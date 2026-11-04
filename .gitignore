@@ -43,3 +43,6 @@ next-env.d.ts
 # local browser test artifacts
 .playwright-mcp/
 !.env.example
+
+# benchmark inputs/outputs — real bank statements, NEVER commit
+bench/

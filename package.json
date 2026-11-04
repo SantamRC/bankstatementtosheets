@@ -7,8 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node scripts/test-reconcile.ts",
-    "typecheck": "tsc --noEmit"
+    "test": "node scripts/test-reconcile.ts && tsx scripts/test-cascade.ts",
+    "typecheck": "tsc --noEmit",
+    "bench": "tsx --env-file-if-exists=.env.local scripts/benchmark.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.4.0",
@@ -33,6 +34,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.4.5",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   },
   "engines": {
