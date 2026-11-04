@@ -1,7 +1,11 @@
 import "server-only";
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from "node:crypto";
 
-const key = () => createHash("sha256").update(process.env.APP_SECRET || "dev-secret-change-me").digest();
+const key = () => {
+  const secret = process.env.APP_SECRET;
+  if (!secret && process.env.NODE_ENV === "production") throw new Error("APP_SECRET must be set in production");
+  return createHash("sha256").update(secret || "dev-secret-change-me").digest();
+};
 
 /** AES-256-GCM, output is base64url(iv | tag | ciphertext). */
 export function seal(plaintext: string): string {
