@@ -240,6 +240,22 @@ npm run build                   # production build (must pass before deploy)
 - Never store uploaded PDFs, and never log statement contents. This is a core product promise.
 - Don't fabricate testimonials, user counts or ratings on the site. Add them only when they're real.
 
+## 10b. Deployment status (as of 2026-11-05)
+
+- **Repo:** https://github.com/SantamRC/bankstatementtosheets (public, branch `main`, auto-deploys on push).
+- **Render:** workspace `bankstatementtosheets` (`tea-dblppg3bc2fs73a2ufc0`), service `srv-dblpu42jnfac73d590s0`,
+  live at https://bankstatementtosheets.onrender.com. Plan: **Free** for now (it sleeps after 15 min idle), because the
+  workspace has no card yet. **Before launch:** add a card and switch to Starter ($7/mo), then set Health Check Path to
+  `/api/health` in Settings (the MCP tool couldn't set it).
+- **Env vars set on Render:** NODE_VERSION, NEXT_TELEMETRY_DISABLED, NEXT_PUBLIC_SITE_URL, APP_SECRET (generated),
+  EXTRACTION_MODEL, EXTRACTION_EFFORT, STRIPE_AUTOMATIC_TAX. **Missing:** ANTHROPIC_API_KEY, all Supabase, Stripe and
+  Google keys. Never set `NODE_ENV` on Render, because `npm ci` would then skip devDependencies and the build fails.
+- **Production safety:** until the Supabase env vars are set, `/api/extract` returns 503 "opens very soon" (no
+  free, unmetered conversions). The sample demo works.
+- **Cloudflare / domain:** not set up yet (see the §8 checklist).
+- **Considered and rejected:** hosting on Cloudflare Workers. The free tier's 10 ms CPU limit can't run Next.js or split PDFs,
+  128 MB memory is risky for 25 MB PDFs, and Next 16 needs the OpenNext adapter port. Render Starter avoids all of that.
+
 ## 11. Decision log
 
 - 2026-11-05 — Project started. Stack: Next 16 + Supabase + Stripe + Claude (`claude-opus-5-5`, env-configurable) + Vercel.
@@ -253,3 +269,4 @@ npm run build                   # production build (must pass before deploy)
 - 2026-11-05 — Google Sheets uses the `drive.file` scope and cookie-stored encrypted tokens (no DB, no Google security review).
 - 2026-11-05 — Pricing shown in USD / EUR / INR via a dropdown (auto-detected from the time zone). EUR uses the same numbers as USD; INR uses ...99 price points (₹799 / ₹2,499 / ₹6,999). Stripe uses one price ID per plan with currency_options.
 - 2026-11-05 — Hosting switched from Vercel to **Render** (web service via `render.yaml`) with **Cloudflare** in front (DNS, proxy, SSL). Supabase stays for auth and the database. Added a 15s NDJSON heartbeat for the Cloudflare 100s idle limit, plus `/api/health`.
+- 2026-11-05 — Deployed to Render (Free plan for now; switch to Starter before launch). Cloudflare stays as DNS/CDN in front; Cloudflare Workers hosting rejected (CPU and memory limits, adapter port).
