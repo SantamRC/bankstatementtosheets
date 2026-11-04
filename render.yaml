@@ -1,0 +1,70 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# Deploy: Render Dashboard → New → Blueprint → pick this repo. Secrets marked `sync: false` are prompted for on first deploy.
+services:
+  - type: web
+    name: bankstatementtosheets
+    runtime: node
+    # Starter = always on (free instances sleep after 15 min and cold-start in ~1 min — bad for paying users).
+    # Move to Standard (2 GB RAM) if large PDFs / concurrent uploads hit memory limits.
+    plan: starter
+    # Keep the same region as your Supabase project to minimise DB latency.
+    region: oregon
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "24"
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_TELEMETRY_DISABLED
+        value: "1"
+      - key: NEXT_PUBLIC_SITE_URL
+        value: https://bankstatementtosheets.com
+      - key: APP_SECRET
+        generateValue: true
+
+      # Claude
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: EXTRACTION_MODEL
+        value: claude-opus-5-5
+      - key: EXTRACTION_EFFORT
+        value: medium
+
+      # Supabase (NEXT_PUBLIC_* are inlined at build time — redeploy after changing them)
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false
+
+      # Stripe
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: STRIPE_AUTOMATIC_TAX
+        value: "false"
+      - key: STRIPE_PRICE_STARTER_MONTHLY
+        sync: false
+      - key: STRIPE_PRICE_STARTER_YEARLY
+        sync: false
+      - key: STRIPE_PRICE_PRO_MONTHLY
+        sync: false
+      - key: STRIPE_PRICE_PRO_YEARLY
+        sync: false
+      - key: STRIPE_PRICE_BUSINESS_MONTHLY
+        sync: false
+      - key: STRIPE_PRICE_BUSINESS_YEARLY
+        sync: false
+      - key: STRIPE_PRICE_PACK_100
+        sync: false
+
+      # Google Sheets export
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
