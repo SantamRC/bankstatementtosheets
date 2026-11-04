@@ -28,7 +28,12 @@ services:
       # Claude
       - key: ANTHROPIC_API_KEY
         sync: false
-      - key: EXTRACTION_MODEL
+      # Cascade: every page on the fast model; only chunks that fail balance verification re-run on the strong one.
+      - key: EXTRACTION_MODE
+        value: cascade
+      - key: EXTRACTION_MODEL_FAST
+        value: claude-haiku-5-5
+      - key: EXTRACTION_MODEL_STRONG
         value: claude-opus-5-5
       - key: EXTRACTION_EFFORT
         value: medium

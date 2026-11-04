@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { ExtractionError, extractStatement, inspectPdf } from "@/lib/extraction/extract";
+import { ExtractionError, extractStatement, inspectPdf, publicStatement, summarize } from "@/lib/extraction/extract";
 import type { ExtractEvent } from "@/lib/extraction/schema";
 import { getUser, supabaseAdmin } from "@/lib/supabase/server";
 import { isDevAuthBypass, isSupabaseConfigured } from "@/lib/env";
@@ -56,13 +56,11 @@ export async function POST(req: NextRequest) {
       // Cloudflare drops proxied connections idle for 100s; a dense chunk can take longer, so ping every 15s.
       const heartbeat = setInterval(() => send({ type: "ping" }), 15_000);
       try {
-        const statement = await extractStatement(
-          file.name,
-          doc,
-          pages,
-          (done, total) => send({ type: "progress", done, total }),
-          (chunks) => send({ type: "start", pages, chunks }),
-        );
+        const statement = await extractStatement(file.name, doc, pages, {
+          onProgress: (done, total) => send({ type: "progress", done, total }),
+          onStart: (chunks) => send({ type: "start", pages, chunks }),
+        });
+        console.info(summarize(statement));
 
         if (metered) {
           const { data } = await supabaseAdmin()
@@ -83,7 +81,8 @@ export async function POST(req: NextRequest) {
             .single();
           statement.conversionId = data?.id ?? null;
         }
-        send({ type: "result", statement, pagesRemaining });
+        // Cost/model details are stored for unit economics but never sent to the browser.
+        send({ type: "result", statement: publicStatement(statement), pagesRemaining });
       } catch (e) {
         if (metered) await supabaseAdmin().rpc("refund_pages", { p_user: user.id, p_pages: pages });
         const err =

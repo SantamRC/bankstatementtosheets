@@ -5,6 +5,7 @@ import { Workspace } from "@/components/convert/Workspace";
 import { getProfile, getUser, supabaseServer } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 import type { Statement } from "@/lib/extraction/schema";
+import { publicStatement } from "@/lib/extraction/extract";
 
 export const metadata: Metadata = {
   title: "Convert a bank statement",
@@ -21,7 +22,10 @@ async function ConvertPageInner({ searchParams }: { searchParams: Promise<{ c?: 
   let initialStatement: Statement | null = null;
   if (c && signedIn) {
     const { data } = await (await supabaseServer()).from("conversions").select("id, statement").eq("id", c).single();
-    if (data) initialStatement = { ...(data.statement as Statement), conversionId: data.id };
+    if (data) {
+      // Drop server-only cost/model metadata before it reaches the browser.
+      initialStatement = { ...publicStatement(data.statement as Statement), conversionId: data.id };
+    }
   }
 
   return (

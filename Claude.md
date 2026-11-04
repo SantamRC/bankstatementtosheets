@@ -74,16 +74,27 @@ subscriptions. Set `active: false` once the offer ends.
   Monthly pages are spent first.
 
 ### ⚠️ Unit economics — not yet measured, VALIDATE BEFORE LAUNCH
-- The default model is `claude-opus-5-5` ($4 input / $20 output per million tokens). A PDF page sent as a document costs roughly
-  1.5–3k input tokens. Output plus thinking is about 1–3k tokens per page.
-  **Rough estimate: $0.03–0.07 per page.** Launch prices are $0.032–0.060/page, so at full usage **Pro is about
-  break-even on Opus and Business loses money**. Average plan utilization is usually well below 100%, but don't rely on that.
-  The break-even model cost for Business is under $0.026/page (yearly price).
-- Every chunk logs `[extract] model=… in=… out=…`. Run 20–30 real statements and compute the actual $/page.
-- Levers, all set in env with no code change: `EXTRACTION_MODEL=claude-sonnet-5-5` ($2/$10) or `claude-haiku-5-5`
-  ($0.10/$0.50), `EXTRACTION_EFFORT=low`, or raise prices. Measure accuracy (the reconciliation pass rate) for each
-  model before switching. The model choice is the owner's decision.
-- Planned cost optimization: for PDFs that have a text layer, send extracted text instead of the full page image.
+**Extraction runs in cascade mode ("verify, then escalate"),** chosen by the owner on 2026-11-05:
+1. Every 5-page chunk goes to the **fast model** (`claude-haiku-5-5`, $0.10 in / $0.50 out per million tokens).
+2. The statement is reconciled against its own printed balances.
+3. Only chunks with rows that don't tie out are re-run on the **strong model** (`claude-opus-5-5`, $4/$20). If the
+   statement has no balances at all, or the totals are off with no row to blame, every chunk is re-run. The better
+   of the two results is kept. A fast-model error on a chunk is retried on the strong model instead of failing.
+
+**Estimates, not measured:** Haiku costs about $0.001–0.002/page and Opus about $0.03–0.07/page. If around 20% of pages
+escalate, the average is about **$0.01/page**, which is a 70–80% margin on the $0.032–0.060/page launch prices.
+Opus-only at full plan usage would leave Pro at break-even and Business losing money.
+
+- **Measuring:** each conversion stores `statement.extraction` in `conversions.statement` (models, tokens, $ per call,
+  escalated chunks) and logs one line: `[extract] pages=… mode=cascade status=… escalated=1/3 cost=$… ($…/page)`.
+  The cost data is stripped before the statement is sent to the browser (`publicStatement()`).
+- **Benchmark before launch:** `npm run bench -- --dir bench/statements` (see §7). Compare the verified %, $/page and
+  agreement with Opus for cascade vs Haiku-only vs Opus-only.
+- **Settings in env, no code change needed:** `EXTRACTION_MODE=cascade|single`, `EXTRACTION_MODEL_FAST`,
+  `EXTRACTION_MODEL_STRONG`, `EXTRACTION_EFFORT`. Single mode uses the strong model only.
+- **Next cost lever:** for PDFs with a text layer, send extracted text instead of the full page image.
+- **Other providers** (Gemini, GPT, Textract/Document AI) were considered. The extractor is pluggable (`ChunkExtractor` in
+  `core.ts`), so an adapter can be added and benchmarked. They aren't built yet.
 
 ## 4. Tech stack
 
@@ -154,13 +165,16 @@ src/
     convert/  Workspace (queue, progress, views), ReviewTable (editable grid), ExportBar, Dropzone
     site/     Navbar, AppHeader, Footer, Logo, LegalPage
   lib/
-    extraction/ schema.ts (Zod + app types), prompt.ts, extract.ts (server-only), reconcile.ts (pure)
+    extraction/ core.ts (engine + cascade, framework-free), extract.ts (server-only re-export for Next),
+                schema.ts (Zod + app types), prompt.ts, reconcile.ts (pure)
     export/     build.ts (tables, CSV/TSV), xlsx.ts (client)
     supabase/   server.ts (getUser/getProfile/admin), client.ts
     plans.ts, stripe.ts, google.ts, crypto.ts (AES-GCM), env.ts (feature flags), sample.ts (demo statement), ui.ts (btn(), money(), cn())
   proxy.ts                   Next 16 "proxy" (formerly middleware): refreshes Supabase session, guards /dashboard
 supabase/migrations/0001_init.sql   profiles, conversions, RLS, signup trigger, consume_pages/refund_pages RPCs
 scripts/test-reconcile.ts    Reconciliation unit tests (node runs TS natively)
+scripts/test-cascade.ts      Cascade/escalation tests with a fake model (tsx, no API calls)
+scripts/benchmark.ts         Model bake-off on real PDFs in bench/statements (git-ignored!)
 .env.example                 All env vars, documented
 ```
 
@@ -170,7 +184,11 @@ scripts/test-reconcile.ts    Reconciliation unit tests (node runs TS natively)
 cp .env.example .env.local      # at minimum set ANTHROPIC_API_KEY and APP_SECRET
 npm install
 npm run dev                     # http://localhost:3000
-npm test                        # reconciliation tests
+npm test                        # reconciliation + cascade tests (no API calls)
+npm run bench -- --dir bench/statements [--configs cascade,claude-haiku-5-5,claude-opus-5-5] [--save] [--yes]
+                                # real API calls on your PDFs. Prints verified %, $/page, latency, escalation rate,
+                                # and agreement vs Opus. Asks for --yes if the estimated cost is over $2.
+                                # bench/ is git-ignored. NEVER commit real statements.
 npm run build                   # production build (must pass before deploy)
 ```
 - **Dev mode:** when the Supabase env vars are blank, auth is bypassed with a "dev user", nothing is metered and
@@ -212,7 +230,8 @@ npm run build                   # production build (must pass before deploy)
 
 ## 9. Roadmap (ordered by expected revenue impact)
 
-1. **Measure accuracy and cost** on 30+ real statements (US, UK, India, EU; digital and scanned). Tune the prompt and model.
+1. **Run `npm run bench`** on 30+ real statements (US, UK, India, EU; digital and scanned). Tune the prompt and the
+   cascade settings from the results. Optionally add a Gemini or GPT `ChunkExtractor` and compare.
 2. **SEO landing pages:** `/banks/[bank]` ("Chase statement to Excel") and `/convert/pdf-to-csv` etc. This is the main
    acquisition channel; competitors rank on these terms.
 3. **QBO / OFX / QIF export** for QuickBooks and Xero users (accountants ask for it constantly).
@@ -229,9 +248,12 @@ npm run build                   # production build (must pass before deploy)
 - **Next 16:** middleware is `src/proxy.ts`. `cacheComponents` is on, so pages that read cookies/searchParams must render
   that part inside `<Suspense>` (see the `*Inner` pattern in convert/dashboard/login). Don't export `runtime` from route
   files because it's incompatible with cacheComponents. Don't call `new Date()` in prerendered components.
-- **Claude API:** use `client.beta.messages.stream` with `betas: ["server-side-fallback-2026-07-01"], fallbacks: "default"`,
-  `output_config: { effort, format: zodOutputFormat(schema) }`, then `finalMessage()`. Opus 5.5 can't disable thinking;
-  use `effort` to control cost. No assistant prefill. Check `stop_reason` for `refusal` / `max_tokens`.
+- **Claude API:** stream with `output_config: { effort, format: zodOutputFormat(schema) }`, then `finalMessage()`.
+  For Opus 5.x, Sonnet 5.5 and Fable models, use `client.beta.messages.stream` with
+  `betas: ["server-side-fallback-2026-07-01"], fallbacks: "default"`. Haiku 5.5 has no server-side fallback, so it uses
+  plain `client.messages.stream` (see `supportsFallbacks()` in core.ts). Thinking can't be disabled on Opus 5.5; use
+  `effort` to control cost. No assistant prefill. Check `stop_reason` for `refusal` / `max_tokens`.
+- `core.ts` must stay free of `server-only` and `@/` path aliases so the tsx scripts can import it.
 - Zod is imported from `zod/v4` in extraction code (that's what the SDK helper expects).
 - Money values are plain numbers rounded to 2dp. Debit and credit are both positive; the signed `Amount` column is
   computed at export.
@@ -270,3 +292,4 @@ npm run build                   # production build (must pass before deploy)
 - 2026-11-05 — Pricing shown in USD / EUR / INR via a dropdown (auto-detected from the time zone). EUR uses the same numbers as USD; INR uses ...99 price points (₹799 / ₹2,499 / ₹6,999). Stripe uses one price ID per plan with currency_options.
 - 2026-11-05 — Hosting switched from Vercel to **Render** (web service via `render.yaml`) with **Cloudflare** in front (DNS, proxy, SSL). Supabase stays for auth and the database. Added a 15s NDJSON heartbeat for the Cloudflare 100s idle limit, plus `/api/health`.
 - 2026-11-05 — Deployed to Render (Free plan for now; switch to Starter before launch). Cloudflare stays as DNS/CDN in front; Cloudflare Workers hosting rejected (CPU and memory limits, adapter port).
+- 2026-11-05 — Extraction switched to a **cascade**: Haiku 5.5 first, Opus 5.5 only on chunks that fail reconciliation (approved by the owner). Pluggable `ChunkExtractor`, per-conversion cost tracking (server-only), cascade tests, and `npm run bench`.

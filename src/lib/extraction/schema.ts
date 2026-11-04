@@ -140,6 +140,33 @@ export interface Statement {
   reconciliation: Reconciliation;
   notes: string[];
   conversionId?: string | null;
+  /** Server-side only (stripped before sending to the browser): how the statement was extracted and what it cost. */
+  extraction?: ExtractionMeta;
+}
+
+export interface ModelCall {
+  model: string;
+  pages: string; // e.g. "1-5"
+  inputTokens: number;
+  outputTokens: number;
+  costUsd: number;
+  ms: number;
+}
+
+export interface ExtractionMeta {
+  mode: "cascade" | "single";
+  fastModel: string | null;
+  strongModel: string;
+  chunks: number;
+  /** chunk indexes re-run on the strong model */
+  escalatedChunks: number[];
+  escalationReason: string | null;
+  /** which pass produced the returned result */
+  usedPass: 1 | 2;
+  calls: ModelCall[];
+  costUsd: number;
+  costPerPageUsd: number;
+  ms: number;
 }
 
 /** NDJSON events streamed from /api/extract */
