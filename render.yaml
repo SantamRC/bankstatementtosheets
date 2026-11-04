@@ -16,8 +16,8 @@ services:
     envVars:
       - key: NODE_VERSION
         value: "24"
-      - key: NODE_ENV
-        value: production
+      # Don't set NODE_ENV here: `npm ci` would skip devDependencies (Tailwind, TypeScript) that the build needs.
+      # `next build` / `next start` set production mode themselves.
       - key: NEXT_TELEMETRY_DISABLED
         value: "1"
       - key: NEXT_PUBLIC_SITE_URL
