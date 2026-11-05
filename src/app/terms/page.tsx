@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { LegalPage } from "@/components/site/LegalPage";
 import { SITE } from "@/lib/site";
 
@@ -7,7 +8,7 @@ export const metadata: Metadata = { title: "Terms of Service", alternates: { can
 // NOTE: Template — have this reviewed by a lawyer before launch.
 export default function Terms() {
   return (
-    <LegalPage title="Terms of Service" updated="November 5, 2026">
+    <LegalPage title="Terms of Service" updated="November 6, 2026">
       <p>By using {SITE.domain} you agree to these terms.</p>
       <h2>The service</h2>
       <p>
@@ -22,7 +23,10 @@ export default function Terms() {
         <li>One credit is used per PDF page converted. Failed conversions are not charged.</li>
         <li>Monthly page allowances reset each billing cycle and don’t roll over. Purchased page packs never expire.</li>
         <li>You can cancel any time from the billing portal; your plan stays active until the end of the paid period.</li>
-        <li>If something went wrong, email {SITE.email} within 14 days and we’ll make it right.</li>
+        <li>
+          Refunds, including our 14-day money-back guarantee, are covered by the{" "}
+          <Link href="/refunds" className="underline">Refund &amp; Cancellation Policy</Link>.
+        </li>
       </ul>
       <h2>Acceptable use</h2>
       <p>No reverse engineering, abuse of free allowances, or uploading content that is unlawful or that you are not authorised to process.</p>

@@ -6,7 +6,7 @@ export function Footer() {
   const cols: [string, [string, string][]][] = [
     ["Product", [["Converter", "/convert"], ["Pricing", "/pricing"], ["Security", "/#security"], ["FAQ", "/#faq"]]],
     ["Convert", [["PDF to Excel", "/convert"], ["PDF to Google Sheets", "/convert"], ["PDF to CSV", "/convert"], ["Credit card statements", "/convert"]]],
-    ["Company", [["Privacy", "/privacy"], ["Terms", "/terms"], ["Contact", `mailto:${SITE.email}`]]],
+    ["Company", [["Contact", "/contact"], ["Refunds & cancellation", "/refunds"], ["Privacy", "/privacy"], ["Terms", "/terms"]]],
   ];
   return (
     <footer className="mt-auto border-t border-line bg-paper">
