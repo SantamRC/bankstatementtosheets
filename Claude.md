@@ -152,6 +152,7 @@ src/
     dashboard/               Plan, pages left, billing portal, conversion history (30 days)
     login/                   Google OAuth + magic link (Supabase)
     pricing/, privacy/, terms/   (privacy/terms are TEMPLATES — get legal review)
+    refunds/, contact/       Refund & Cancellation policy (14-day money-back if <20% used) + contact page (required by MoR onboarding)
     api/extract/             Core extraction endpoint (NDJSON stream)
     api/checkout/            Stripe Checkout (subscription or page pack)
     api/billing-portal/      Stripe customer portal
@@ -215,14 +216,14 @@ npm run build                   # production build (must pass before deploy)
       Fill in the `sync: false` secrets when prompted. Pick the same region as Supabase. Use the Starter plan or higher,
       because free instances sleep. After the first deploy, add custom domains `bankstatementtosheets.com` and
       `www.bankstatementtosheets.com` under Settings → Custom Domains.
-- [ ] **Cloudflare:** add the site to Cloudflare, then change the nameservers at **Porkbun** to the two Cloudflare gives you.
+- [x] **Cloudflare:** (done 2026-11-06) add the site to Cloudflare, then change the nameservers at **Porkbun** to the two Cloudflare gives you.
       DNS: apex `CNAME @ → <service>.onrender.com` (Cloudflare flattens it) and `CNAME www → <service>.onrender.com`,
       both proxied (orange cloud). SSL/TLS mode **Full (strict)**, Always Use HTTPS on.
       Turn **Rocket Loader off** (it breaks Next.js scripts). Add a redirect rule from www to the apex.
       For Render to issue its certificate you may need to set the records to DNS-only (grey cloud) briefly,
       then switch back to proxied.
 - [ ] Stripe webhook URL and Google OAuth redirect must use the final `https://bankstatementtosheets.com` domain.
-- [ ] Email for `support@bankstatementtosheets.com` (Porkbun email forwarding is enough to start).
+- [x] Email (done 2026-11-06): **Cloudflare Email Routing** (free, receive-only): `support@` plus a catch-all forward to the owner's Gmail. Don't use Porkbun forwarding, because it stops working once the nameservers move to Cloudflare. To reply *as* support@ later, add Gmail "Send mail as" through an SMTP relay (Resend or Brevo free tier).
 - [ ] Legal review of the privacy and terms templates. Add a company name and address.
 - [ ] Analytics (Cloudflare Web Analytics is free, or Plausible) and error tracking (Sentry). Consider Cloudflare Turnstile on sign-up if free-tier abuse appears.
 - [ ] Rate limiting on `/api/extract` beyond credits (for example Upstash) if free-tier abuse appears.
@@ -274,7 +275,8 @@ npm run build                   # production build (must pass before deploy)
   Google keys. Never set `NODE_ENV` on Render, because `npm ci` would then skip devDependencies and the build fails.
 - **Production safety:** until the Supabase env vars are set, `/api/extract` returns 503 "opens very soon" (no
   free, unmetered conversions). The sample demo works.
-- **Cloudflare / domain:** not set up yet (see the §8 checklist).
+- **Domain (live 2026-11-06):** https://bankstatementtosheets.com. Nameservers at Porkbun → Cloudflare (`cesar` / `jocelyn.ns.cloudflare.com`). DNS: CNAME `@` and `www` → `bankstatementtosheets.onrender.com`, both **proxied**. SSL **Full (strict)**. Custom domains added on Render (www 301 → apex, certificate issued by Render).
+- **Email (live 2026-11-06):** Cloudflare Email Routing. `support@` and a **catch-all** forward to santamdev404@gmail.com. MX/SPF/DKIM are managed by Cloudflare. It's receive-only; to reply as support@ later, add Gmail "Send mail as" through an SMTP relay. Use `santam@bankstatementtosheets.com` for vendor signups (Dodo etc.).
 - **Considered and rejected:** hosting on Cloudflare Workers. The free tier's 10 ms CPU limit can't run Next.js or split PDFs,
   128 MB memory is risky for 25 MB PDFs, and Next 16 needs the OpenNext adapter port. Render Starter avoids all of that.
 
@@ -294,3 +296,4 @@ npm run build                   # production build (must pass before deploy)
 - 2026-11-05 — Deployed to Render (Free plan for now; switch to Starter before launch). Cloudflare stays as DNS/CDN in front; Cloudflare Workers hosting rejected (CPU and memory limits, adapter port).
 - 2026-11-05 — Extraction switched to a **cascade**: Haiku 5.5 first, Opus 5.5 only on chunks that fail reconciliation (approved by the owner). Pluggable `ChunkExtractor`, per-conversion cost tracking (server-only), cascade tests, and `npm run bench`.
 - 2026-11-06 — Owner has no registered business and doesn't plan to register one, so Stripe direct is out. Payments will go through a **merchant of record that accepts individuals** (shortlist: Dodo Payments, Polar.sh). Razorpay as an unregistered seller can't take international cards. Provider not chosen yet; `api/checkout` and `api/webhooks/stripe` will need an adapter.
+- 2026-11-06 — Domain live on Cloudflare → Render. Cloudflare Email Routing (support@ + catch-all → owner's Gmail). Added /refunds (14-day money-back if under 20% used) and /contact, both required for merchant-of-record onboarding.
