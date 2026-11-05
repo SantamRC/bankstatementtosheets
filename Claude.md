@@ -3,6 +3,15 @@
 > Read this first in every session. Keep it current: when a decision changes, update the relevant section
 > and add a line to the **Decision log** at the bottom.
 
+## 0. Working agreement (set by the owner, 2026-11-06)
+
+- Work autonomously. Ask the owner only when blocked (permissions, logins, payments), and then give exact click steps and wait.
+- Keep replies very brief, with no explanations unless asked.
+- After every change, commit and push to `main` (Render auto-deploys prod).
+- Keep **local** and **prod** separate: `.env.local` plus the dev Supabase project for local; Render env plus the prod Supabase project for prod.
+- On every request, check how competitors do it and suggest how we can do better.
+- Look for MCPs, skills or connectors that help (see §12).
+
 ## 1. What we're building
 
 **bankstatementtosheets.com** (domain bought on Porkbun). A web app that converts PDF bank and credit-card statements
@@ -279,6 +288,13 @@ npm run build                   # production build (must pass before deploy)
 - **Email (live 2026-11-06):** Cloudflare Email Routing. `support@` and a **catch-all** forward to santamdev404@gmail.com. MX/SPF/DKIM are managed by Cloudflare. It's receive-only; to reply as support@ later, add Gmail "Send mail as" through an SMTP relay. Use `santam@bankstatementtosheets.com` for vendor signups (Dodo etc.).
 - **Considered and rejected:** hosting on Cloudflare Workers. The free tier's 10 ms CPU limit can't run Next.js or split PDFs,
   128 MB memory is risky for 25 MB PDFs, and Next 16 needs the OpenNext adapter port. Render Starter avoids all of that.
+
+## 12. Tooling available to Claude
+
+- **MCP (claude.ai connectors):** Render (services, env vars, deploys, logs), Supabase (projects, migrations, SQL, keys, logs), Cloudflare Developer Platform (Workers/KV/R2/D1 only, no DNS; deprecated, so prefer the Cloudflare API MCP), Gmail, OpenSEO (keyword research, SERP, audits, rank tracking), Claude Docs.
+- **Browser:** Claude in Chrome (the owner's signed-in Chrome: Cloudflare, Porkbun, Render, Dodo dashboards). The auto-mode classifier blocks DNS, domain and cert changes, so the owner clicks those. Playwright MCP is for testing localhost.
+- **Skills:** openseo:* (keyword-research, competitor-analysis, seo-audit, …), engineering:*, claude-api, dataviz, legal:compliance-check.
+- **Worth adding:** the Cloudflare API MCP (https://mcp.cloudflare.com/mcp) for DNS/WAF, a Stripe or Dodo MCP when payments go live, and a Sentry MCP once error tracking is set up.
 
 ## 11. Decision log
 
