@@ -36,12 +36,12 @@ alter table public.conversions enable row level security;
 
 -- Users read their own profile; all writes go through the service role (webhooks / credit RPC).
 drop policy if exists "own profile" on public.profiles;
-create policy "own profile" on public.profiles for select using (auth.uid() = id);
+create policy "own profile" on public.profiles for select using ((select auth.uid()) = id);
 
 drop policy if exists "own conversions read" on public.conversions;
-create policy "own conversions read" on public.conversions for select using (auth.uid() = user_id);
+create policy "own conversions read" on public.conversions for select using ((select auth.uid()) = user_id);
 drop policy if exists "own conversions delete" on public.conversions;
-create policy "own conversions delete" on public.conversions for delete using (auth.uid() = user_id);
+create policy "own conversions delete" on public.conversions for delete using ((select auth.uid()) = user_id);
 
 -- Create a profile with free pages on signup.
 create or replace function public.handle_new_user()
@@ -86,6 +86,5 @@ $$;
 
 revoke execute on function public.consume_pages(uuid, integer) from public, anon, authenticated;
 revoke execute on function public.refund_pages(uuid, integer) from public, anon, authenticated;
+revoke execute on function public.handle_new_user() from public, anon, authenticated;
 
--- Daily cleanup of expired history (enable pg_cron in the dashboard first):
--- select cron.schedule('purge-expired-conversions', '0 3 * * *', $$delete from public.conversions where expires_at < now()$$);
