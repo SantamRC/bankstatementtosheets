@@ -26,7 +26,7 @@ function isoToDate(v: string): Date | string {
 }
 
 /** Builds a polished workbook in the browser (exceljs is lazy-loaded, ~1MB). */
-export async function downloadXlsx(statements: Statement[], style: DescStyle = "clean") {
+export async function downloadXlsx(statements: Statement[], style: DescStyle = "original") {
   const ExcelJS = (await import("exceljs")).default;
   const wb = new ExcelJS.Workbook();
   wb.creator = "BankStatementToSheets.com";
