@@ -1,6 +1,6 @@
 "use client";
 import type { Statement } from "@/lib/extraction/schema";
-import { baseName, summaryTable, transactionsTable, type Table } from "./build";
+import { baseName, summaryTable, transactionsTable, type DescStyle, type Table } from "./build";
 import { CATEGORIES } from "@/lib/extraction/schema";
 
 // Single-section format: every app (Excel, Numbers, Sheets, LibreOffice) adds the minus sign itself.
@@ -26,7 +26,7 @@ function isoToDate(v: string): Date | string {
 }
 
 /** Builds a polished workbook in the browser (exceljs is lazy-loaded, ~1MB). */
-export async function downloadXlsx(statements: Statement[]) {
+export async function downloadXlsx(statements: Statement[], style: DescStyle = "clean") {
   const ExcelJS = (await import("exceljs")).default;
   const wb = new ExcelJS.Workbook();
   wb.creator = "BankStatementToSheets.com";
@@ -55,8 +55,9 @@ export async function downloadXlsx(statements: Statement[]) {
     return ws;
   };
 
-  const tx = transactionsTable(statements);
-  const txWs = addTable(tx, [12, 54, 16, 18, 13, 13, 13, 14, 6, 11, 36]);
+  const tx = transactionsTable(statements, style);
+  const clean = style === "clean";
+  const txWs = addTable(tx, [12, clean ? 32 : 60, 20, 18, 13, 13, 13, 14, 6, 11, ...(clean ? [70] : []), 36]);
   // Highlight rows that need review.
   tx.rows.forEach((r, i) => {
     if (i > 0 && r[9] === "Check")

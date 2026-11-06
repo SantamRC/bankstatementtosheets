@@ -1,4 +1,4 @@
-import { CATEGORIES, type Statement } from "@/lib/extraction/schema";
+import { CATEGORIES, type Statement, type Transaction } from "@/lib/extraction/schema";
 
 export type Cell = string | number | null;
 
@@ -14,9 +14,15 @@ const STATUS_LABEL = { verified: "Verified", fixed: "Auto-fixed", mismatch: "Che
 export const signed = (debit: number | null, credit: number | null) =>
   Math.round(((credit ?? 0) - (debit ?? 0)) * 100) / 100;
 
+/** "clean" = short payee name as Description (full narration kept in its own column); "original" = narration as printed. */
+export type DescStyle = "clean" | "original";
+
+export const cleanDescription = (t: Pick<Transaction, "payee" | "description">) => t.payee?.trim() || t.description;
+
 /** Rows for the main Transactions sheet. Adds a Source column when several statements are merged. */
-export function transactionsTable(statements: Statement[]): Table {
+export function transactionsTable(statements: Statement[], style: DescStyle = "clean"): Table {
   const multi = statements.length > 1;
+  const clean = style === "clean";
   const header = [
     "Date",
     "Description",
@@ -28,6 +34,7 @@ export function transactionsTable(statements: Statement[]): Table {
     "Balance",
     "Page",
     "Status",
+    ...(clean ? ["Original description"] : []),
     ...(multi ? ["Source"] : []),
   ];
   const rows: Cell[][] = [header];
@@ -35,7 +42,7 @@ export function transactionsTable(statements: Statement[]): Table {
     for (const t of s.transactions)
       rows.push([
         t.date,
-        t.description,
+        clean ? cleanDescription(t) : t.description,
         t.reference,
         t.category,
         t.debit,
@@ -44,6 +51,7 @@ export function transactionsTable(statements: Statement[]): Table {
         t.balance,
         t.page,
         STATUS_LABEL[t.status],
+        ...(clean ? [t.description] : []),
         ...(multi ? [s.bankName ? `${s.bankName} · ${s.fileName}` : s.fileName] : []),
       ]);
   return { name: "Transactions", rows, moneyCols: [4, 5, 6, 7], dateCols: [0] };

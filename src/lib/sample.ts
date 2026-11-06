@@ -20,11 +20,30 @@ const rows: [string, string, number | null, number | null, number, Category, num
   ["2026-03-31", "INTEREST PAID", null, 3.42, 9464.58, "Interest", 3],
 ];
 
+// Clean payee name and reference the model pulls out of each narration.
+const PAYEES: Record<string, [string, string | null]> = {
+  "STRIPE PAYOUT 8823-XK TRANSFER": ["Stripe payout", "8823-XK"],
+  "AWS EMEA AWS.AMAZON.CO INVOICE 7731": ["Amazon Web Services", "7731"],
+  "PAYROLL ACME LTD REF 0326": ["Acme Ltd payroll", "0326"],
+  "WHOLE FOODS MKT #1029 AUSTIN TX": ["Whole Foods Market", null],
+  "RENT 14 HARBOUR ST STANDING ORDER": ["Rent – 14 Harbour St", null],
+  "UBER *TRIP 4F2KQ HELP.UBER.COM": ["Uber", "4F2KQ"],
+  "NOTION LABS INC SUBSCRIPTION": ["Notion", null],
+  "CITY WATER & POWER AUTOPAY": ["City Water & Power", null],
+  "TRANSFER FROM SAVINGS ****4410": ["Transfer from savings", null],
+  "DELTA AIR 0062384 ATLANTA": ["Delta Air Lines", "0062384"],
+  "BLUE BOTTLE COFFEE SF": ["Blue Bottle Coffee", null],
+  "CLIENT PAYMENT INV-1043 BRIGHTLINE CO": ["Brightline Co", "INV-1043"],
+  "MONTHLY ACCOUNT FEE": ["Monthly account fee", null],
+  "INTEREST PAID": ["Interest", null],
+};
+
 const raw: Transaction[] = rows.map(([date, description, debit, credit, balance, category, page], i) => ({
   id: `sample-${i}`,
   date,
   description,
-  reference: null,
+  payee: PAYEES[description]?.[0] ?? null,
+  reference: PAYEES[description]?.[1] ?? null,
   debit,
   credit,
   balance,

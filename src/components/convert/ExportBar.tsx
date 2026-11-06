@@ -5,6 +5,7 @@ import type { Statement } from "@/lib/extraction/schema";
 import { baseName, categoryTable, summaryTable, toCSV, toTSV, transactionsTable } from "@/lib/export/build";
 import { downloadXlsx, saveBlob } from "@/lib/export/xlsx";
 import { btn, cn } from "@/lib/ui";
+import { setDescStyle, useDescStyle } from "@/lib/prefs";
 
 type Busy = null | "xlsx" | "csv" | "copy" | "sheets";
 
@@ -13,6 +14,7 @@ export function ExportBar({ statements, scopeLabel }: { statements: Statement[];
   const [done, setDone] = useState<Busy>(null);
   const [sheetUrl, setSheetUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const style = useDescStyle();
 
   const flash = (k: Busy) => {
     setDone(k);
@@ -55,7 +57,7 @@ export function ExportBar({ statements, scopeLabel }: { statements: Statement[];
   async function toSheets() {
     const payload = JSON.stringify({
       title: baseName(statements),
-      sheets: [transactionsTable(statements), summaryTable(statements), categoryTable(statements)],
+      sheets: [transactionsTable(statements, style), summaryTable(statements), categoryTable(statements)],
     });
     const post = () => fetch("/api/google/sheets", { method: "POST", headers: { "Content-Type": "application/json" }, body: payload });
     let res = await post();
@@ -79,10 +81,32 @@ export function ExportBar({ statements, scopeLabel }: { statements: Statement[];
         <div className="px-2 text-sm">
           <p className="font-semibold">Export {scopeLabel}</p>
           <p className="text-xs text-paper/55">Transactions · Summary · Category totals</p>
+          <div role="radiogroup" aria-label="Descriptions" className="mt-2 inline-flex rounded-lg bg-white/10 p-0.5 text-xs">
+            {(
+              [
+                ["clean", "Clean names", "Short payee names, with the full bank narration in its own column"],
+                ["original", "Bank original", "Descriptions exactly as printed on the statement"],
+              ] as const
+            ).map(([v, text, tip]) => (
+              <button
+                key={v}
+                role="radio"
+                aria-checked={style === v}
+                title={tip}
+                onClick={() => setDescStyle(v)}
+                className={cn(
+                  "rounded-md px-2.5 py-1 font-medium transition",
+                  style === v ? "bg-paper text-ink" : "text-paper/70 hover:text-paper",
+                )}
+              >
+                {text}
+              </button>
+            ))}
+          </div>
         </div>
         <div className="flex flex-wrap gap-2 sm:ml-auto">
           <button
-            onClick={() => run("xlsx", () => downloadXlsx(statements))}
+            onClick={() => run("xlsx", () => downloadXlsx(statements, style))}
             disabled={busy !== null}
             className={btn("lime", "md", "min-w-[150px]")}
           >
@@ -98,7 +122,7 @@ export function ExportBar({ statements, scopeLabel }: { statements: Statement[];
           <button
             onClick={() =>
               run("csv", () =>
-                saveBlob(new Blob([toCSV(transactionsTable(statements))], { type: "text/csv;charset=utf-8" }), `${baseName(statements)}.csv`),
+                saveBlob(new Blob([toCSV(transactionsTable(statements, style))], { type: "text/csv;charset=utf-8" }), `${baseName(statements)}.csv`),
               )
             }
             disabled={busy !== null}
@@ -107,7 +131,7 @@ export function ExportBar({ statements, scopeLabel }: { statements: Statement[];
             <Download className="size-4" /> {label("csv", "CSV")}
           </button>
           <button
-            onClick={() => run("copy", () => navigator.clipboard.writeText(toTSV(transactionsTable(statements))))}
+            onClick={() => run("copy", () => navigator.clipboard.writeText(toTSV(transactionsTable(statements, style))))}
             disabled={busy !== null}
             title="Copy as a table you can paste into any spreadsheet"
             className={cn(btn("ghost", "md"), "text-paper/80 hover:bg-white/10 hover:text-paper")}
