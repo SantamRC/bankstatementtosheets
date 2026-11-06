@@ -8,9 +8,9 @@ const listeners = new Set<() => void>();
 
 function read(): DescStyle {
   try {
-    return localStorage.getItem(KEY) === "original" ? "original" : "clean";
+    return localStorage.getItem(KEY) === "clean" ? "clean" : "original";
   } catch {
-    return "clean";
+    return "original";
   }
 }
 
@@ -28,6 +28,6 @@ export function useDescStyle(): DescStyle {
       return () => listeners.delete(l);
     },
     read,
-    () => "clean",
+    () => "original",
   );
 }

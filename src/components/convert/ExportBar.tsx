@@ -5,7 +5,8 @@ import type { Statement } from "@/lib/extraction/schema";
 import { baseName, categoryTable, summaryTable, toCSV, toTSV, transactionsTable } from "@/lib/export/build";
 import { downloadXlsx, saveBlob } from "@/lib/export/xlsx";
 import { btn, cn } from "@/lib/ui";
-import { setDescStyle, useDescStyle } from "@/lib/prefs";
+import { useDescStyle } from "@/lib/prefs";
+import { DescStyleSwitch } from "./DescStyleSwitch";
 
 type Busy = null | "xlsx" | "csv" | "copy" | "sheets";
 
@@ -81,28 +82,7 @@ export function ExportBar({ statements, scopeLabel }: { statements: Statement[];
         <div className="px-2 text-sm">
           <p className="font-semibold">Export {scopeLabel}</p>
           <p className="text-xs text-paper/55">Transactions · Summary · Category totals</p>
-          <div role="radiogroup" aria-label="Descriptions" className="mt-2 inline-flex rounded-lg bg-white/10 p-0.5 text-xs">
-            {(
-              [
-                ["clean", "Clean names", "Short payee names, with the full bank narration in its own column"],
-                ["original", "Bank original", "Descriptions exactly as printed on the statement"],
-              ] as const
-            ).map(([v, text, tip]) => (
-              <button
-                key={v}
-                role="radio"
-                aria-checked={style === v}
-                title={tip}
-                onClick={() => setDescStyle(v)}
-                className={cn(
-                  "rounded-md px-2.5 py-1 font-medium transition",
-                  style === v ? "bg-paper text-ink" : "text-paper/70 hover:text-paper",
-                )}
-              >
-                {text}
-              </button>
-            ))}
-          </div>
+          <DescStyleSwitch tone="dark" className="mt-2" />
         </div>
         <div className="flex flex-wrap gap-2 sm:ml-auto">
           <button

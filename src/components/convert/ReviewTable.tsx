@@ -4,7 +4,8 @@ import { AlertTriangle, Check, CircleDashed, Search, Trash2, Wand2 } from "lucid
 import { CATEGORIES, type Category, type Transaction } from "@/lib/extraction/schema";
 import { cn } from "@/lib/ui";
 import { cleanDescription } from "@/lib/export/build";
-import { setDescStyle, useDescStyle } from "@/lib/prefs";
+import { useDescStyle } from "@/lib/prefs";
+import { DescStyleSwitch } from "./DescStyleSwitch";
 
 type Patch = Partial<Pick<Transaction, "date" | "description" | "payee" | "debit" | "credit" | "balance" | "category">>;
 
@@ -63,27 +64,7 @@ export function ReviewTable({
         >
           <AlertTriangle className="size-4" /> Flagged ({flagged})
         </button>
-        <div role="radiogroup" aria-label="Descriptions" className="inline-flex h-9 items-center rounded-lg bg-paper p-0.5 text-sm">
-          {(
-            [
-              ["clean", "Clean"],
-              ["original", "Bank original"],
-            ] as const
-          ).map(([v, text]) => (
-            <button
-              key={v}
-              role="radio"
-              aria-checked={style === v}
-              onClick={() => setDescStyle(v)}
-              className={cn(
-                "h-8 rounded-md px-2.5 font-medium transition",
-                style === v ? "bg-card text-ink shadow-sm" : "text-ink-soft hover:text-ink",
-              )}
-            >
-              {text}
-            </button>
-          ))}
-        </div>
+        <DescStyleSwitch />
         <span className="num ml-auto hidden text-xs text-muted sm:block">
           {visible.length} of {rows.length} rows
         </span>

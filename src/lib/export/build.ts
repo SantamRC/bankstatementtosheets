@@ -20,7 +20,7 @@ export type DescStyle = "clean" | "original";
 export const cleanDescription = (t: Pick<Transaction, "payee" | "description">) => t.payee?.trim() || t.description;
 
 /** Rows for the main Transactions sheet. Adds a Source column when several statements are merged. */
-export function transactionsTable(statements: Statement[], style: DescStyle = "clean"): Table {
+export function transactionsTable(statements: Statement[], style: DescStyle = "original"): Table {
   const multi = statements.length > 1;
   const clean = style === "clean";
   const header = [
