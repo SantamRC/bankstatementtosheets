@@ -3,7 +3,21 @@ import type { Statement } from "@/lib/extraction/schema";
 import { baseName, summaryTable, transactionsTable, type Table } from "./build";
 import { CATEGORIES } from "@/lib/extraction/schema";
 
-const MONEY = '#,##0.00;[Red]-#,##0.00';
+// Single-section format: every app (Excel, Numbers, Sheets, LibreOffice) adds the minus sign itself.
+// A literal "-" in a negative section shows as "--1.00" in Apple Numbers. Red comes from conditional formatting.
+const MONEY = "#,##0.00";
+const colLetter = (i: number): string => (i >= 26 ? colLetter(Math.floor(i / 26) - 1) : "") + String.fromCharCode(65 + (i % 26));
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function redNegatives(ws: any, cols: number[], lastRow: number) {
+  if (lastRow < 2) return;
+  for (const ci of cols) {
+    const L = colLetter(ci);
+    ws.addConditionalFormatting({
+      ref: `${L}2:${L}${lastRow}`,
+      rules: [{ type: "cellIs", operator: "lessThan", formulae: [0], priority: 1, style: { font: { color: { argb: "FFC0392B" } } } }],
+    });
+  }
+}
 const BRAND = "FF0F766E";
 
 function isoToDate(v: string): Date | string {
@@ -36,6 +50,7 @@ export async function downloadXlsx(statements: Statement[]) {
       if (t.dateCols.includes(ci)) col.numFmt = "yyyy-mm-dd";
     });
     ws.getRow(1).numFmt = "@";
+    redNegatives(ws, t.moneyCols, t.rows.length);
     if (t.rows.length > 1) ws.autoFilter = { from: { row: 1, column: 1 }, to: { row: t.rows.length, column: t.rows[0].length } };
     return ws;
   };
@@ -80,6 +95,7 @@ export async function downloadXlsx(statements: Statement[]) {
     col.width = [22, 14, 16, 16, 16][i];
     if (i >= 2) col.numFmt = MONEY;
   });
+  redNegatives(cat, [2, 3, 4], totalRow);
 
   const buf = await wb.xlsx.writeBuffer();
   saveBlob(
