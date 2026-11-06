@@ -1,11 +1,15 @@
 import "server-only";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL, isDevAuthBypass, isSupabaseConfigured } from "@/lib/env";
 
 /** Supabase client acting as the signed-in user (RLS applies). */
 export async function supabaseServer() {
+  // supabase-js reads Date.now() for session expiry; mark this render as request-time so Next 16
+  // (cacheComponents) doesn't flag it as an unstable value during prerendering.
+  await connection();
   const cookieStore = await cookies();
   return createServerClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     cookies: {
