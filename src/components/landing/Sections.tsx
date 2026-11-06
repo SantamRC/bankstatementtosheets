@@ -5,7 +5,12 @@ import {
   Calculator,
   Camera,
   Check,
+  ClipboardCopy,
+  CreditCard,
   FileSpreadsheet,
+  History,
+  ArrowDownUp,
+  Wand2,
   Globe2,
   Layers,
   Lock,
@@ -58,6 +63,7 @@ export function Comparison() {
     ["Dropped rows and flipped signs go unnoticed", "Every row checked against the printed running balance"],
     ["Scanned or phone-photo PDFs fail or come out garbled", "Scanned, skewed and photographed pages supported"],
     ["Raw dump you have to clean up in Excel", "Real dates, number formats, filters & category totals"],
+    ["Cryptic narrations like “UPI/9176…/PAYTM/ADD-MONEY@…”", "Clean payee names and reference IDs in their own columns"],
     ["Export only — fix mistakes after download", "Review, edit & recategorize before you export"],
     ["Confusing credits, per-file upsells", "Simple per-page pricing. Failed jobs aren't charged"],
   ];
@@ -136,6 +142,25 @@ export function Features() {
           <Feature className="md:col-span-2" icon={<Globe2 />} title="Any bank, any country">
             Day-first or month-first dates, European decimals, Indian lakh grouping, 30+ languages and every major currency.
           </Feature>
+          {/* Clean names card */}
+          <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-7 md:col-span-4">
+            <Wand2 className="size-6 text-lime" />
+            <h3 className="mt-4 text-xl font-semibold">Clean payee names, not bank gibberish</h3>
+            <p className="mt-2 max-w-lg text-paper/65">
+              Long narrations become a short payee name, and the UPI, NEFT, card or cheque reference moves to its own column. Prefer
+              the bank’s exact wording? Switch to “Bank original” at any time. The full narration is always kept in the export.
+            </p>
+            <div className="mt-6 grid gap-2 font-mono text-[12.5px] sm:grid-cols-[1.4fr_auto_1fr] sm:items-center">
+              <div className="rounded-lg bg-white/[0.06] p-3 break-all text-paper/55">
+                UPI/917615458104/ AMAZONPAY/AMAZONPAY@APL/UTIB0000000/ 1000129101465/AMAZONPAY PURCHASE/
+              </div>
+              <ArrowRight className="mx-auto size-4 rotate-90 text-paper/40 sm:rotate-0" />
+              <div className="rounded-lg bg-lime p-3 text-ink">
+                <div className="text-base font-semibold">Amazon Pay</div>
+                <div className="mt-0.5 text-ink/60">Ref 917615458104</div>
+              </div>
+            </div>
+          </div>
           <Feature className="md:col-span-2" icon={<Camera />} title="Scanned & photographed PDFs">
             Crooked scans and phone photos saved as PDF are read with vision AI — not brittle OCR templates.
           </Feature>
@@ -153,6 +178,18 @@ export function Features() {
           </Feature>
           <Feature className="md:col-span-2" icon={<Layers />} title="Batch & merge">
             Drop 12 months of statements at once and export them into one sheet, with a source column per file.
+          </Feature>
+          <Feature className="md:col-span-2" icon={<CreditCard />} title="Bank accounts & credit cards">
+            Checking, savings and credit card statements. Purchases, payments and refunds land on the right side every time.
+          </Feature>
+          <Feature className="md:col-span-2" icon={<ArrowDownUp />} title="Newest-first? Handled">
+            Statements printed newest-first are detected and put back in date order, so balances and totals line up.
+          </Feature>
+          <Feature className="md:col-span-2" icon={<History />} title="History for 30 days">
+            Reopen or re-download any conversion from your dashboard for 30 days, then it’s deleted automatically.
+          </Feature>
+          <Feature className="md:col-span-2" icon={<ClipboardCopy />} title="CSV & copy-paste">
+            A clean CSV for QuickBooks or Xero bank imports, or copy the table and paste it into any spreadsheet.
           </Feature>
         </div>
       </div>
@@ -276,6 +313,14 @@ export const FAQS: [string, string][] = [
   [
     "Can I export to Google Sheets?",
     "Yes — one click creates a formatted Google Sheet in your Drive. You can also download Excel (.xlsx) or CSV, or copy the table and paste it into any spreadsheet.",
+  ],
+  [
+    "Can I keep the bank’s original descriptions?",
+    "Yes. By default you get a short, clean payee name (for example “Amazon Pay” instead of a long UPI string) with the transaction ID in the Reference column, and the full narration in an “Original description” column. One toggle switches to the bank’s exact wording everywhere.",
+  ],
+  [
+    "Does it work with credit card statements?",
+    "Yes. Credit card, checking and savings statements all work. For cards, purchases and fees are debits and payments and refunds are credits.",
   ],
   [
     "What about password-protected PDFs?",
