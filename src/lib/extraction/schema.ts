@@ -37,10 +37,18 @@ export const ModelTransactionSchema = z.object({
     .describe(
       "Full transaction description/narration exactly as printed, multi-line descriptions joined with a single space.",
     ),
+  payee: z
+    .string()
+    .nullable()
+    .describe(
+      "Short, clean name of the counterparty or what the row is, in Title Case, 1-5 words, e.g. 'Amazon Pay', 'Paytm wallet top-up', 'ATM withdrawal', 'Bharti Airtel', 'Interest credit', 'NEFT from State Bank of India'. No IDs, card numbers or timestamps. Null only if the narration is meaningless.",
+    ),
   reference: z
     .string()
     .nullable()
-    .describe("Cheque number, reference or transaction ID if printed in its own column, else null."),
+    .describe(
+      "The main transaction identifier: cheque number, or the UPI/IMPS/NEFT/RTGS/card reference or transaction ID — from its own column, or the primary ID inside the narration. Never a card or account number. Else null.",
+    ),
   debit: z
     .number()
     .nullable()
@@ -98,6 +106,8 @@ export interface Transaction {
   id: string;
   date: string;
   description: string;
+  /** Short clean counterparty name from the model (absent on older conversions). */
+  payee?: string | null;
   reference: string | null;
   debit: number | null;
   credit: number | null;

@@ -7,6 +7,8 @@ How to read the statement:
 - Strip currency symbols and thousands separators. Handle European formats (1.234,56) and Indian lakh grouping (1,23,456.78) correctly.
 - Dates: output YYYY-MM-DD. Infer the year from the statement period when rows omit it (watch for December→January rollovers). Decide between day-first and month-first using the bank's country and any unambiguous dates (a day > 12) elsewhere in the statement.
 - Descriptions: keep the full narration, joining wrapped lines with a single space. Do not paraphrase.
+- Payee: separately, give a short human-readable name for who the money went to / came from (or what the row is, e.g. "ATM withdrawal", "GST on charges"). This is the only field where you summarise.
+- Reference: the cheque number or the main transaction ID (UPI/IMPS/NEFT ref, card auth code). Never output full card or account numbers here.
 - Category: pick the closest category from the allowed list based on the description; use "Other" when unsure.
 - Scanned or photographed pages: read carefully; if a value is genuinely illegible, still include the row with your best reading and mention it in "notes".
 - If the pages are not a bank or card statement, set is_bank_statement to false and return no transactions.`;

@@ -3,8 +3,10 @@ import { memo, useMemo, useState } from "react";
 import { AlertTriangle, Check, CircleDashed, Search, Trash2, Wand2 } from "lucide-react";
 import { CATEGORIES, type Category, type Transaction } from "@/lib/extraction/schema";
 import { cn } from "@/lib/ui";
+import { cleanDescription } from "@/lib/export/build";
+import { setDescStyle, useDescStyle } from "@/lib/prefs";
 
-type Patch = Partial<Pick<Transaction, "date" | "description" | "debit" | "credit" | "balance" | "category">>;
+type Patch = Partial<Pick<Transaction, "date" | "description" | "payee" | "debit" | "credit" | "balance" | "category">>;
 
 const parseNum = (s: string): number | null => {
   const t = s.replace(/[^\d.\-]/g, "");
@@ -26,6 +28,7 @@ export function ReviewTable({
 }) {
   const [q, setQ] = useState("");
   const [onlyFlagged, setOnlyFlagged] = useState(false);
+  const style = useDescStyle();
   const flagged = rows.filter((r) => r.status === "mismatch" || r.status === "fixed").length;
 
   const visible = useMemo(() => {
@@ -33,7 +36,8 @@ export function ReviewTable({
     return rows.filter(
       (r) =>
         (!onlyFlagged || r.status === "mismatch" || r.status === "fixed") &&
-        (!needle || r.description.toLowerCase().includes(needle) || r.category.toLowerCase().includes(needle) || r.date.includes(needle)),
+        (!needle ||
+          [r.description, r.payee, r.reference, r.category, r.date].some((v) => v?.toLowerCase().includes(needle))),
     );
   }, [rows, q, onlyFlagged]);
 
@@ -59,6 +63,27 @@ export function ReviewTable({
         >
           <AlertTriangle className="size-4" /> Flagged ({flagged})
         </button>
+        <div role="radiogroup" aria-label="Descriptions" className="inline-flex h-9 items-center rounded-lg bg-paper p-0.5 text-sm">
+          {(
+            [
+              ["clean", "Clean"],
+              ["original", "Bank original"],
+            ] as const
+          ).map(([v, text]) => (
+            <button
+              key={v}
+              role="radio"
+              aria-checked={style === v}
+              onClick={() => setDescStyle(v)}
+              className={cn(
+                "h-8 rounded-md px-2.5 font-medium transition",
+                style === v ? "bg-card text-ink shadow-sm" : "text-ink-soft hover:text-ink",
+              )}
+            >
+              {text}
+            </button>
+          ))}
+        </div>
         <span className="num ml-auto hidden text-xs text-muted sm:block">
           {visible.length} of {rows.length} rows
         </span>
@@ -80,7 +105,7 @@ export function ReviewTable({
           </thead>
           <tbody>
             {visible.map((r) => (
-              <Row key={r.id} row={r} onPatch={onPatch} onDelete={onDelete} />
+              <Row key={r.id} row={r} clean={style === "clean"} onPatch={onPatch} onDelete={onDelete} />
             ))}
             {visible.length === 0 && (
               <tr>
@@ -101,10 +126,12 @@ const cellInput =
 
 const Row = memo(function Row({
   row: r,
+  clean,
   onPatch,
   onDelete,
 }: {
   row: Transaction;
+  clean: boolean;
   onPatch: (id: string, patch: Patch) => void;
   onDelete: (id: string) => void;
 }) {
@@ -140,14 +167,25 @@ const Row = memo(function Row({
         />
       </td>
       <td className="border-b border-line/60 px-1">
-        <input
-          key={`s-${r.description}`}
-          defaultValue={r.description}
-          title={r.description}
-          aria-label="description"
-          onBlur={(e) => e.target.value !== r.description && onPatch(r.id, { description: e.target.value })}
-          className={cn(cellInput, "font-medium")}
-        />
+        {clean ? (
+          <input
+            key={`p-${cleanDescription(r)}`}
+            defaultValue={cleanDescription(r)}
+            title={[r.description, r.reference && `Ref ${r.reference}`].filter(Boolean).join("\n")}
+            aria-label="payee"
+            onBlur={(e) => e.target.value !== cleanDescription(r) && onPatch(r.id, { payee: e.target.value })}
+            className={cn(cellInput, "font-medium")}
+          />
+        ) : (
+          <input
+            key={`s-${r.description}`}
+            defaultValue={r.description}
+            title={r.description}
+            aria-label="description"
+            onBlur={(e) => e.target.value !== r.description && onPatch(r.id, { description: e.target.value })}
+            className={cn(cellInput, "font-medium")}
+          />
+        )}
       </td>
       <td className="border-b border-line/60 px-1">
         <select
