@@ -66,7 +66,7 @@ visitor's time zone (Asia/Kolkata → INR, eurozone → EUR, everyone else → U
   If INR conversion is weak, consider cutting INR prices about 40%.
 
 **Launch offer** (`LAUNCH_OFFER` in plans.ts): anyone who subscribes before **2027-01-31** keeps their price for as long as
-they stay subscribed. To honour it later, create NEW Stripe price IDs for new customers. Never edit existing
+they stay subscribed. To honour it later, create NEW Dodo products for new customers and point the env at them. Never edit existing
 subscriptions. Set `active: false` once the offer ends.
 
 **Competitor anchors** (checked on their pricing pages, 2026-11-05):
@@ -79,7 +79,7 @@ subscriptions. Set `active: false` once the offer ends.
 
 **Rules:**
 - 1 page = 1 credit. Pages are reserved atomically before extraction and **refunded if extraction fails**.
-- The monthly allowance resets on each `invoice.paid`. Bonus pages (free signup pages and packs) never expire.
+- The monthly allowance is granted on `subscription.active/renewed/plan_changed` and refills every month (yearly plans too) via `refresh_allowance()` inside `consume_pages()`. Bonus pages (free signup pages and packs) never expire.
   Monthly pages are spent first.
 
 ### ⚠️ Unit economics — not yet measured, VALIDATE BEFORE LAUNCH
@@ -115,7 +115,7 @@ Opus-only at full plan usage would leave Pro at break-even and Business losing m
 | AI extraction | **Anthropic Claude API** (`@anthropic-ai/sdk`), PDF `document` blocks, structured outputs (Zod), streaming, server-side refusal fallbacks | Strong vision + layout reading; handles scanned pages |
 | PDF handling | `pdf-lib` (page count, splitting into 5-page chunks, encryption detection) | Pure JS, works on serverless |
 | Auth + DB | **Supabase** (Google OAuth + magic link, Postgres with RLS) | One vendor, generous free tier |
-| Payments | **Stripe** Checkout + Billing Portal + webhooks | Standard. Note: if the founder's entity is in India, Stripe may be invite-only; consider Lemon Squeezy, Paddle or Dodo Payments as merchant of record (MoR handles global sales tax) |
+| Payments | **Dodo Payments** (merchant of record; `dodopayments` SDK): hosted checkout sessions, customer portal, Standard Webhooks | The owner sells as an unregistered individual, so Stripe direct is out; the MoR handles global sales tax and invoices. Products are USD; EUR/INR buyers pay local currency via Dodo Adaptive Pricing |
 | Excel | `exceljs`, generated **client-side** and lazy-loaded | No second upload of the data; zero server cost |
 | Google Sheets | Our own OAuth (scope `drive.file`, non-sensitive, so no Google security review) + Sheets REST API | Tokens stored AES-GCM-encrypted in an httpOnly cookie, so no DB table is needed |
 | Hosting | **Render** web service (Node 24, `render.yaml` Blueprint, Starter plan, health check `/api/health`) | Owner already uses Render. Long-running Node server, so extraction has no serverless time limit |
@@ -163,9 +163,10 @@ src/
     pricing/, privacy/, terms/   (privacy/terms are TEMPLATES — get legal review)
     refunds/, contact/       Refund & Cancellation policy (14-day money-back if <20% used) + contact page (required by MoR onboarding)
     api/extract/             Core extraction endpoint (NDJSON stream)
-    api/checkout/            Stripe Checkout (subscription or page pack)
-    api/billing-portal/      Stripe customer portal
-    api/webhooks/stripe/     invoice.paid (reset quota), subscription.updated/deleted, checkout.session.completed (packs)
+    api/checkout/            Dodo checkout session (subscription or page pack); metadata carries user_id/kind/pages
+    api/billing-portal/      Dodo customer portal
+    api/webhooks/dodo/       payment.succeeded (packs), subscription.active/renewed/plan_changed (grant allowance),
+                             updated/on_hold/failed (status), cancelled/expired (back to free); idempotent via webhook_events
     api/google/{connect,callback,sheets}/   Google Sheets export
     api/conversions/[id]/    DELETE a history item
     auth/callback, auth/signout
@@ -179,9 +180,10 @@ src/
                 schema.ts (Zod + app types), prompt.ts, reconcile.ts (pure)
     export/     build.ts (tables, CSV/TSV), xlsx.ts (client)
     supabase/   server.ts (getUser/getProfile/admin), client.ts
-    plans.ts, stripe.ts, google.ts, crypto.ts (AES-GCM), env.ts (feature flags), sample.ts (demo statement), ui.ts (btn(), money(), cn())
+    plans.ts, dodo.ts, google.ts, crypto.ts (AES-GCM), env.ts (feature flags), sample.ts (demo statement), ui.ts (btn(), money(), cn())
   proxy.ts                   Next 16 "proxy" (formerly middleware): refreshes Supabase session, guards /dashboard
 supabase/migrations/0001_init.sql   profiles, conversions, RLS, signup trigger, consume_pages/refund_pages RPCs
+supabase/migrations/0003_dodo_billing.sql   billing_customer_id, subscription_id, monthly_allowance + lazy monthly refill (yearly plans), add_bonus_pages, webhook_events
 scripts/test-reconcile.ts    Reconciliation unit tests (node runs TS natively)
 scripts/test-cascade.ts      Cascade/escalation tests with a fake model (tsx, no API calls)
 scripts/benchmark.ts         Model bake-off on real PDFs in bench/statements (git-ignored!)
@@ -212,13 +214,12 @@ npm run build                   # production build (must pass before deploy)
 - [ ] **Supabase:** create the project, run `supabase/migrations/0001_init.sql`, enable the Google provider and email magic link,
       set Site URL to `https://bankstatementtosheets.com`, and add redirect URL `https://bankstatementtosheets.com/auth/callback`.
       Optional: enable pg_cron and schedule the 30-day purge (SQL at the bottom of the migration).
-- [ ] **Stripe:** create products/prices (Starter/Pro/Business × monthly/yearly + Pack 100) and put the price IDs in env.
-      Create each price in **USD with `currency_options` for EUR and INR**, using the amounts in the §3 table. In the
-      Dashboard this is "Add another currency" on the price. Checkout passes `currency` (see `api/checkout`), so one price
-      ID serves all three currencies. If a currency option is missing, Checkout fails for that currency.
-      INR caveat: card payments in INR need an Indian Stripe account, or a merchant of record that supports INR.
-      Add a webhook to `/api/webhooks/stripe` with events `checkout.session.completed, invoice.paid,
-      customer.subscription.updated, customer.subscription.deleted`. Enable the Billing Portal. Consider Stripe Tax.
+- [ ] **Dodo Payments:** verification submitted 2026-11-07 (individual). Run `supabase/migrations/0003_dodo_billing.sql` in prod.
+      In **test mode** create 7 products (Starter/Pro/Business × monthly/yearly subscriptions in USD + one-time "Page pack 100"),
+      put their IDs in `DODO_PRODUCT_*`, create an API key (`DODO_PAYMENTS_API_KEY`) and a webhook to
+      `https://bankstatementtosheets.com/api/webhooks/dodo` (secret → `DODO_PAYMENTS_WEBHOOK_KEY`) with the events listed in
+      `api/webhooks/dodo/route.ts`. Enable Adaptive Pricing so EUR/INR buyers pay in their currency. After approval, repeat in
+      live mode and set `DODO_PAYMENTS_ENVIRONMENT=live_mode`.
 - [ ] **Google Cloud:** create an OAuth client (Web) with redirect `https://bankstatementtosheets.com/api/google/callback`,
       scope `drive.file`, and publish the consent screen. Enable the Sheets API and Drive API.
 - [ ] **Render:** push the repo to GitHub, then Render → New → **Blueprint** → select the repo (reads `render.yaml`).
@@ -231,7 +232,7 @@ npm run build                   # production build (must pass before deploy)
       Turn **Rocket Loader off** (it breaks Next.js scripts). Add a redirect rule from www to the apex.
       For Render to issue its certificate you may need to set the records to DNS-only (grey cloud) briefly,
       then switch back to proxied.
-- [ ] Stripe webhook URL and Google OAuth redirect must use the final `https://bankstatementtosheets.com` domain.
+- [ ] Dodo webhook URL and Google OAuth redirect must use the final `https://bankstatementtosheets.com` domain.
 - [x] Email (done 2026-11-06): **Cloudflare Email Routing** (free, receive-only): `support@` plus a catch-all forward to the owner's Gmail. Don't use Porkbun forwarding, because it stops working once the nameservers move to Cloudflare. To reply *as* support@ later, add Gmail "Send mail as" through an SMTP relay (Resend or Brevo free tier).
 - [ ] Legal review of the privacy and terms templates. Add a company name and address.
 - [ ] Analytics (Cloudflare Web Analytics is free, or Plausible) and error tracking (Sentry). Consider Cloudflare Turnstile on sign-up if free-tier abuse appears.
@@ -321,3 +322,4 @@ npm run build                   # production build (must pass before deploy)
 - 2026-11-06 — Clean descriptions: the model also returns `payee` (short counterparty name) and pulls the main transaction ID (UPI/IMPS/NEFT/cheque) into `reference`. A highlighted lime "Clean payee names" on/off switch (`DescStyleSwitch`, `useDescStyle` in `lib/prefs.ts`, localStorage, **default OFF = bank original**, changed 2026-11-07 at the owner's request) drives the review table and every export. Clean exports keep the full narration in an "Original description" column. Older conversions fall back to the raw narration. Excel money format is now single-section `#,##0.00` with red negatives via conditional formatting (the old `;[Red]-` format showed `--1.00` in Apple Numbers).
 - 2026-11-07 — Moving everything for this project off santamdev404@gmail.com to **santamrcdev404@gmail.com** (KinoKrate stays on the old account). Supabase org transferred (new account Owner, old removed). Render rebuilt in a new account (Hobby can't add members); DNS repointed to the new service. Cloudflare zone re-created in the new account from a zone file (records, Full strict, Always HTTPS, Email Routing) and nameservers switched at Porkbun. Brevo: old account closed, new account authenticated the domain and issued a new SMTP key for Supabase. Porkbun (registrar, shared with KinoKrate), Anthropic and GitHub (SantamRC) stay on the old account by owner decision.
 - 2026-11-07 — **Dodo Payments** chosen as merchant of record. Verification submitted as an **individual**: Personal Information and Bank Verification approved, Product Information under review (up to 72h). Next: Dodo checkout + webhook adapter to replace the Stripe routes (`api/checkout`, `api/webhooks/stripe`), built and tested in Dodo test mode.
+- 2026-11-08 — Stripe code removed; billing now runs on **Dodo Payments** (`lib/dodo.ts`, `api/checkout`, `api/billing-portal`, `api/webhooks/dodo`). Migration 0003 adds Dodo columns, idempotent webhooks and a lazy monthly refill so yearly plans still get pages every month (the old Stripe code only reset on invoices, i.e. yearly for yearly plans).

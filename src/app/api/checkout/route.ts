@@ -1,48 +1,48 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getProfile, getUser, supabaseAdmin } from "@/lib/supabase/server";
-import { getStripe } from "@/lib/stripe";
-import { PAGE_PACK, isCurrency, planById, stripePriceId, type Currency, type Interval, type PlanId } from "@/lib/plans";
-import { SITE_URL, isStripeConfigured, isSupabaseConfigured } from "@/lib/env";
+import { getProfile, getUser } from "@/lib/supabase/server";
+import { getDodo } from "@/lib/dodo";
+import { PAGE_PACK, dodoProductId, isCurrency, planById, type Currency, type Interval, type PlanId } from "@/lib/plans";
+import { SITE_URL, isPaymentsConfigured, isSupabaseConfigured } from "@/lib/env";
 
+/** Creates a Dodo hosted checkout for a subscription plan or a one-time page pack. */
 export async function POST(req: NextRequest) {
-  if (!isStripeConfigured || !isSupabaseConfigured)
+  if (!isPaymentsConfigured || !isSupabaseConfigured)
     return NextResponse.json({ error: "Payments aren't configured yet." }, { status: 503 });
 
   const user = await getUser();
-  if (!user) return NextResponse.json({ error: "auth_required" }, { status: 401 });
+  if (!user?.email) return NextResponse.json({ error: "auth_required" }, { status: 401 });
 
   const body = (await req.json().catch(() => ({}))) as { plan?: string; interval?: Interval; currency?: string };
-  // Each Stripe Price is created in USD with `currency_options` for EUR and INR (see Claude.md §8),
-  // so one price ID serves all three currencies; Checkout picks the amount for the requested currency.
   const currency: Currency = isCurrency(body.currency) ? body.currency : "USD";
   const isPack = body.plan === "pack";
   const plan = isPack ? null : planById(body.plan ?? "");
   if (!isPack && (!plan || plan.id === "free")) return NextResponse.json({ error: "Unknown plan" }, { status: 400 });
   const interval: Interval = body.interval === "yearly" ? "yearly" : "monthly";
-  const price = stripePriceId(isPack ? "pack" : (plan!.id as PlanId), interval);
-  if (!price) return NextResponse.json({ error: "Price not configured" }, { status: 503 });
+  const productId = dodoProductId(isPack ? "pack" : (plan!.id as PlanId), interval);
+  if (!productId) return NextResponse.json({ error: "This plan isn't available yet." }, { status: 503 });
 
-  const stripe = getStripe();
   const profile = await getProfile(user.id);
-  let customer = profile?.stripe_customer_id ?? null;
-  if (!customer) {
-    const c = await stripe.customers.create({ email: user.email ?? undefined, metadata: { user_id: user.id } });
-    customer = c.id;
-    await supabaseAdmin().from("profiles").update({ stripe_customer_id: customer }).eq("id", user.id);
+  try {
+    const session = await getDodo().checkoutSessions.create({
+      product_cart: [{ product_id: productId, quantity: 1 }],
+      // Reuse the Dodo customer so the billing portal shows every purchase in one place.
+      customer: profile?.billing_customer_id ? { customer_id: profile.billing_customer_id } : { email: user.email },
+      // Only honoured when Adaptive Pricing is enabled in Dodo; otherwise the product's USD price is charged.
+      billing_currency: currency,
+      metadata: {
+        user_id: user.id,
+        kind: isPack ? "pack" : "subscription",
+        plan: isPack ? "pack" : plan!.id,
+        interval,
+        pages: String(isPack ? PAGE_PACK.pages : plan!.pages),
+      },
+      return_url: `${SITE_URL}/dashboard?checkout=success`,
+      cancel_url: `${SITE_URL}/pricing?checkout=cancelled`,
+    });
+    if (!session.checkout_url) throw new Error("No checkout URL returned");
+    return NextResponse.json({ url: session.checkout_url });
+  } catch (e) {
+    console.error("[checkout] dodo error:", e instanceof Error ? e.message : e);
+    return NextResponse.json({ error: "Checkout is unavailable right now. Please try again." }, { status: 502 });
   }
-
-  const session = await stripe.checkout.sessions.create({
-    mode: isPack ? "payment" : "subscription",
-    customer,
-    client_reference_id: user.id,
-    line_items: [{ price, quantity: 1 }],
-    currency: currency.toLowerCase(),
-    allow_promotion_codes: true,
-    automatic_tax: { enabled: process.env.STRIPE_AUTOMATIC_TAX === "true" },
-    customer_update: process.env.STRIPE_AUTOMATIC_TAX === "true" ? { address: "auto" } : undefined,
-    metadata: { user_id: user.id, kind: isPack ? "pack" : "subscription", pages: String(isPack ? PAGE_PACK.pages : plan!.pages) },
-    success_url: `${SITE_URL}/dashboard?checkout=success`,
-    cancel_url: `${SITE_URL}/pricing?checkout=cancelled`,
-  });
-  return NextResponse.json({ url: session.url });
 }

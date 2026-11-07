@@ -35,8 +35,8 @@ export const FREE_PAGES = 20;
 /**
  * Launch pricing (set 2026-11-05). Positioned between commodity converters (~$0.01–0.04/page, no verification)
  * and DocuClipper ($29/60 pages, $159/640 pages). Anyone who subscribes before LAUNCH_OFFER.endsOn keeps their
- * price for as long as they stay subscribed — Stripe does this automatically if you later create NEW price IDs
- * for new customers instead of editing existing subscriptions.
+ * price for as long as they stay subscribed — keep existing Dodo products unchanged and point the env at NEW
+ * products for new customers.
  */
 export const LAUNCH_OFFER = {
   active: true,
@@ -122,16 +122,14 @@ export const isCurrency = (v: unknown): v is Currency => v === "USD" || v === "E
 
 export const planById = (id: string) => PLANS.find((p) => p.id === id);
 
-/** Stripe price IDs come from env so test/live modes differ only by config. */
-export function stripePriceId(plan: PlanId | "pack", interval: Interval = "monthly"): string | undefined {
-  if (plan === "pack") return process.env.STRIPE_PRICE_PACK_100;
-  const key = `STRIPE_PRICE_${plan.toUpperCase()}_${interval.toUpperCase()}`;
-  return process.env[key];
+/** Dodo product IDs come from env so test/live modes differ only by config (DODO_PRODUCT_PRO_YEARLY, DODO_PRODUCT_PACK_100, …). */
+export function dodoProductId(plan: PlanId | "pack", interval: Interval = "monthly"): string | undefined {
+  if (plan === "pack") return process.env.DODO_PRODUCT_PACK_100 || undefined;
+  return process.env[`DODO_PRODUCT_${plan.toUpperCase()}_${interval.toUpperCase()}`] || undefined;
 }
 
-export function planFromPriceId(priceId: string): PlanId | null {
-  for (const p of ["starter", "pro", "business"] as const) {
-    for (const i of ["monthly", "yearly"] as const) if (stripePriceId(p, i) === priceId) return p;
-  }
+export function planFromProductId(productId: string): PlanId | null {
+  for (const p of ["starter", "pro", "business"] as const)
+    for (const i of ["monthly", "yearly"] as const) if (dodoProductId(p, i) === productId) return p;
   return null;
 }

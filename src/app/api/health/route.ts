@@ -1,4 +1,4 @@
-// Render health check. Kept dependency-free so a Supabase/Stripe outage doesn't restart the service.
+// Render health check. Kept dependency-free so a Supabase/Dodo outage doesn't restart the service.
 export function GET() {
   return Response.json({ ok: true });
 }

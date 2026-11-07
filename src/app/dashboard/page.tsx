@@ -63,7 +63,7 @@ async function DashboardInner({ searchParams }: { searchParams: Promise<{ checko
             <p className="text-sm text-muted">Pages converted</p>
             <div className="mt-1 flex items-end justify-between gap-2">
               <p className="num text-2xl font-semibold">{(profile?.pages_used ?? 0).toLocaleString()}</p>
-              <BillingButton hasCustomer={Boolean(profile?.stripe_customer_id)} />
+              <BillingButton hasCustomer={Boolean(profile?.billing_customer_id)} />
             </div>
           </div>
         </div>

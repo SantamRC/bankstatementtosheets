@@ -48,26 +48,26 @@ services:
       - key: NEXT_PUBLIC_AUTH_GOOGLE
         value: "0"
 
-      # Stripe
-      - key: STRIPE_SECRET_KEY
+      # Dodo Payments (merchant of record)
+      - key: DODO_PAYMENTS_API_KEY
         sync: false
-      - key: STRIPE_WEBHOOK_SECRET
+      - key: DODO_PAYMENTS_WEBHOOK_KEY
         sync: false
-      - key: STRIPE_AUTOMATIC_TAX
-        value: "false"
-      - key: STRIPE_PRICE_STARTER_MONTHLY
+      - key: DODO_PAYMENTS_ENVIRONMENT
+        value: test_mode
+      - key: DODO_PRODUCT_STARTER_MONTHLY
         sync: false
-      - key: STRIPE_PRICE_STARTER_YEARLY
+      - key: DODO_PRODUCT_STARTER_YEARLY
         sync: false
-      - key: STRIPE_PRICE_PRO_MONTHLY
+      - key: DODO_PRODUCT_PRO_MONTHLY
         sync: false
-      - key: STRIPE_PRICE_PRO_YEARLY
+      - key: DODO_PRODUCT_PRO_YEARLY
         sync: false
-      - key: STRIPE_PRICE_BUSINESS_MONTHLY
+      - key: DODO_PRODUCT_BUSINESS_MONTHLY
         sync: false
-      - key: STRIPE_PRICE_BUSINESS_YEARLY
+      - key: DODO_PRODUCT_BUSINESS_YEARLY
         sync: false
-      - key: STRIPE_PRICE_PACK_100
+      - key: DODO_PRODUCT_PACK_100
         sync: false
 
       # Google Sheets export
