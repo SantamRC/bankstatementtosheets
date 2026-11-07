@@ -9,7 +9,8 @@
     "lint": "eslint",
     "test": "node scripts/test-reconcile.ts && tsx scripts/test-cascade.ts",
     "typecheck": "tsc --noEmit",
-    "bench": "tsx --env-file-if-exists=.env.local scripts/benchmark.ts"
+    "bench": "tsx --env-file-if-exists=.env.local scripts/benchmark.ts",
+    "dodo:setup": "tsx scripts/dodo-setup.mts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.4.0",
