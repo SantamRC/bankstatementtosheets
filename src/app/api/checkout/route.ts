@@ -18,7 +18,8 @@ export async function POST(req: NextRequest) {
   const plan = isPack ? null : planById(body.plan ?? "");
   if (!isPack && (!plan || plan.id === "free")) return NextResponse.json({ error: "Unknown plan" }, { status: 400 });
   const interval: Interval = body.interval === "yearly" ? "yearly" : "monthly";
-  const productId = dodoProductId(isPack ? "pack" : (plan!.id as PlanId), interval);
+  // Per-currency, tax-inclusive product, so the buyer pays exactly the price shown on the pricing page.
+  const productId = dodoProductId(isPack ? "pack" : (plan!.id as PlanId), interval, currency);
   if (!productId) return NextResponse.json({ error: "This plan isn't available yet." }, { status: 503 });
 
   const profile = await getProfile(user.id);
@@ -27,7 +28,6 @@ export async function POST(req: NextRequest) {
       product_cart: [{ product_id: productId, quantity: 1 }],
       // Reuse the Dodo customer so the billing portal shows every purchase in one place.
       customer: profile?.billing_customer_id ? { customer_id: profile.billing_customer_id } : { email: user.email },
-      // Only honoured when Adaptive Pricing is enabled in Dodo; otherwise the product's USD price is charged.
       billing_currency: currency,
       metadata: {
         user_id: user.id,

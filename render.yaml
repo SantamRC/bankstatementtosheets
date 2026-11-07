@@ -55,19 +55,47 @@ services:
         sync: false
       - key: DODO_PAYMENTS_ENVIRONMENT
         value: test_mode
-      - key: DODO_PRODUCT_STARTER_MONTHLY
+      - key: DODO_PRODUCT_STARTER_MONTHLY_USD
         sync: false
-      - key: DODO_PRODUCT_STARTER_YEARLY
+      - key: DODO_PRODUCT_STARTER_YEARLY_USD
         sync: false
-      - key: DODO_PRODUCT_PRO_MONTHLY
+      - key: DODO_PRODUCT_PRO_MONTHLY_USD
         sync: false
-      - key: DODO_PRODUCT_PRO_YEARLY
+      - key: DODO_PRODUCT_PRO_YEARLY_USD
         sync: false
-      - key: DODO_PRODUCT_BUSINESS_MONTHLY
+      - key: DODO_PRODUCT_BUSINESS_MONTHLY_USD
         sync: false
-      - key: DODO_PRODUCT_BUSINESS_YEARLY
+      - key: DODO_PRODUCT_BUSINESS_YEARLY_USD
         sync: false
-      - key: DODO_PRODUCT_PACK_100
+      - key: DODO_PRODUCT_STARTER_MONTHLY_EUR
+        sync: false
+      - key: DODO_PRODUCT_STARTER_YEARLY_EUR
+        sync: false
+      - key: DODO_PRODUCT_PRO_MONTHLY_EUR
+        sync: false
+      - key: DODO_PRODUCT_PRO_YEARLY_EUR
+        sync: false
+      - key: DODO_PRODUCT_BUSINESS_MONTHLY_EUR
+        sync: false
+      - key: DODO_PRODUCT_BUSINESS_YEARLY_EUR
+        sync: false
+      - key: DODO_PRODUCT_STARTER_MONTHLY_INR
+        sync: false
+      - key: DODO_PRODUCT_STARTER_YEARLY_INR
+        sync: false
+      - key: DODO_PRODUCT_PRO_MONTHLY_INR
+        sync: false
+      - key: DODO_PRODUCT_PRO_YEARLY_INR
+        sync: false
+      - key: DODO_PRODUCT_BUSINESS_MONTHLY_INR
+        sync: false
+      - key: DODO_PRODUCT_BUSINESS_YEARLY_INR
+        sync: false
+      - key: DODO_PRODUCT_PACK_100_USD
+        sync: false
+      - key: DODO_PRODUCT_PACK_100_EUR
+        sync: false
+      - key: DODO_PRODUCT_PACK_100_INR
         sync: false
 
       # Google Sheets export

@@ -122,14 +122,22 @@ export const isCurrency = (v: unknown): v is Currency => v === "USD" || v === "E
 
 export const planById = (id: string) => PLANS.find((p) => p.id === id);
 
-/** Dodo product IDs come from env so test/live modes differ only by config (DODO_PRODUCT_PRO_YEARLY, DODO_PRODUCT_PACK_100, …). */
-export function dodoProductId(plan: PlanId | "pack", interval: Interval = "monthly"): string | undefined {
-  if (plan === "pack") return process.env.DODO_PRODUCT_PACK_100 || undefined;
-  return process.env[`DODO_PRODUCT_${plan.toUpperCase()}_${interval.toUpperCase()}`] || undefined;
+/**
+ * Dodo product IDs come from env so test/live modes differ only by config. One tax-inclusive product per plan,
+ * interval and currency (e.g. DODO_PRODUCT_PRO_YEARLY_INR), so checkout charges exactly the price on the pricing page.
+ * The unsuffixed USD names (DODO_PRODUCT_PRO_YEARLY) are accepted as a fallback.
+ */
+export const productEnvKey = (plan: PlanId | "pack", interval: Interval, currency: Currency) =>
+  plan === "pack" ? `DODO_PRODUCT_PACK_100_${currency}` : `DODO_PRODUCT_${plan.toUpperCase()}_${interval.toUpperCase()}_${currency}`;
+
+export function dodoProductId(plan: PlanId | "pack", interval: Interval = "monthly", currency: Currency = "USD"): string | undefined {
+  const legacy = plan === "pack" ? "DODO_PRODUCT_PACK_100" : `DODO_PRODUCT_${plan.toUpperCase()}_${interval.toUpperCase()}`;
+  return process.env[productEnvKey(plan, interval, currency)] || (currency === "USD" ? process.env[legacy] : undefined) || undefined;
 }
 
 export function planFromProductId(productId: string): PlanId | null {
   for (const p of ["starter", "pro", "business"] as const)
-    for (const i of ["monthly", "yearly"] as const) if (dodoProductId(p, i) === productId) return p;
+    for (const i of ["monthly", "yearly"] as const)
+      for (const c of CURRENCIES) if (dodoProductId(p, i, c.code) === productId) return p;
   return null;
 }

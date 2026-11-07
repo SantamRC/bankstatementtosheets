@@ -5,10 +5,11 @@
  *   npm run dodo:setup                        # reads/writes .env.local (DODO_PAYMENTS_API_KEY + DODO_PAYMENTS_ENVIRONMENT)
  *   npm run dodo:setup -- --env .env.live     # e.g. a separate file holding the live_mode key
  *
- * Prices mirror src/lib/plans.ts (USD). Never prints secrets.
+ * Prices come from src/lib/plans.ts (USD/EUR/INR, tax-inclusive). Never prints secrets.
  */
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import DodoPayments from "dodopayments";
+import { CURRENCIES, PAGE_PACK, PLANS, productEnvKey, type Currency } from "../src/lib/plans.ts";
 
 const envFile = process.argv.includes("--env") ? process.argv[process.argv.indexOf("--env") + 1] : ".env.local";
 const WEBHOOK_URL = "https://bankstatementtosheets.com/api/webhooks/dodo";
@@ -24,16 +25,33 @@ const EVENTS = [
   "subscription.expired",
 ] as const;
 
-type Def = { env: string; name: string; cents: number; yearly?: boolean; pack?: boolean; description: string };
-const PRODUCTS: Def[] = [
-  { env: "DODO_PRODUCT_STARTER_MONTHLY", name: "Starter (monthly)", cents: 900, description: "150 pages / month" },
-  { env: "DODO_PRODUCT_STARTER_YEARLY", name: "Starter (yearly)", cents: 8400, yearly: true, description: "150 pages / month, billed yearly" },
-  { env: "DODO_PRODUCT_PRO_MONTHLY", name: "Pro (monthly)", cents: 2900, description: "600 pages / month" },
-  { env: "DODO_PRODUCT_PRO_YEARLY", name: "Pro (yearly)", cents: 28800, yearly: true, description: "600 pages / month, billed yearly" },
-  { env: "DODO_PRODUCT_BUSINESS_MONTHLY", name: "Business (monthly)", cents: 7900, description: "2,500 pages / month" },
-  { env: "DODO_PRODUCT_BUSINESS_YEARLY", name: "Business (yearly)", cents: 78000, yearly: true, description: "2,500 pages / month, billed yearly" },
-  { env: "DODO_PRODUCT_PACK_100", name: "Page pack (100 pages)", cents: 1000, pack: true, description: "100 extra pages that never expire" },
-];
+// Built from src/lib/plans.ts so checkout prices can't drift from the pricing page. One product per plan × interval ×
+// currency, all tax-inclusive: the buyer pays exactly the advertised price and Dodo remits GST/VAT out of it.
+type Def = { env: string; name: string; amount: number; currency: Currency; yearly?: boolean; pack?: boolean; description: string };
+const PRODUCTS: Def[] = [];
+for (const { code: currency } of CURRENCIES) {
+  for (const plan of PLANS.filter((p) => p.id !== "free")) {
+    for (const interval of ["monthly", "yearly"] as const) {
+      const perMonth = plan.price[currency][interval];
+      PRODUCTS.push({
+        env: productEnvKey(plan.id, interval, currency),
+        name: `${plan.name} (${interval}) · ${currency}`,
+        amount: Math.round((interval === "yearly" ? perMonth * 12 : perMonth) * 100),
+        currency,
+        yearly: interval === "yearly",
+        description: `${plan.pages.toLocaleString("en-US")} pages / month${interval === "yearly" ? ", billed yearly" : ""}`,
+      });
+    }
+  }
+  PRODUCTS.push({
+    env: productEnvKey("pack", "monthly", currency),
+    name: `Page pack (${PAGE_PACK.pages} pages) · ${currency}`,
+    amount: Math.round(PAGE_PACK.price[currency] * 100),
+    currency,
+    pack: true,
+    description: `${PAGE_PACK.pages} extra pages that never expire`,
+  });
+}
 
 function readEnv(file: string): Record<string, string> {
   if (!existsSync(file)) throw new Error(`${file} not found`);
@@ -72,13 +90,14 @@ for (const d of PRODUCTS) {
       description: d.description,
       tax_category: "saas",
       price: d.pack
-        ? { type: "one_time_price", currency: "USD", price: d.cents, discount: 0, purchasing_power_parity: false }
+        ? { type: "one_time_price", currency: d.currency, price: d.amount, discount: 0, purchasing_power_parity: false, tax_inclusive: true }
         : {
             type: "recurring_price",
-            currency: "USD",
-            price: d.cents,
+            currency: d.currency,
+            price: d.amount,
             discount: 0,
             purchasing_power_parity: false,
+            tax_inclusive: true,
             payment_frequency_count: 1,
             payment_frequency_interval: d.yearly ? "Year" : "Month",
             subscription_period_count: 20,
@@ -86,8 +105,8 @@ for (const d of PRODUCTS) {
           },
     });
     id = created.product_id;
-    console.log(`  created  ${d.name.padEnd(24)} ${id}`);
-  } else console.log(`  exists   ${d.name.padEnd(24)} ${id}`);
+    console.log(`  created  ${d.name.padEnd(32)} ${id}`);
+  } else console.log(`  exists   ${d.name.padEnd(32)} ${id}`);
   updates[d.env] = id;
 }
 
