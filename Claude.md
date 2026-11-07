@@ -61,7 +61,8 @@ visitor's time zone (Asia/Kolkata → INR, eurozone → EUR, everyone else → U
 - EUR uses the same numbers as USD, as most SaaS companies do. INR is the USD price at about ₹88/$, rounded to a ...99
   price point. These are fixed price points, not live exchange-rate conversions. Yearly billing saves at least
   2 months in every currency (the toggle says "2+ months free").
-- The source of truth is `PLANS[].price[currency]` and `PAGE_PACK.price` in `src/lib/plans.ts`.
+- The source of truth is `PLANS[].price[currency]` and `PAGE_PACK.price` in `src/lib/plans.ts`. `npm run dodo:setup` creates one Dodo product per plan × interval × currency (21) from it.
+- **Prices are tax-inclusive** (owner decision 2026-11-08): the buyer pays exactly the advertised price; Dodo remits GST/VAT out of it (≈15% less net revenue on Indian sales, ~17–20% in the EU). Changing a price = edit plans.ts, re-run `dodo:setup` (new names) and update the env IDs.
 - **Not done yet:** purchasing-power pricing for India. ₹2,499/mo is a meaningful amount for Indian freelancers.
   If INR conversion is weak, consider cutting INR prices about 40%.
 
@@ -324,3 +325,4 @@ npm run build                   # production build (must pass before deploy)
 - 2026-11-07 — **Dodo Payments** chosen as merchant of record. Verification submitted as an **individual**: Personal Information and Bank Verification approved, Product Information under review (up to 72h). Next: Dodo checkout + webhook adapter to replace the Stripe routes (`api/checkout`, `api/webhooks/stripe`), built and tested in Dodo test mode.
 - 2026-11-08 — Stripe code removed; billing now runs on **Dodo Payments** (`lib/dodo.ts`, `api/checkout`, `api/billing-portal`, `api/webhooks/dodo`). Migration 0003 adds Dodo columns, idempotent webhooks and a lazy monthly refill so yearly plans still get pages every month (the old Stripe code only reset on invoices, i.e. yearly for yearly plans).
 - 2026-11-08 — Dodo **test-mode purchase verified end to end on prod**: Pro monthly checkout → test card → webhook upgraded the account to Pro (600 monthly pages, renews in a month) → "Manage billing" opens the Dodo customer portal. Render has `DODO_PAYMENTS_ENVIRONMENT=test_mode`, the 7 test product IDs, API key and webhook key. **Open issue:** INR checkout showed ₹2,837.72 + 18% GST = ₹3,348.51 for Pro, while the pricing page says ₹2,499 (Dodo converts $29 at its FX rate + fee, and prices are tax-exclusive).
+- 2026-11-08 — Checkout prices now match the pricing page exactly: per-currency (USD/EUR/INR), **tax-inclusive** Dodo products generated from plans.ts; env `DODO_PRODUCT_<PLAN>_<INTERVAL>_<CUR>` / `DODO_PRODUCT_PACK_100_<CUR>`. Verified: Pro monthly INR checkout = ₹2,499.00 incl. GST (was ₹3,348.51). Old 7 USD tax-exclusive test products are unused.
