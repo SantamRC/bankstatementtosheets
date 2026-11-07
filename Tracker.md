@@ -46,7 +46,6 @@ _Last updated: 2026-11-08_
   - domain property on santamrcdev404, verified through Cloudflare
   - sitemap submitted (27 pages found)
   - indexing requested for /, /bank-statement-to-excel, /banks, /banks/chase and /banks/hdfc-bank
-- [ ] 👤 **Bing Webmaster:** sign in with Google (santamrcdev404), then Import from GSC.
 - [ ] 🤖 **In about a week:** check Search Console coverage and the first queries, and request indexing for the remaining pages (quota is about 10 a day).
 - [ ] 👤 **OpenSEO:** 12 credits left; keyword research needs about 500. Top up, then 🤖 create a bankstatementtosheets.com project (US, IN, UK markets).
 - [x] 🤖 **Phase 1, technical** (2026-11-08):
