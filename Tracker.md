@@ -40,6 +40,29 @@ _Last updated: 2026-11-08_
 - [ ] 🤖 **Rate limiting** on `/api/extract`, and Turnstile on sign-up, only if free-tier abuse appears.
 - [ ] Decide on **INR purchasing-power pricing** (~40% lower) if INR conversion is weak.
 
+## 🟢 SEO plan (started 2026-11-08)
+
+- [ ] 👤 **Search Console + Bing Webmaster:** verify the domain with a DNS TXT record in Cloudflare, then submit `/sitemap.xml`.
+- [ ] 👤 **OpenSEO:** 12 credits left; keyword research needs about 500. Top up, then 🤖 create a bankstatementtosheets.com project (US, IN, UK markets).
+- [ ] 🤖 **Phase 1, technical:**
+  - OG image
+  - Organization and WebSite schema
+  - unique title, description and canonical on every page
+  - footer links to every SEO page
+  - drop the `keywords` meta (Google ignores it)
+  - Lighthouse / Core Web Vitals pass
+- [ ] 🤖 **Phase 2, bank pages:** `/banks/[bank]` for about 20 banks (US, UK, India, EU). Each page has how-to-download steps, a sample statement in that bank's layout with a reconciled preview, an FAQ, and a call to action.
+- [ ] 🤖 **Phase 2, format pages:**
+  - `/pdf-to-excel`, `/pdf-to-csv`, `/pdf-to-google-sheets`
+  - `/credit-card-statement-to-excel`
+  - `/pdf-to-qbo` after QBO export ships
+- [ ] 🤖 **Phase 3:**
+  - audience pages: `/for/accountants`, `/for/mortgage-brokers`
+  - comparison pages: `/vs/docuclipper`, `/alternatives` (re-check competitor facts first)
+  - how-to guides
+- [ ] 👤🤖 **Phase 4, links:** Product Hunt, AlternativeTo, G2/Capterra, SaaS directories, Indie Hackers, and helpful Reddit/Quora answers.
+- [ ] 🤖 **Phase 5, AI answers:** `llms.txt`, plus checking whether ChatGPT and Google AI Overviews cite us.
+
 ## 🔵 Roadmap (after launch, ordered by expected revenue impact)
 
 1. SEO landing pages: `/banks/[bank]` and `/convert/pdf-to-csv` etc.
