@@ -13,6 +13,23 @@ export default function Home() {
   const jsonLd = [
     {
       "@context": "https://schema.org",
+      "@type": "Organization",
+      "@id": `${SITE.url}/#org`,
+      name: SITE.name,
+      url: SITE.url,
+      logo: `${SITE.url}/icon.svg`,
+      email: SITE.email,
+      contactPoint: { "@type": "ContactPoint", email: SITE.email, contactType: "customer support" },
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: SITE.name,
+      url: SITE.url,
+      publisher: { "@id": `${SITE.url}/#org` },
+    },
+    {
+      "@context": "https://schema.org",
       "@type": "SoftwareApplication",
       name: SITE.name,
       url: SITE.url,

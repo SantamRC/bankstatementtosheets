@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo/meta";
 import { AppHeader } from "@/components/site/AppHeader";
 import { Workspace } from "@/components/convert/Workspace";
 import { getProfile, getUser, supabaseServer } from "@/lib/supabase/server";
@@ -7,11 +8,11 @@ import { isSupabaseConfigured } from "@/lib/env";
 import type { Statement } from "@/lib/extraction/schema";
 import { publicStatement } from "@/lib/extraction/extract";
 
-export const metadata: Metadata = {
-  title: "Convert a bank statement",
-  description: "Upload a PDF bank statement and convert it to Excel, CSV or Google Sheets with balance verification.",
-  alternates: { canonical: "/convert" },
-};
+export const metadata: Metadata = pageMeta({
+  title: "Convert a Bank Statement PDF to Excel, CSV or Google Sheets",
+  description: "Upload a PDF bank or credit card statement and convert it to Excel, CSV or Google Sheets, with every row checked against the running balance.",
+  path: "/convert",
+});
 
 async function ConvertPageInner({ searchParams }: { searchParams: Promise<{ c?: string }> }) {
   const { c } = await searchParams;

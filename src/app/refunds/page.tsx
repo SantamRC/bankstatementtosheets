@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo/meta";
 import Link from "next/link";
 import { LegalPage } from "@/components/site/LegalPage";
 import { SITE } from "@/lib/site";
 import { FREE_PAGES } from "@/lib/plans";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Refund & Cancellation Policy",
   description: "Cancel any time, 14-day money-back on your first payment, and failed conversions never cost you pages.",
-  alternates: { canonical: "/refunds" },
-};
+  path: "/refunds",
+});
 
 export default function Refunds() {
   return (

@@ -5,12 +5,32 @@ import { SITE } from "@/lib/site";
 export function Footer() {
   const cols: [string, [string, string][]][] = [
     ["Product", [["Converter", "/convert"], ["Pricing", "/pricing"], ["Security", "/#security"], ["FAQ", "/#faq"]]],
-    ["Convert", [["PDF to Excel", "/convert"], ["PDF to Google Sheets", "/convert"], ["PDF to CSV", "/convert"], ["Credit card statements", "/convert"]]],
+    [
+      "Convert",
+      [
+        ["Bank statement to Excel", "/bank-statement-to-excel"],
+        ["Bank statement to CSV", "/bank-statement-to-csv"],
+        ["Bank statement to Google Sheets", "/bank-statement-to-google-sheets"],
+        ["Credit card statement to Excel", "/credit-card-statement-to-excel"],
+      ],
+    ],
+    [
+      "Banks",
+      [
+        ["Chase", "/banks/chase"],
+        ["Bank of America", "/banks/bank-of-america"],
+        ["Barclays", "/banks/barclays"],
+        ["HSBC", "/banks/hsbc"],
+        ["HDFC Bank", "/banks/hdfc-bank"],
+        ["SBI", "/banks/sbi"],
+        ["All banks", "/banks"],
+      ],
+    ],
     ["Company", [["Contact", "/contact"], ["Refunds & cancellation", "/refunds"], ["Privacy", "/privacy"], ["Terms", "/terms"]]],
   ];
   return (
     <footer className="mt-auto border-t border-line bg-paper">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
+      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 sm:grid-cols-2 md:grid-cols-[1.4fr_1fr_1.3fr_1fr_1fr]">
         <div className="space-y-3">
           <Logo />
           <p className="max-w-xs text-sm text-muted">

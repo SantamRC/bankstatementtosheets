@@ -44,18 +44,29 @@ _Last updated: 2026-11-08_
 
 - [ ] 👤 **Search Console + Bing Webmaster:** verify the domain with a DNS TXT record in Cloudflare, then submit `/sitemap.xml`.
 - [ ] 👤 **OpenSEO:** 12 credits left; keyword research needs about 500. Top up, then 🤖 create a bankstatementtosheets.com project (US, IN, UK markets).
-- [ ] 🤖 **Phase 1, technical:**
-  - OG image
+- [x] 🤖 **Phase 1, technical** (2026-11-08):
+  - OG image (`opengraph-image.tsx`)
   - Organization and WebSite schema
-  - unique title, description and canonical on every page
-  - footer links to every SEO page
-  - drop the `keywords` meta (Google ignores it)
-  - Lighthouse / Core Web Vitals pass
-- [ ] 🤖 **Phase 2, bank pages:** `/banks/[bank]` for about 20 banks (US, UK, India, EU). Each page has how-to-download steps, a sample statement in that bank's layout with a reconciled preview, an FAQ, and a call to action.
-- [ ] 🤖 **Phase 2, format pages:**
-  - `/pdf-to-excel`, `/pdf-to-csv`, `/pdf-to-google-sheets`
-  - `/credit-card-statement-to-excel`
-  - `/pdf-to-qbo` after QBO export ships
+  - `pageMeta()` gives every page its own title, description, canonical and OG tags
+  - footer links to all the SEO pages
+  - `keywords` meta removed
+  - `llms.txt`
+- [ ] 🤖 **Lighthouse / Core Web Vitals pass** on prod.
+- [x] 🤖 **Phase 2, bank pages** (2026-11-08): `/banks` plus 15 banks in `src/lib/seo/banks.ts`:
+  - US: Chase, Bank of America, Wells Fargo, Citi, Capital One, Amex
+  - UK: Barclays, HSBC, Lloyds, NatWest
+  - India: HDFC, ICICI, SBI, Axis, Kotak
+
+  Each page has a sample in that bank's column layout, reconciled for real; download steps; quirks; an FAQ; and breadcrumb and FAQ schema.
+- [ ] 🤖 **More bank pages, ordered by keyword data:**
+  - Canada (TD, RBC), Australia (CommBank)
+  - EU (ING, N26)
+  - US credit unions, Discover, PNC, US Bank
+  - India (PNB, Bank of Baroda, Yes Bank)
+- [x] 🤖 **Phase 2, format pages** (2026-11-08): `/bank-statement-to-excel`, `/bank-statement-to-csv`, `/bank-statement-to-google-sheets` and `/credit-card-statement-to-excel`.
+- [ ] 🤖 `/bank-statement-to-qbo` once QBO export ships (move QBO up the roadmap: high-intent accountant searches).
+- [ ] 🤖 **Check credit-card reconciliation:** `reconcile()` uses `opening + credits − debits = closing`, but a card's balance is money owed, so it may mark a correct card statement as "mismatch". Test with a real card PDF and flip the formula for `credit_card`. Card SEO pages avoid the "verified" claim until this is fixed.
+- [ ] 👤 **Google Sheets export is promised on the site but needs Google OAuth on prod** (see the item above).
 - [ ] 🤖 **Phase 3:**
   - audience pages: `/for/accountants`, `/for/mortgage-brokers`
   - comparison pages: `/vs/docuclipper`, `/alternatives` (re-check competitor facts first)

@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo/meta";
 import { LegalPage } from "@/components/site/LegalPage";
 import { SITE } from "@/lib/site";
 
-export const metadata: Metadata = { title: "Privacy Policy", alternates: { canonical: "/privacy" } };
+export const metadata: Metadata = pageMeta({
+  title: "Privacy Policy",
+  description: "How BankStatementToSheets handles your data: PDFs are processed in memory and never stored, extracted tables are deleted after 30 days.",
+  path: "/privacy",
+});
 
 // NOTE: Template — have this reviewed by a lawyer before launch (GDPR/CCPA specifics, company entity, address).
 export default function Privacy() {

@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo/meta";
 import Link from "next/link";
 import { LegalPage } from "@/components/site/LegalPage";
 import { SITE } from "@/lib/site";
 
-export const metadata: Metadata = { title: "Terms of Service", alternates: { canonical: "/terms" } };
+export const metadata: Metadata = pageMeta({
+  title: "Terms of Service",
+  description: "The terms for using BankStatementToSheets, the bank statement to Excel and Google Sheets converter.",
+  path: "/terms",
+});
 
 // NOTE: Template — have this reviewed by a lawyer before launch.
 export default function Terms() {

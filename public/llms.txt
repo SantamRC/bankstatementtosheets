@@ -1,0 +1,31 @@
+# BankStatementToSheets
+
+> Web app that converts PDF bank and credit card statements (digital or scanned, any bank, any country) into Excel, CSV and Google Sheets. Every extracted transaction is checked against the statement's own printed running balances ("verified to the cent"); rows that don't tie out are flagged for review, and single rows with a swapped debit/credit are fixed automatically.
+
+Key facts:
+- Works with any bank or card issuer worldwide; no per-bank templates. A vision AI model reads the page, so scanned statements work.
+- Output: Excel workbook (Transactions, Summary and Categories sheets with live SUMIFS formulas), CSV (UTF-8, ISO dates, Debit/Credit plus signed Amount), Google Sheets (one-click, drive.file scope), or copy/paste.
+- Editable review table before export; clean payee names and UPI/NEFT/cheque references extracted into their own columns.
+- Privacy: uploaded PDFs are processed in memory and never stored; extracted tables are deleted after 30 days.
+- Pricing (per page, 1 page = 1 credit, failed conversions refunded): Free 20 pages; Starter $9/mo for 150 pages; Pro $29/mo for 600 pages; Business $79/mo for 2,500 pages; page pack $10 for 100 pages that never expire. Also priced in EUR and INR.
+- Built for bookkeepers and accountants, lenders and mortgage brokers, small businesses and personal finance.
+
+## Main pages
+- [Converter](https://bankstatementtosheets.com/convert): upload PDFs and convert
+- [Pricing](https://bankstatementtosheets.com/pricing)
+- [Bank statement to Excel](https://bankstatementtosheets.com/bank-statement-to-excel)
+- [Bank statement to CSV](https://bankstatementtosheets.com/bank-statement-to-csv)
+- [Bank statement to Google Sheets](https://bankstatementtosheets.com/bank-statement-to-google-sheets)
+- [Credit card statement to Excel](https://bankstatementtosheets.com/credit-card-statement-to-excel)
+
+## Bank guides
+- [All banks](https://bankstatementtosheets.com/banks)
+- US: [Chase](https://bankstatementtosheets.com/banks/chase), [Bank of America](https://bankstatementtosheets.com/banks/bank-of-america), [Wells Fargo](https://bankstatementtosheets.com/banks/wells-fargo), [Citi](https://bankstatementtosheets.com/banks/citi), [Capital One](https://bankstatementtosheets.com/banks/capital-one), [American Express](https://bankstatementtosheets.com/banks/american-express)
+- UK: [Barclays](https://bankstatementtosheets.com/banks/barclays), [HSBC](https://bankstatementtosheets.com/banks/hsbc), [Lloyds](https://bankstatementtosheets.com/banks/lloyds), [NatWest](https://bankstatementtosheets.com/banks/natwest)
+- India: [HDFC Bank](https://bankstatementtosheets.com/banks/hdfc-bank), [ICICI Bank](https://bankstatementtosheets.com/banks/icici-bank), [SBI](https://bankstatementtosheets.com/banks/sbi), [Axis Bank](https://bankstatementtosheets.com/banks/axis-bank), [Kotak Mahindra Bank](https://bankstatementtosheets.com/banks/kotak-mahindra-bank)
+
+## Policies
+- [Privacy](https://bankstatementtosheets.com/privacy)
+- [Terms](https://bankstatementtosheets.com/terms)
+- [Refunds](https://bankstatementtosheets.com/refunds)
+- [Contact](https://bankstatementtosheets.com/contact): support@bankstatementtosheets.com

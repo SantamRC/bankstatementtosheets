@@ -12,16 +12,7 @@ export const metadata: Metadata = {
   title: { default: SITE.title, template: `%s · ${SITE.name}` },
   description: SITE.description,
   applicationName: SITE.name,
-  keywords: [
-    "bank statement converter",
-    "bank statement to excel",
-    "pdf bank statement to excel",
-    "bank statement to google sheets",
-    "bank statement to csv",
-    "convert bank statement pdf",
-    "credit card statement to excel",
-  ],
-  openGraph: { type: "website", url: SITE.url, siteName: SITE.name, title: SITE.title, description: SITE.description },
+  openGraph: { type: "website", url: SITE.url, siteName: SITE.name, title: SITE.title, description: SITE.description, locale: "en_US" },
   twitter: { card: "summary_large_image", title: SITE.title, description: SITE.description },
   alternates: { canonical: "/" },
 };

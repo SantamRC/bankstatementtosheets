@@ -172,16 +172,20 @@ src/
     api/google/{connect,callback,sheets}/   Google Sheets export
     api/conversions/[id]/    DELETE a history item
     auth/callback, auth/signout
-    sitemap.ts, robots.ts, icon.svg
+    sitemap.ts (fixed UPDATED date; bump on content changes), robots.ts, icon.svg, opengraph-image.tsx
+    banks/, banks/[slug]/    SEO: bank hub + one page per bank (data in lib/seo/banks.ts, static params)
+    bank-statement-to-{excel,csv,google-sheets}/, credit-card-statement-to-excel/   SEO format pages (components/seo/FormatPage)
   components/
     landing/  HeroVisual, Sections (all marketing sections + FAQS data), Pricing (client, monthly/yearly toggle)
     convert/  Workspace (queue, progress, views), ReviewTable (editable grid), ExportBar, Dropzone
     site/     Navbar, AppHeader, Footer, Logo, LegalPage
+    seo/      StatementPreview (bank layout → verified output), Blocks (breadcrumbs+schema, hero, FAQ+schema), FormatPage
   lib/
     extraction/ core.ts (engine + cascade, framework-free), extract.ts (server-only re-export for Next),
                 schema.ts (Zod + app types), prompt.ts, reconcile.ts (pure)
     export/     build.ts (tables, CSV/TSV), xlsx.ts (client)
     supabase/   server.ts (getUser/getProfile/admin), client.ts
+    seo/        banks.ts (bank page content), samples.ts (fictional regional samples run through reconcile()), meta.ts (pageMeta: title/canonical/OG per page)
     plans.ts, dodo.ts, google.ts, crypto.ts (AES-GCM), env.ts (feature flags), sample.ts (demo statement), ui.ts (btn(), money(), cn())
   proxy.ts                   Next 16 "proxy" (formerly middleware): refreshes Supabase session, guards /dashboard
 supabase/migrations/0001_init.sql   profiles, conversions, RLS, signup trigger, consume_pages/refund_pages RPCs
@@ -327,3 +331,4 @@ npm run build                   # production build (must pass before deploy)
 - 2026-11-08 — Stripe code removed; billing now runs on **Dodo Payments** (`lib/dodo.ts`, `api/checkout`, `api/billing-portal`, `api/webhooks/dodo`). Migration 0003 adds Dodo columns, idempotent webhooks and a lazy monthly refill so yearly plans still get pages every month (the old Stripe code only reset on invoices, i.e. yearly for yearly plans).
 - 2026-11-08 — Dodo **test-mode purchase verified end to end on prod**: Pro monthly checkout → test card → webhook upgraded the account to Pro (600 monthly pages, renews in a month) → "Manage billing" opens the Dodo customer portal. Render has `DODO_PAYMENTS_ENVIRONMENT=test_mode`, the 7 test product IDs, API key and webhook key. **Open issue:** INR checkout showed ₹2,837.72 + 18% GST = ₹3,348.51 for Pro, while the pricing page says ₹2,499 (Dodo converts $29 at its FX rate + fee, and prices are tax-exclusive).
 - 2026-11-08 — Checkout prices now match the pricing page exactly: per-currency (USD/EUR/INR), **tax-inclusive** Dodo products generated from plans.ts; env `DODO_PRODUCT_<PLAN>_<INTERVAL>_<CUR>` / `DODO_PRODUCT_PACK_100_<CUR>`. Verified: Pro monthly INR checkout = ₹2,499.00 incl. GST (was ₹3,348.51). Old 7 USD tax-exclusive test products are unused.
+- 2026-11-08 — **SEO pass 1:** 15 bank pages (`/banks/[slug]`), 4 format pages, a `/banks` hub, an OG image, Organization/WebSite/Breadcrumb/FAQ schema, `pageMeta()` on every page, and `llms.txt`. Each bank page shows a fictional sample in that bank's own column layout, reconciled by the real engine. This is our edge over the thin copycat pages that rank today. Rules: column names are labelled "typical", menu paths are hedged, there's a trademark disclaimer on every bank page, and we never use bank logos or branding. Keyword volumes aren't researched yet (OpenSEO has 12 credits). Next: Search Console (owner), more banks ordered by keyword data, audience and comparison pages.

@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
+import { pageMeta } from "@/lib/seo/meta";
 import Link from "next/link";
 import { CreditCard, LifeBuoy, Mail, ShieldCheck } from "lucide-react";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
 import { SITE } from "@/lib/site";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMeta({
   title: "Contact",
   description: `Get help with conversions, billing or privacy. Email ${SITE.email}. We reply within one business day.`,
-  alternates: { canonical: "/contact" },
-};
+  path: "/contact",
+});
 
 const mail = (subject: string) => `mailto:${SITE.email}?subject=${encodeURIComponent(subject)}`;
 
