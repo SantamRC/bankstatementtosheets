@@ -10,7 +10,8 @@
     "test": "node scripts/test-reconcile.ts && tsx scripts/test-cascade.ts",
     "typecheck": "tsc --noEmit",
     "bench": "tsx --env-file-if-exists=.env.local scripts/benchmark.ts",
-    "dodo:setup": "tsx scripts/dodo-setup.mts"
+    "dodo:setup": "tsx scripts/dodo-setup.mts",
+    "indexnow": "node scripts/indexnow.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.4.0",

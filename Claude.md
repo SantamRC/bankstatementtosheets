@@ -192,6 +192,7 @@ supabase/migrations/0001_init.sql   profiles, conversions, RLS, signup trigger, 
 supabase/migrations/0003_dodo_billing.sql   billing_customer_id, subscription_id, monthly_allowance + lazy monthly refill (yearly plans), add_bonus_pages, webhook_events
 scripts/test-reconcile.ts    Reconciliation unit tests (node runs TS natively)
 scripts/test-cascade.ts      Cascade/escalation tests with a fake model (tsx, no API calls)
+scripts/indexnow.mjs         IndexNow submit (key file public/f41940a6….txt; the key is public by design)
 scripts/benchmark.ts         Model bake-off on real PDFs in bench/statements (git-ignored!)
 .env.example                 All env vars, documented
 ```
@@ -208,6 +209,8 @@ npm run bench -- --dir bench/statements [--configs cascade,claude-haiku-5-5,clau
                                 # and agreement vs Opus. Asks for --yes if the estimated cost is over $2.
                                 # bench/ is git-ignored. NEVER commit real statements.
 npm run build                   # production build (must pass before deploy)
+npm run indexnow [-- /path ...] # tell Bing/IndexNow pages changed (default: whole live sitemap). Also runs
+                                # automatically from .github/workflows/indexnow.yml 5 min after page-changing pushes.
 ```
 - **Dev mode:** when the Supabase env vars are blank, auth is bypassed with a "dev user", nothing is metered and
   history isn't saved. Only `ANTHROPIC_API_KEY` is needed to try real conversions.

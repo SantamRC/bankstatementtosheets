@@ -1,0 +1,24 @@
+name: IndexNow
+# After a push that changes public pages, wait for Render to deploy, then tell Bing/IndexNow to re-crawl.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/app/**"
+      - "src/components/**"
+      - "src/lib/seo/**"
+      - "public/**"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Wait for Render deploy
+        run: sleep 300
+      - name: Submit sitemap URLs to IndexNow
+        run: node scripts/indexnow.mjs
