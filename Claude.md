@@ -8,6 +8,7 @@
 - Work autonomously. Ask the owner only when blocked (permissions, logins, payments), and then give exact click steps and wait.
 - Keep replies very brief, with no explanations unless asked.
 - After every change, commit and push to `main` (Render auto-deploys prod).
+- Keep **`Tracker.md`** (pending and done to-dos) current: tick items off and add new ones in the same commit as the work.
 - Keep **local** and **prod** separate: `.env.local` plus the dev Supabase project for local; Render env plus the prod Supabase project for prod.
 - On every request, check how competitors do it and suggest how we can do better.
 - Look for MCPs, skills or connectors that help (see §12).
