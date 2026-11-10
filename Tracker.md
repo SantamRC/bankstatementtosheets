@@ -16,6 +16,9 @@ _Last updated: 2026-11-10_
   - [x] 🤖 checkout falls back to the email when the stored Dodo customer ID is stale (test → live)
   - [x] 👤 test-mode billing data cleared in prod (2026-11-10)
   - [x] 👤🤖 real live purchase verified (2026-11-10): Starter monthly INR ₹799 → webhook set Starter, 150 monthly pages, renews 2026-12-10; Manage billing opens the live customer portal
+  - [x] 🤖 invoices cleaned up (2026-11-10): live products renamed to "BankStatementToSheets Starter (Monthly)" etc. (no "· INR" suffix; IDs unchanged), and the Dodo brand is now "BankStatementToSheets" with support@ as the support email
+  - [ ] 👤 upload the logo in Dodo → Settings → Business → Primary brand → Edit (shown on checkout and invoices)
+  - [ ] 👤 ask Dodo support whether INR payers can get an INR invoice with Dodo's GSTIN (the invoice for ₹799 shows USD 8.20 and has no GSTIN, so Indian businesses can't claim input tax credit)
   - [ ] 👤 decide: keep the Starter subscription, or cancel it in the portal and refund the ₹799 in Dodo → Transactions
 - [ ] 👤 **Render:** add a card and switch from Free to Starter ($7/mo). Free instances sleep and take ~50s to wake up.
 - [ ] 🤖 **Real conversion on prod:** check that a real PDF converts on prod. The Anthropic key on Render starts with `sk-ant-usr-`; if extraction fails, replace it with a normal `sk-ant-api…` key.

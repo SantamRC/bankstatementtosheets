@@ -1,5 +1,5 @@
 /**
- * One-time Dodo Payments setup (idempotent): creates the 7 products and the webhook endpoint, then writes their IDs
+ * One-time Dodo Payments setup (idempotent): creates (or renames) the 21 products and the webhook endpoint, then writes their IDs
  * and the webhook signing key into the env file. Run per mode (test first, then live after approval):
  *
  *   npm run dodo:setup                        # reads/writes .env.local (DODO_PAYMENTS_API_KEY + DODO_PAYMENTS_ENVIRONMENT)
@@ -27,7 +27,7 @@ const EVENTS = [
 
 // Built from src/lib/plans.ts so checkout prices can't drift from the pricing page. One product per plan × interval ×
 // currency, all tax-inclusive: the buyer pays exactly the advertised price and Dodo remits GST/VAT out of it.
-type Def = { env: string; name: string; amount: number; currency: Currency; yearly?: boolean; pack?: boolean; description: string };
+type Def = { env: string; name: string; legacyName: string; amount: number; currency: Currency; yearly?: boolean; pack?: boolean; description: string };
 const PRODUCTS: Def[] = [];
 for (const { code: currency } of CURRENCIES) {
   for (const plan of PLANS.filter((p) => p.id !== "free")) {
@@ -35,7 +35,10 @@ for (const { code: currency } of CURRENCIES) {
       const perMonth = plan.price[currency][interval];
       PRODUCTS.push({
         env: productEnvKey(plan.id, interval, currency),
-        name: `${plan.name} (${interval}) · ${currency}`,
+        // Shown on the customer's checkout and invoice, so no internal currency suffix. Products are matched by
+        // metadata.env_key (legacyName is the pre-2026-11-10 name, kept so old products are found and renamed).
+        name: `BankStatementToSheets ${plan.name} (${interval === "yearly" ? "Yearly" : "Monthly"})`,
+        legacyName: `${plan.name} (${interval}) · ${currency}`,
         amount: Math.round((interval === "yearly" ? perMonth * 12 : perMonth) * 100),
         currency,
         yearly: interval === "yearly",
@@ -45,7 +48,8 @@ for (const { code: currency } of CURRENCIES) {
   }
   PRODUCTS.push({
     env: productEnvKey("pack", "monthly", currency),
-    name: `Page pack (${PAGE_PACK.pages} pages) · ${currency}`,
+    name: `BankStatementToSheets Page Pack (${PAGE_PACK.pages} pages)`,
+    legacyName: `Page pack (${PAGE_PACK.pages} pages) · ${currency}`,
     amount: Math.round(PAGE_PACK.price[currency] * 100),
     currency,
     pack: true,
@@ -78,16 +82,28 @@ const mode = env.DODO_PAYMENTS_ENVIRONMENT === "live_mode" ? "live_mode" : "test
 const dodo = new DodoPayments({ bearerToken: env.DODO_PAYMENTS_API_KEY, environment: mode });
 console.log(`Dodo ${mode} — writing IDs to ${envFile}`);
 
-const existing = new Map<string, string>();
-for await (const p of dodo.products.list()) if (p.name) existing.set(p.name, p.product_id);
+const existing = new Map<string, { id: string; name: string; desc?: string | null }>();
+// page_size 100: with the default 10, products created in the same second paged unstably and some were missed.
+for await (const p of dodo.products.list({ page_size: 100 })) {
+  const key = (p.metadata as Record<string, string> | undefined)?.env_key;
+  const info = { id: p.product_id, name: p.name ?? "", desc: p.description };
+  if (key) existing.set(key, info);
+  else if (p.name) existing.set(`legacy:${p.name}`, info);
+}
 
 const updates: Record<string, string> = {};
 for (const d of PRODUCTS) {
-  let id = existing.get(d.name);
-  if (!id) {
+  // The ID already in the env file wins, so a listing gap can never create a duplicate product.
+  const known = env[d.env]
+    ? await dodo.products.retrieve(env[d.env]).then((p) => ({ id: p.product_id, name: p.name ?? "", desc: p.description }), () => undefined)
+    : undefined;
+  const found = known ?? existing.get(d.env) ?? existing.get(`legacy:${d.legacyName}`);
+  let id = found?.id;
+  if (!found) {
     const created = await dodo.products.create({
       name: d.name,
       description: d.description,
+      metadata: { env_key: d.env },
       tax_category: "saas",
       price: d.pack
         ? { type: "one_time_price", currency: d.currency, price: d.amount, discount: 0, purchasing_power_parity: false, tax_inclusive: true }
@@ -105,8 +121,13 @@ for (const d of PRODUCTS) {
           },
     });
     id = created.product_id;
-    console.log(`  created  ${d.name.padEnd(32)} ${id}`);
-  } else console.log(`  exists   ${d.name.padEnd(32)} ${id}`);
+    console.log(`  created  ${d.env.padEnd(36)} ${id}`);
+  } else if (found.name !== d.name || found.desc !== d.description || !existing.has(d.env)) {
+    // (metadata.env_key is missing on products made before 2026-11-10)
+    // Prices are never touched here (existing subscribers keep theirs); only the customer-facing name/description.
+    await dodo.products.update(found.id, { name: d.name, description: d.description, metadata: { env_key: d.env } });
+    console.log(`  renamed  ${d.env.padEnd(36)} ${found.id}`);
+  } else console.log(`  exists   ${d.env.padEnd(36)} ${id}`);
   updates[d.env] = id;
 }
 
