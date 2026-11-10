@@ -29,9 +29,13 @@ export function Footer() {
     [
       "Guides",
       [
+        ["Download a bank statement", "/how-to-download-bank-statement"],
+        ["Read a bank statement", "/how-to-read-a-bank-statement"],
+        ["Reconciliation template", "/bank-reconciliation-template-excel"],
         ["DocuClipper alternative", "/docuclipper-alternative"],
         ["Bank statement password", "/bank-statement-password"],
         ["Statements for a mortgage", "/bank-statements-for-mortgage"],
+        ["All guides", "/guides"],
       ],
     ],
     ["Company", [["Contact", "/contact"], ["Refunds & cancellation", "/refunds"], ["Privacy", "/privacy"], ["Terms", "/terms"]]],

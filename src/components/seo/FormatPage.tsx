@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
 import { FinalCTA } from "@/components/landing/Sections";
@@ -19,6 +20,8 @@ export interface FormatContent {
   steps: string[];
   extra?: { title: string; body: React.ReactNode };
   faqs: [string, string][];
+  /** Same page in another language (also listed in hreflang). */
+  alt?: { href: string; label: string; lang: string };
 }
 
 const GENERIC: BankLayout = {
@@ -53,6 +56,11 @@ export function FormatPage({ c }: { c: FormatContent }) {
           <Points items={CORE_POINTS} />
         </Section>
         <Faq items={c.faqs} />
+        {c.alt && (
+          <p className="mx-auto max-w-6xl px-4 text-center text-sm text-muted sm:px-6">
+            <Link href={c.alt.href} hrefLang={c.alt.lang} lang={c.alt.lang} className="text-brand underline-offset-2 hover:underline">{c.alt.label}</Link>
+          </p>
+        )}
         <LinkGrid title="Popular banks" links={BANKS.map((b) => [b.name, `/banks/${b.slug}`])} />
         <LinkGrid title="Other formats" links={FORMAT_LINKS.filter(([, href]) => href !== c.path)} />
         <FinalCTA />

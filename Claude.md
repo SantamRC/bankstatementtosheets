@@ -176,6 +176,8 @@ src/
     banks/, banks/[slug]/    SEO: bank hub + one page per bank (data in lib/seo/banks.ts, static params)
     bank-statement-to-{excel,csv,google-sheets}/, credit-card-statement-to-excel/   SEO format pages (components/seo/FormatPage)
     docuclipper-alternative/, bank-statement-password/, bank-statements-for-mortgage/   SEO comparison + guide pages (GUIDE_LINKS in seo/Blocks)
+    guides/ (hub), how-to-download-bank-statement/, how-to-read-a-bank-statement/, bank-reconciliation-template-excel/ (serves public/templates/*.xlsx)
+    es/convertir-estado-de-cuenta-pdf-a-excel/, hi/bank-statement-kaise-nikale/   Translated pages; hreflang pairs live in HREFLANG (lib/seo/meta.ts). <main lang=…> since the root <html> is "en"
   components/
     landing/  HeroVisual, Sections (all marketing sections + FAQS data), Pricing (client, monthly/yearly toggle)
     convert/  Workspace (queue, progress, views), ReviewTable (editable grid), ExportBar, Dropzone
@@ -193,6 +195,7 @@ supabase/migrations/0001_init.sql   profiles, conversions, RLS, signup trigger, 
 supabase/migrations/0003_dodo_billing.sql   billing_customer_id, subscription_id, monthly_allowance + lazy monthly refill (yearly plans), add_bonus_pages, webhook_events
 scripts/test-reconcile.ts    Reconciliation unit tests (node runs TS natively)
 scripts/test-cascade.ts      Cascade/escalation tests with a fake model (tsx, no API calls)
+scripts/make-reconciliation-template.mts   Regenerates public/templates/bank-reconciliation-template.xlsx (npx tsx …; commit the file)
 scripts/indexnow.mjs         IndexNow submit (key file public/f41940a6….txt; the key is public by design)
 scripts/benchmark.ts         Model bake-off on real PDFs in bench/statements (git-ignored!)
 .env.example                 All env vars, documented
@@ -348,3 +351,4 @@ npm run indexnow [-- /path ...] # tell Bing/IndexNow pages changed (default: who
 - 2026-11-10 — Correction: the Supabase 2-project limit is per account. santamrcdev404 has just 1 project, so a free staging project is possible; KinoKrate (old account) doesn't count.
 - 2026-11-10 — Added a **staging** environment (Render Free + a second free Supabase project + Dodo test mode) so billing flows can be tested end to end without real money. `dodo:setup` now picks the webhook URL by mode (live → prod, test → staging).
 - 2026-11-11 — **Keyword research** (OpenSEO, US + IN): the head term is "bank statement converter" (US 1,300/mo KD 6; IN 33,100 KD 16), so the homepage is retitled around it. Per-bank terms are ≤10/mo, so bank pages are long-tail support. On-page pass: question-keyword FAQs, internal link block, 8 more banks (23 total), plus `/docuclipper-alternative`, `/bank-statement-password` and `/bank-statements-for-mortgage`. No keyword stuffing: each phrase appears naturally in a title, heading or FAQ. The comparison page is honest about where DocuClipper is stronger (QBO/OFX, integrations, SOC 2).
+- 2026-11-11 — **Guides + first translated pages** (keyword data via OpenSEO): `/guides` hub; `/how-to-download-bank-statement` ("how to get bank statement" US 5,400 KD 11; "how to download bank statement" 480 KD 7), `/how-to-read-a-bank-statement` (210, KD 1), `/bank-reconciliation-template-excel` (480, KD 0) with a free .xlsx. Languages chosen by data, not by guess: Spanish/Mexico "convertir estado de cuenta (pdf) a excel" ≈1,000/mo KD 0–3 → one es-MX page paired with /bank-statement-to-excel. Hindi converter searches don't exist (Indians search in English), but "बैंक स्टेटमेंट कैसे निकाले" is 2,900/mo KD 0 → a hi-IN download guide paired with the English one. German, French and Portuguese bank-statement terms are ≤40/mo, so skipped. Translated pages say honestly that the app UI is English and prices are in USD.

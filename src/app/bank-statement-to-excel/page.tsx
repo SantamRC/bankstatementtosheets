@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { pageMeta } from "@/lib/seo/meta";
+import { HREFLANG, pageMeta } from "@/lib/seo/meta";
 import { FormatPage } from "@/components/seo/FormatPage";
 
 const path = "/bank-statement-to-excel";
@@ -8,6 +8,7 @@ export const metadata: Metadata = pageMeta({
   description: "Convert PDF bank statements to Excel (.xlsx) in seconds. Real dates and numbers, Summary and Categories sheets with live formulas, and every row checked against the running balance. 20 pages free.",
   path: path,
   absoluteTitle: true,
+  languages: HREFLANG.excel,
 });
 
 export default function Page() {
@@ -16,6 +17,7 @@ export default function Page() {
       c={{
         path,
         crumb: "Bank statement to Excel",
+        alt: { href: HREFLANG.excel["es-MX"], label: "Leer en español: convertir estado de cuenta PDF a Excel", lang: "es" },
         eyebrow: "PDF bank statement to Excel",
         title: "Convert bank statements to Excel,",
         accent: "verified to the cent.",

@@ -401,20 +401,24 @@ export function FAQ() {
   );
 }
 
-export function FinalCTA() {
+export function FinalCTA({ t }: { t?: { title: string; accent: string; body: string; cta: string } }) {
+  const c = t ?? {
+    title: "Stop retyping statements.",
+    accent: "Start reconciling.",
+    body: `Your first ${FREE_PAGES} pages are free. No credit card, no sales call — just drop in a PDF.`,
+    cta: "Convert a statement free",
+  };
   return (
     <section className="px-4 pb-24 sm:px-6">
       <div className="relative mx-auto max-w-6xl overflow-hidden rounded-3xl bg-ink px-6 py-16 text-center text-paper sm:px-12">
         <div className="grid-bg absolute inset-0 opacity-[0.15] invert" />
         <div className="relative">
           <h2 className="mx-auto max-w-2xl text-4xl font-semibold tracking-tight sm:text-5xl">
-            Stop retyping statements. <span className="font-serif font-normal italic text-lime">Start reconciling.</span>
+            {c.title} <span className="font-serif font-normal italic text-lime">{c.accent}</span>
           </h2>
-          <p className="mx-auto mt-4 max-w-lg text-paper/65">
-            Your first {FREE_PAGES} pages are free. No credit card, no sales call — just drop in a PDF.
-          </p>
+          <p className="mx-auto mt-4 max-w-lg text-paper/65">{c.body}</p>
           <Link href="/convert" className={btn("lime", "lg", "mt-8")}>
-            Convert a statement free <ArrowRight className="size-4" />
+            {c.cta} <ArrowRight className="size-4" />
           </Link>
         </div>
       </div>

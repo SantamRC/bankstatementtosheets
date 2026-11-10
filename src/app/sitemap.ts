@@ -12,7 +12,17 @@ const UPDATED = {
 };
 
 const FORMAT_PATHS = ["/bank-statement-to-excel", "/bank-statement-to-csv", "/bank-statement-to-google-sheets", "/credit-card-statement-to-excel"];
-const GUIDE_PATHS = ["/docuclipper-alternative", "/bank-statement-password", "/bank-statements-for-mortgage"];
+const GUIDE_PATHS = [
+  "/guides",
+  "/how-to-download-bank-statement",
+  "/how-to-read-a-bank-statement",
+  "/bank-reconciliation-template-excel",
+  "/docuclipper-alternative",
+  "/bank-statement-password",
+  "/bank-statements-for-mortgage",
+  "/es/convertir-estado-de-cuenta-pdf-a-excel",
+  "/hi/bank-statement-kaise-nikale",
+];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const page = (path: string, lastModified: string): MetadataRoute.Sitemap[number] => ({ url: `${SITE.url}${path}`, lastModified });

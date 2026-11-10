@@ -73,6 +73,10 @@ _Last updated: 2026-11-10_
 - [x] 🤖 `/docuclipper-alternative` (2026-11-11; DocuClipper pricing re-checked that day; re-check before editing numbers). Later `/vs/moneythumb` (880/mo).
 - [x] 🤖 `/bank-statements-for-mortgage` guide (2026-11-11).
 - [x] 🤖 **Sitemap audit** (2026-11-11): 38 URLs, valid XML, all 200, canonicals match, no noindexed or redirected URLs, listed in robots.txt. Fixed: per-group accurate lastmod, dropped `<priority>`.
+- [x] 🤖 **Guides hub + 3 guides** (2026-11-11): `/guides`, `/how-to-download-bank-statement` (23 banks' steps), `/how-to-read-a-bank-statement` (US/UK/India codes), `/bank-reconciliation-template-excel` with a free .xlsx (Reconciliation, Adjustments, Match, How to use).
+- [x] 🤖 **First translated pages** (2026-11-11): es-MX `/es/convertir-estado-de-cuenta-pdf-a-excel` (Mexican sample statement, ≈1,000/mo) and hi-IN `/hi/bank-statement-kaise-nikale` (2,900/mo), with reciprocal hreflang. DE/FR/PT skipped (no volume).
+- [ ] 🤖 In 4–6 weeks: check impressions for /es and /hi in Search Console. If they convert, translate the app UI (at least /convert and the pricing section) and consider MXN pricing; if /hi gets traffic, add a Hindi password guide.
+- [ ] 🤖 Template guide: open the .xlsx in real Excel and Google Sheets once to confirm the formulas, dropdowns and highlighting work (only checked by reading the XML so far).
 - [ ] 🤖 **Tally export** (India: "pdf to tally" 320, "bank statement to tally" 110), then a `/bank-statement-to-tally` page.
 - [x] 🤖 `/bank-statement-password` guide (2026-11-11). Formats are hedged because sources disagree. Next: password-protected PDF support (roadmap #4).
 - [ ] 🤖 In 4–6 weeks: check Search Console for impressions on the new pages and the retitled homepage; request indexing for the new URLs.

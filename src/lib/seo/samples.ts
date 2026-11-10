@@ -6,7 +6,7 @@ import type { Category, Reconciliation, Transaction } from "@/lib/extraction/sch
  * Each bank page renders one of these in that bank's column layout, runs it through the
  * real reconcile() and shows the result. No API calls.
  */
-export type Region = "us" | "us_card" | "uk" | "in";
+export type Region = "us" | "us_card" | "uk" | "in" | "mx";
 
 export interface SampleRow {
   date: string; // ISO
@@ -86,6 +86,21 @@ const SAMPLES: Record<Region, Sample> = {
       { date: "2026-10-30", desc: "SMS CHARGES FOR QTR SEP-26 INCL GST", payee: "SMS charges", out: 17.7, category: "Fees & Charges" },
     ],
   },
+  mx: {
+    currency: "MXN",
+    locale: "es-MX",
+    opening: 18452.3,
+    rows: [
+      { date: "2026-10-01", desc: "SPEI RECIBIDO BANORTE/0123456 ACME DISENO SA DE CV NOMINA OCT", payee: "Acme Diseño (nómina)", ref: "0123456", in: 24500, category: "Payroll" },
+      { date: "2026-10-02", desc: "PAGO TARJETA DE CREDITO BMOVIL", payee: "Pago tarjeta de crédito", out: 6200, category: "Loan Payment" },
+      { date: "2026-10-04", desc: "OXXO GAS INSURGENTES CDMX TARJ 4821", payee: "OXXO Gas", out: 850, category: "Transport" },
+      { date: "2026-10-06", desc: "DOMICILIACION CFE SUMINISTRADOR SERV BASICOS REF 7731905", payee: "CFE", ref: "7731905", out: 642, category: "Utilities" },
+      { date: "2026-10-09", desc: "SPEI ENVIADO SANTANDER/0098811 LAURA MARTINEZ RENTA OCTUBRE", payee: "Laura Martínez (renta)", ref: "0098811", out: 9500, category: "Rent & Mortgage" },
+      { date: "2026-10-15", desc: "DEPOSITO EN EFECTIVO PRACTICAJA SUC 0412", payee: "Depósito en efectivo", in: 3000, category: "Income" },
+      { date: "2026-10-21", desc: "WALMART SUPERCENTER COYOACAN TARJ 4821", payee: "Walmart", out: 1287.45, category: "Groceries" },
+      { date: "2026-10-31", desc: "COMISION MANEJO DE CUENTA E IVA", payee: "Comisión manejo de cuenta", out: 174, category: "Fees & Charges" },
+    ],
+  },
 };
 
 const round2 = (n: number) => Math.round(n * 100) / 100;
@@ -135,14 +150,16 @@ export function buildSample(region: Region, mode: BalanceMode): BuiltSample {
 export const fmtMoney = (n: number | null | undefined, locale: string) =>
   n == null ? "" : n.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+const MES = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "OCT", "NOV", "DIC"];
 const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-export type DateFmt = "MM/DD" | "MM/DD/YY" | "DD/MM/YY" | "DD/MM/YYYY" | "DD-MM-YYYY" | "D Mon" | "DD Mon YY" | "D Mon YYYY";
+export type DateFmt = "DD/MES" | "MM/DD" | "MM/DD/YY" | "DD/MM/YY" | "DD/MM/YYYY" | "DD-MM-YYYY" | "D Mon" | "DD Mon YY" | "D Mon YYYY";
 
 /** Format an ISO date the way a bank prints it (string maths only; no Date objects in prerender). */
 export function fmtDate(iso: string, f: DateFmt) {
   const [y, m, d] = iso.split("-");
   const mon = MON[Number(m) - 1];
   switch (f) {
+    case "DD/MES": return `${d}/${MES[Number(m) - 1]}`;
     case "MM/DD": return `${m}/${d}`;
     case "MM/DD/YY": return `${m}/${d}/${y.slice(2)}`;
     case "DD/MM/YY": return `${d}/${m}/${y.slice(2)}`;

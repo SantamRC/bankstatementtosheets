@@ -10,8 +10,8 @@ export function JsonLd({ data }: { data: object | object[] }) {
 }
 
 /** Visible breadcrumb trail + BreadcrumbList schema. Last item is the current page. */
-export function Breadcrumbs({ items }: { items: [string, string][] }) {
-  const all: [string, string][] = [["Home", "/"], ...items];
+export function Breadcrumbs({ items, home = "Home" }: { items: [string, string][]; home?: string }) {
+  const all: [string, string][] = [[home, "/"], ...items];
   return (
     <>
       <nav aria-label="Breadcrumb" className="mx-auto max-w-6xl px-4 pt-6 text-xs text-muted sm:px-6">
@@ -39,7 +39,21 @@ export function Breadcrumbs({ items }: { items: [string, string][] }) {
   );
 }
 
-export function SeoHero({ eyebrow, title, accent, intro }: { eyebrow: string; title: string; accent: string; intro: string }) {
+const HERO_CTA = { primary: "Convert a statement free", secondary: "See pricing", perks: [`${FREE_PAGES} free pages`, "No credit card", "PDFs never stored"] };
+
+export function SeoHero({
+  eyebrow,
+  title,
+  accent,
+  intro,
+  cta = HERO_CTA,
+}: {
+  eyebrow: string;
+  title: string;
+  accent: string;
+  intro: string;
+  cta?: typeof HERO_CTA;
+}) {
   return (
     <section className="relative overflow-hidden">
       <div className="grid-bg absolute inset-0 [mask-image:radial-gradient(ellipse_at_top,black_30%,transparent_70%)]" />
@@ -51,14 +65,14 @@ export function SeoHero({ eyebrow, title, accent, intro }: { eyebrow: string; ti
         <p className="mx-auto mt-5 max-w-2xl text-lg text-ink-soft">{intro}</p>
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link href="/convert" className={btn("primary", "lg")}>
-            Convert a statement free <ArrowRight className="size-4" />
+            {cta.primary} <ArrowRight className="size-4" />
           </Link>
           <Link href="/pricing" className={btn("outline", "lg")}>
-            See pricing
+            {cta.secondary}
           </Link>
         </div>
         <ul className="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-muted">
-          {[`${FREE_PAGES} free pages`, "No credit card", "PDFs never stored"].map((t) => (
+          {cta.perks.map((t) => (
             <li key={t} className="flex items-center gap-1.5">
               <Check className="size-4 text-brand" strokeWidth={2.5} /> {t}
             </li>
@@ -165,6 +179,10 @@ export const FORMAT_LINKS: [string, string][] = [
 ];
 
 export const GUIDE_LINKS: [string, string][] = [
+  ["All guides", "/guides"],
+  ["How to download a bank statement", "/how-to-download-bank-statement"],
+  ["How to read a bank statement", "/how-to-read-a-bank-statement"],
+  ["Bank reconciliation template (Excel)", "/bank-reconciliation-template-excel"],
   ["DocuClipper alternative", "/docuclipper-alternative"],
   ["Bank statement PDF password (HDFC, SBI, ICICI…)", "/bank-statement-password"],
   ["Bank statements for a mortgage", "/bank-statements-for-mortgage"],

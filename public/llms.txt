@@ -19,9 +19,17 @@ Key facts:
 - [Credit card statement to Excel](https://bankstatementtosheets.com/credit-card-statement-to-excel)
 
 ## Guides
+- [All guides](https://bankstatementtosheets.com/guides)
+- [How to download a bank statement](https://bankstatementtosheets.com/how-to-download-bank-statement): online banking, apps and branches; steps for 23 US, UK and Indian banks
+- [How to read a bank statement](https://bankstatementtosheets.com/how-to-read-a-bank-statement): sections, debits and credits, running balance, US/UK/India abbreviations
+- [Free bank reconciliation template (Excel)](https://bankstatementtosheets.com/bank-reconciliation-template-excel): downloadable .xlsx with live formulas and auto-matching
 - [DocuClipper alternative](https://bankstatementtosheets.com/docuclipper-alternative): price and feature comparison
 - [Bank statement PDF password](https://bankstatementtosheets.com/bank-statement-password): opening locked HDFC, SBI, ICICI, Axis and Kotak statements
 - [Bank statements for a mortgage](https://bankstatementtosheets.com/bank-statements-for-mortgage): what lenders check
+
+## Other languages
+- Spanish (Mexico): [Convertir estado de cuenta PDF a Excel](https://bankstatementtosheets.com/es/convertir-estado-de-cuenta-pdf-a-excel)
+- Hindi (India): [बैंक स्टेटमेंट कैसे निकाले](https://bankstatementtosheets.com/hi/bank-statement-kaise-nikale)
 
 ## Bank guides
 - [All banks](https://bankstatementtosheets.com/banks)
