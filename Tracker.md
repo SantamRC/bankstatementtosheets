@@ -12,8 +12,10 @@ _Last updated: 2026-11-10_
 - [ ] 👤🤖 **Dodo live mode:**
   - [x] 🤖 live API key `bankstatementtosheets-prod` created (all scopes, write) and saved to `.env.live` (git-ignored) (2026-11-10)
   - [x] 🤖 `npm run dodo:setup -- --env .env.live`: 21 live products and the live webhook created (2026-11-10)
-  - [ ] 👤 paste `.env.live` into Render → Environment → **Add from .env** (24 vars; overwrites the test ones), then save and redeploy
-  - [ ] 🤖 make one real small purchase (a page pack), check that the webhook credits the pages, then refund it
+  - [x] 👤 `.env.live` pasted into Render; live deploy is up (2026-11-10)
+  - [x] 🤖 checkout falls back to the email when the stored Dodo customer ID is stale (test → live)
+  - [ ] 👤 clear the test-mode billing data in prod (SQL editor; Claude is blocked from prod SQL): `update profiles set plan='free', monthly_allowance=0, monthly_pages_left=0, allowance_resets_at=null, subscription_status=null, subscription_id=null, current_period_end=null, billing_customer_id=null where billing_customer_id is not null or subscription_id is not null;`
+  - [ ] 👤 make one real small purchase (a page pack) with your own card; then 🤖 check that the webhook credits the pages; then 👤 refund it in Dodo → Transactions
 - [ ] 👤 **Render:** add a card and switch from Free to Starter ($7/mo). Free instances sleep and take ~50s to wake up.
 - [ ] 🤖 **Real conversion on prod:** check that a real PDF converts on prod. The Anthropic key on Render starts with `sk-ant-usr-`; if extraction fails, replace it with a normal `sk-ant-api…` key.
 - [ ] 🤖 **Benchmark:** run `npm run bench` on 30+ real statements (US, UK, India, EU; digital and scanned). Record the real $/page and verified % in CLAUDE.md §3.
