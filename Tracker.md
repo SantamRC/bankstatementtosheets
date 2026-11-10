@@ -4,16 +4,16 @@
 > Decisions and the reasons for them live in `CLAUDE.md` (decision log). This file is the to-do list.
 > 👤 = needs the owner (login, payment, or a click Claude can't make). 🤖 = Claude can do it.
 
-_Last updated: 2026-11-08_
+_Last updated: 2026-11-10_
 
 ## 🔴 Pending: launch blockers
 
-- [ ] 👤 **Dodo approval:** Product Information is under review (submitted 2026-11-07, up to 72h). Personal info and bank are approved.
-- [ ] 👤🤖 **Dodo live mode** (after approval):
-  - 👤 create a live API key and put it in `.env.live` together with `DODO_PAYMENTS_ENVIRONMENT=live_mode`
-  - 🤖 run `npm run dodo:setup -- --env .env.live` (creates the 21 products and the webhook)
-  - 👤🤖 copy the live product IDs, API key and webhook key to Render, and set `DODO_PAYMENTS_ENVIRONMENT=live_mode`
-  - 🤖 make one real small purchase (a page pack), check that the webhook credits the pages, then refund it
+- [x] 👤 **Dodo approval** (2026-11-10): live mode enabled.
+- [ ] 👤🤖 **Dodo live mode:**
+  - [x] 🤖 live API key `bankstatementtosheets-prod` created (all scopes, write) and saved to `.env.live` (git-ignored) (2026-11-10)
+  - [x] 🤖 `npm run dodo:setup -- --env .env.live`: 21 live products and the live webhook created (2026-11-10)
+  - [ ] 👤 paste `.env.live` into Render → Environment → **Add from .env** (24 vars; overwrites the test ones), then save and redeploy
+  - [ ] 🤖 make one real small purchase (a page pack), check that the webhook credits the pages, then refund it
 - [ ] 👤 **Render:** add a card and switch from Free to Starter ($7/mo). Free instances sleep and take ~50s to wake up.
 - [ ] 🤖 **Real conversion on prod:** check that a real PDF converts on prod. The Anthropic key on Render starts with `sk-ant-usr-`; if extraction fails, replace it with a normal `sk-ant-api…` key.
 - [ ] 🤖 **Benchmark:** run `npm run bench` on 30+ real statements (US, UK, India, EU; digital and scanned). Record the real $/page and verified % in CLAUDE.md §3.
