@@ -3,6 +3,8 @@ import { ExtractionError, extractStatement, inspectPdf, publicStatement, summari
 import type { ExtractEvent } from "@/lib/extraction/schema";
 import { getUser, supabaseAdmin } from "@/lib/supabase/server";
 import { isDevAuthBypass, isSupabaseConfigured } from "@/lib/env";
+import { lowPagesThreshold, sendLowPages } from "@/lib/email";
+import { planById } from "@/lib/plans";
 
 const MAX_BYTES = 25 * 1024 * 1024;
 const MAX_PAGES = Number(process.env.MAX_PAGES_PER_FILE || 150);
@@ -83,6 +85,7 @@ export async function POST(req: NextRequest) {
         }
         // Cost/model details are stored for unit economics but never sent to the browser.
         send({ type: "result", statement: publicStatement(statement), pagesRemaining });
+        if (metered && pagesRemaining !== null) void maybeSendLowPages(user.id, pagesRemaining + pages, pagesRemaining);
       } catch (e) {
         if (metered) await supabaseAdmin().rpc("refund_pages", { p_user: user.id, p_pages: pages });
         const err =
@@ -101,4 +104,30 @@ export async function POST(req: NextRequest) {
   return new Response(stream, {
     headers: { "Content-Type": "application/x-ndjson; charset=utf-8", "Cache-Control": "no-store", "X-Accel-Buffering": "no" },
   });
+}
+
+/**
+ * One email when a successful conversion takes the balance from above the threshold to at/below it. Only successful
+ * conversions count (failures are refunded), so a given drop emails once; refills and packs re-arm it naturally.
+ */
+async function maybeSendLowPages(userId: string, before: number, after: number) {
+  try {
+    const { data: p } = await supabaseAdmin()
+      .from("profiles")
+      .select("email, plan, monthly_allowance, allowance_resets_at")
+      .eq("id", userId)
+      .maybeSingle();
+    if (!p?.email) return;
+    const threshold = lowPagesThreshold(p.monthly_allowance ?? 0);
+    if (!(before > threshold && after <= threshold)) return;
+    const plan = planById(p.plan ?? "free");
+    await sendLowPages(p.email, {
+      left: after,
+      planName: plan?.name ?? "Free",
+      isFree: !p.monthly_allowance,
+      resetsAt: p.allowance_resets_at ?? null,
+    });
+  } catch (e) {
+    console.error("[extract] low-pages email failed:", e instanceof Error ? e.message : e);
+  }
 }

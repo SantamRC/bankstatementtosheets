@@ -26,7 +26,7 @@ async function send(to: string, subject: string, html: string, text: string) {
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]!);
 
 /** Brand-styled shell: paper background, ink text, brand-green button (tokens from globals.css). */
-function layout(heading: string, paras: string[], cta: { label: string; href: string }) {
+function layout(heading: string, paras: string[], cta: { label: string; href: string }, billingNote = true) {
   const p = paras.map((x) => `<p style="margin:0 0 14px;font-size:15px;line-height:1.55;color:#0d1512">${x}</p>`).join("");
   return `<!doctype html><html><body style="margin:0;background:#f7f6f1;font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f7f6f1;padding:32px 16px"><tr><td align="center">
@@ -36,7 +36,7 @@ function layout(heading: string, paras: string[], cta: { label: string; href: st
 <h1 style="margin:0 0 16px;font-size:22px;line-height:1.3;color:#0d1512">${heading}</h1>
 ${p}
 <a href="${cta.href}" style="display:inline-block;margin:6px 0 22px;background:#0b6e4f;color:#ffffff;text-decoration:none;font-weight:600;font-size:15px;padding:12px 20px;border-radius:10px">${cta.label}</a>
-<p style="margin:0;font-size:13px;line-height:1.5;color:#5b6660">Your receipt and tax invoice come in a separate email from <b>Dodo Payments</b>, our payment provider and merchant of record. Your card or bank statement shows <b>${DESCRIPTOR}</b>. Questions? Just reply to this email.</p>
+<p style="margin:0;font-size:13px;line-height:1.5;color:#5b6660">${billingNote ? `Your receipt and tax invoice come in a separate email from <b>Dodo Payments</b>, our payment provider and merchant of record. Your card or bank statement shows <b>${DESCRIPTOR}</b>. ` : ""}Questions? Just reply to this email.</p>
 </td></tr></table>
 <p style="font-size:12px;color:#8a918c;margin:16px 0 0">BankStatementToSheets · <a href="${SITE_URL}" style="color:#8a918c">bankstatementtosheets.com</a></p>
 </td></tr></table></body></html>`;
@@ -64,3 +64,30 @@ export async function sendPackAdded(to: string, pages: number) {
   const text = `${subject}\n\n${paras[0].replace(/<[^>]+>/g, "")}\n\nConvert a statement: ${SITE_URL}/convert${footerText}`;
   await send(to, subject, layout(subject, paras, { label: "Convert a statement", href: `${SITE_URL}/convert` }), text);
 }
+
+/** Sent once when a successful conversion takes the balance down past the low-pages threshold (see lowPagesThreshold). */
+export async function sendLowPages(
+  to: string,
+  o: { left: number; planName: string; isFree: boolean; resetsAt: string | null },
+) {
+  const out = o.left === 0;
+  const subject = out ? "You've used all your pages" : `You have ${o.left} page${o.left === 1 ? "" : "s"} left`;
+  const refill =
+    !o.isFree && o.resetsAt
+      ? ` Your ${esc(o.planName)} pages refill on <b>${new Date(o.resetsAt).toLocaleDateString("en-US", { month: "long", day: "numeric" })}</b>.`
+      : "";
+  const paras = [
+    out
+      ? `You've converted every page on your account.${refill}`
+      : `You have <b>${o.left} page${o.left === 1 ? "" : "s"}</b> left on your account.${refill}`,
+    o.isFree
+      ? `Paid plans start at 150 pages a month, with every row checked against the statement's running balance. Launch pricing is locked in for as long as you stay subscribed.`
+      : `Need more before then? A page pack adds 100 pages that never expire, or move up a plan for more pages every month.`,
+  ];
+  const cta = { label: o.isFree ? "See plans" : "Get more pages", href: `${SITE_URL}/pricing` };
+  const text = `${subject}\n\n${paras.map((x) => x.replace(/<[^>]+>/g, "")).join("\n\n")}\n\n${cta.label}: ${cta.href}\n\nBankStatementToSheets · ${SITE_URL}`;
+  await send(to, subject, layout(subject, paras, cta, false), text);
+}
+
+/** Low-pages threshold: 20% of the monthly allowance on paid plans, 5 pages on Free. */
+export const lowPagesThreshold = (monthlyAllowance: number) => (monthlyAllowance > 0 ? Math.floor(monthlyAllowance * 0.2) : 5);

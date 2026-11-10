@@ -19,10 +19,14 @@ _Last updated: 2026-11-10_
   - [x] 🤖 invoices cleaned up (2026-11-10): live products renamed to "BankStatementToSheets Starter (Monthly)" etc. (no "· INR" suffix; IDs unchanged), and the Dodo brand is now "BankStatementToSheets" with support@ as the support email
   - [x] 🤖 our own branded emails from no-reply@bankstatementtosheets.com (Brevo API, `src/lib/email.ts`): welcome on subscription start, a note on plan change, "pages added" on a pack. Each explains that the Dodo receipt and the DODOPAY_ card descriptor are ours (2026-11-10)
   - [x] 👤🤖 `BREVO_API_KEY` set on Render; a test welcome email was accepted by Brevo on prod (2026-11-10)
+  - [x] 🤖 Dodo's "Subscription Plan Changed" customer email switched off (ours replaces it) (2026-11-10)
+  - [x] 🤖 low-pages email: after a successful conversion that drops the balance to ≤20% of the monthly allowance (≤5 on Free), or to 0 (2026-11-10)
+  - [ ] 👤 decide: turn on Dodo's **Payment Failed**, **Subscription Renewal Failed** and **Upcoming Renewal Reminder** emails (currently OFF; without them a customer whose card fails just loses pages silently)
+  - [ ] 🤖 "pages refilled" monthly email (needs a scheduled job; refills are lazy in `consume_pages`)
   - [ ] 👤 upload the logo in Dodo → Settings → Business → Primary brand → Edit (shown on checkout and invoices)
   - [ ] 👤 ask Dodo support whether INR payers can get an INR invoice with Dodo's GSTIN (the invoice for ₹799 shows USD 8.20 and has no GSTIN, so Indian businesses can't claim input tax credit)
   - [ ] 👤 own ₹799 test payment: cancel Starter in the customer portal now (stops the 2026-12-10 renewal). Dodo refunds only from available balance, which is still ₹0 while the payment settles, so refund once it shows in Payouts → Balances (or ask Dodo support). It won't be paid out in the meantime, being far below the $50–100 payout minimum
-- [ ] 👤 **Render:** add a card and switch from Free to Starter ($7/mo). Free instances sleep and take ~50s to wake up.
+- [ ] 👤 **Render:** add a card and switch from Free to Starter ($7/mo). Free instances sleep and take ~50s to wake up. (2026-11-10: deploy 894e63e failed: built fine but the instance never started and the health check timed out after 15 min; the previous deploy stayed live.)
 - [ ] 🤖 **Real conversion on prod:** check that a real PDF converts on prod. The Anthropic key on Render starts with `sk-ant-usr-`; if extraction fails, replace it with a normal `sk-ant-api…` key.
 - [ ] 🤖 **Benchmark:** run `npm run bench` on 30+ real statements (US, UK, India, EU; digital and scanned). Record the real $/page and verified % in CLAUDE.md §3.
 - [ ] 👤 **Legal:** review the privacy and terms templates; add a name and address.
