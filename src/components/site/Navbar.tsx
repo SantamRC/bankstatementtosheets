@@ -3,14 +3,14 @@ import { Suspense } from "react";
 import { Logo } from "./Logo";
 import { btn } from "@/lib/ui";
 import { hasSessionCookie } from "@/lib/supabase/server";
-import { isSupabaseConfigured } from "@/lib/env";
+import { isDevAuthBypass, isSupabaseConfigured } from "@/lib/env";
+import { AccountButton } from "./AccountButton";
 
 // Cookie check, not getUser(): getUser() is a round trip to Supabase and made the button pop in seconds late.
+// AccountButton then verifies the session once in the background after load.
 async function AccountLink() {
-  const user = await hasSessionCookie();
-  if (user) return <Link href="/dashboard" className={btn("ghost", "sm")}>Dashboard</Link>;
-  if (isSupabaseConfigured) return <Link href="/login" className={btn("ghost", "sm", "hidden sm:inline-flex")}>Sign in</Link>;
-  return null;
+  if (!isSupabaseConfigured) return null;
+  return <AccountButton signedIn={await hasSessionCookie()} verify={!isDevAuthBypass} />;
 }
 
 export function Navbar() {
