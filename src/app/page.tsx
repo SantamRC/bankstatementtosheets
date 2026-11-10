@@ -68,7 +68,7 @@ export default function Home() {
               <span className="font-serif font-normal italic text-brand sm:whitespace-nowrap">verified to the cent.</span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl animate-rise text-lg text-ink-soft [animation-delay:120ms] sm:text-xl">
-              Drop in any PDF statement — digital or scanned, any bank, any country. Get a clean Excel file or Google Sheet in
+              A bank statement converter for any PDF — digital or scanned, any bank, any country. Get a clean Excel file or Google Sheet in
               seconds, with every transaction reconciled against the statement’s own balances.
             </p>
             <div className="mt-9 flex animate-rise flex-col items-center justify-center gap-3 [animation-delay:180ms] sm:flex-row">

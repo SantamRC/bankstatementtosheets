@@ -3,7 +3,7 @@ import { SITE } from "@/lib/site";
 import { BANKS } from "@/lib/seo/banks";
 
 // Bump when page content changes meaningfully (a fixed date avoids telling Google everything changed on every deploy).
-const UPDATED = "2026-11-08";
+const UPDATED = "2026-11-11";
 
 const FORMAT_PATHS = ["/bank-statement-to-excel", "/bank-statement-to-csv", "/bank-statement-to-google-sheets", "/credit-card-statement-to-excel"];
 

@@ -4,7 +4,7 @@ import { FormatPage } from "@/components/seo/FormatPage";
 
 const path = "/bank-statement-to-excel";
 export const metadata: Metadata = pageMeta({
-  title: "Bank Statement to Excel Converter — PDF to XLSX, Verified",
+  title: "Bank Statement PDF to Excel Converter — Verified to the Cent",
   description: "Convert PDF bank statements to Excel (.xlsx) in seconds. Real dates and numbers, Summary and Categories sheets with live formulas, and every row checked against the running balance. 20 pages free.",
   path: path,
   absoluteTitle: true,
