@@ -3,6 +3,7 @@ import type { UnwrapWebhookEvent } from "dodopayments/resources/webhooks/webhook
 import { getDodo } from "@/lib/dodo";
 import { supabaseAdmin } from "@/lib/supabase/server";
 import { planById, planFromProductId } from "@/lib/plans";
+import { sendPackAdded, sendPlanWelcome } from "@/lib/email";
 
 type Meta = Record<string, string | number | boolean> | null | undefined;
 type Customer = { customer_id: string; email: string };
@@ -47,6 +48,17 @@ export async function POST(req: NextRequest) {
     return id;
   };
 
+  /** Our branded email. Never throws: a failed email must not make Dodo retry (that would re-grant pack pages). */
+  const notify = async (userId: string, fallbackEmail: string, fn: (to: string) => Promise<void>) => {
+    try {
+      const { data } = await db.from("profiles").select("email").eq("id", userId).maybeSingle();
+      const to = data?.email || fallbackEmail;
+      if (to) await fn(to);
+    } catch (e) {
+      console.error(`[dodo] ${event.type} email failed:`, e instanceof Error ? e.message : e);
+    }
+  };
+
   try {
     switch (event.type) {
       case "payment.succeeded": {
@@ -55,7 +67,11 @@ export async function POST(req: NextRequest) {
         if (p.metadata?.kind !== "pack" || p.subscription_ids?.length) break;
         const userId = await findUser(p.metadata, p.customer);
         const pages = Number(p.metadata.pages || 0);
-        if (userId && pages > 0) await db.rpc("add_bonus_pages", { p_user: userId, p_pages: pages });
+        if (userId && pages > 0) {
+          const { error } = await db.rpc("add_bonus_pages", { p_user: userId, p_pages: pages });
+          if (error) throw new Error(error.message);
+          await notify(userId, p.customer.email, (to) => sendPackAdded(to, pages));
+        }
         break;
       }
       case "subscription.active":
@@ -84,6 +100,11 @@ export async function POST(req: NextRequest) {
             current_period_end: s.next_billing_date,
           })
           .eq("id", userId);
+        // Renewals stay quiet (Dodo emails the receipt); welcome on start, confirm on plan change.
+        if (event.type !== "subscription.renewed")
+          await notify(userId, s.customer.email, (to) =>
+            sendPlanWelcome(to, planById(planId)!.name, pages, event.type === "subscription.plan_changed"),
+          );
         break;
       }
       case "subscription.updated":

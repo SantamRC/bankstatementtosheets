@@ -17,6 +17,8 @@ _Last updated: 2026-11-10_
   - [x] 👤 test-mode billing data cleared in prod (2026-11-10)
   - [x] 👤🤖 real live purchase verified (2026-11-10): Starter monthly INR ₹799 → webhook set Starter, 150 monthly pages, renews 2026-12-10; Manage billing opens the live customer portal
   - [x] 🤖 invoices cleaned up (2026-11-10): live products renamed to "BankStatementToSheets Starter (Monthly)" etc. (no "· INR" suffix; IDs unchanged), and the Dodo brand is now "BankStatementToSheets" with support@ as the support email
+  - [x] 🤖 our own branded emails from no-reply@bankstatementtosheets.com (Brevo API, `src/lib/email.ts`): welcome on subscription start, a note on plan change, "pages added" on a pack. Each explains that the Dodo receipt and the DODOPAY_ card descriptor are ours (2026-11-10)
+  - [ ] 👤 Brevo → SMTP & API → **API Keys** → Generate (name `render-prod`), then add it on Render as `BREVO_API_KEY` (emails are skipped until then)
   - [ ] 👤 upload the logo in Dodo → Settings → Business → Primary brand → Edit (shown on checkout and invoices)
   - [ ] 👤 ask Dodo support whether INR payers can get an INR invoice with Dodo's GSTIN (the invoice for ₹799 shows USD 8.20 and has no GSTIN, so Indian businesses can't claim input tax credit)
   - [ ] 👤 decide: keep the Starter subscription, or cancel it in the portal and refund the ₹799 in Dodo → Transactions
