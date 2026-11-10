@@ -309,6 +309,7 @@ npm run indexnow [-- /path ...] # tell Bing/IndexNow pages changed (default: who
 - **MCP (claude.ai connectors):** Render (services, env vars, deploys, logs), Supabase (projects, migrations, SQL, keys, logs), Cloudflare Developer Platform (Workers/KV/R2/D1 only, no DNS; deprecated, so prefer the Cloudflare API MCP), Gmail, OpenSEO (keyword research, SERP, audits, rank tracking), Claude Docs.
 - **Browser:** Claude in Chrome (the owner's signed-in Chrome: Cloudflare, Porkbun, Render, Dodo dashboards). The auto-mode classifier blocks DNS, domain and cert changes, so the owner clicks those. Playwright MCP is for testing localhost.
 - **Skills:** openseo:* (keyword-research, competitor-analysis, seo-audit, …), engineering:*, claude-api, dataviz, legal:compliance-check.
+- **claude-seo plugin** (AgriciDaniel/claude-seo v2.5.0, user scope, added 2026-11-11): `/seo …` skills and agents for technical SEO, schema, E-E-A-T, GEO/AEO, sitemaps, Core Web Vitals and more. Its PostToolUse hook validates JSON-LD after every Edit/Write (local Python, no network). The optional `seo-cockpit` mod needs Claude Code 2.1.287+.
 - **Worth adding:** the Cloudflare API MCP (https://mcp.cloudflare.com/mcp) for DNS/WAF, a Stripe or Dodo MCP when payments go live, and a Sentry MCP once error tracking is set up.
 
 ## 11. Decision log
