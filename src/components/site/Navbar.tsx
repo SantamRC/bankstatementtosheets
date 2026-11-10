@@ -2,11 +2,12 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { Logo } from "./Logo";
 import { btn } from "@/lib/ui";
-import { getUser } from "@/lib/supabase/server";
+import { hasSessionCookie } from "@/lib/supabase/server";
 import { isSupabaseConfigured } from "@/lib/env";
 
+// Cookie check, not getUser(): getUser() is a round trip to Supabase and made the button pop in seconds late.
 async function AccountLink() {
-  const user = isSupabaseConfigured ? await getUser() : null;
+  const user = await hasSessionCookie();
   if (user) return <Link href="/dashboard" className={btn("ghost", "sm")}>Dashboard</Link>;
   if (isSupabaseConfigured) return <Link href="/login" className={btn("ghost", "sm", "hidden sm:inline-flex")}>Sign in</Link>;
   return null;
@@ -31,7 +32,7 @@ export function Navbar() {
           ))}
         </nav>
         <div className="flex items-center gap-2">
-          <Suspense fallback={null}>
+          <Suspense fallback={<span aria-hidden className={btn("ghost", "sm", "invisible hidden sm:inline-flex")}>Dashboard</span>}>
             <AccountLink />
           </Suspense>
           <Link href="/convert" className={btn("primary", "sm")}>

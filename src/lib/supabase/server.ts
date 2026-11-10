@@ -47,6 +47,17 @@ export async function getUser(): Promise<SessionUser | null> {
   return data.user ? { id: data.user.id, email: data.user.email ?? null } : null;
 }
 
+/**
+ * Display hint only (navbar): is there a Supabase session cookie? No network call, so it renders instantly.
+ * Never use it for access control; pages and APIs verify the user with getUser().
+ */
+export async function hasSessionCookie(): Promise<boolean> {
+  if (isDevAuthBypass) return true;
+  if (!isSupabaseConfigured) return false;
+  const all = (await cookies()).getAll();
+  return all.some((c) => /^sb-.+-auth-token(\.\d+)?$/.test(c.name) && c.value.length > 0);
+}
+
 export interface Profile {
   id: string;
   email: string | null;
