@@ -23,11 +23,10 @@ export async function POST(req: NextRequest) {
   if (!productId) return NextResponse.json({ error: "This plan isn't available yet." }, { status: 503 });
 
   const profile = await getProfile(user.id);
-  try {
-    const session = await getDodo().checkoutSessions.create({
+  const create = (customer: { customer_id: string } | { email: string }) =>
+    getDodo().checkoutSessions.create({
       product_cart: [{ product_id: productId, quantity: 1 }],
-      // Reuse the Dodo customer so the billing portal shows every purchase in one place.
-      customer: profile?.billing_customer_id ? { customer_id: profile.billing_customer_id } : { email: user.email },
+      customer,
       billing_currency: currency,
       metadata: {
         user_id: user.id,
@@ -39,6 +38,17 @@ export async function POST(req: NextRequest) {
       return_url: `${SITE_URL}/dashboard?checkout=success`,
       cancel_url: `${SITE_URL}/pricing?checkout=cancelled`,
     });
+  try {
+    // Reuse the Dodo customer so the billing portal shows every purchase in one place. A stored ID can be stale
+    // (e.g. a test_mode customer after switching to live_mode), so fall back to the email; the webhook re-links it.
+    let session;
+    try {
+      session = profile?.billing_customer_id ? await create({ customer_id: profile.billing_customer_id }) : await create({ email: user.email });
+    } catch (e) {
+      if (!profile?.billing_customer_id) throw e;
+      console.warn("[checkout] stored customer rejected, retrying by email:", e instanceof Error ? e.message : e);
+      session = await create({ email: user.email });
+    }
     if (!session.checkout_url) throw new Error("No checkout URL returned");
     return NextResponse.json({ url: session.checkout_url });
   } catch (e) {
