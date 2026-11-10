@@ -27,6 +27,12 @@ _Last updated: 2026-11-10_
   - [ ] 👤 upload the logo in Dodo → Settings → Business → Primary brand → Edit (shown on checkout and invoices)
   - [ ] 👤 ask Dodo support whether INR payers can get an INR invoice with Dodo's GSTIN (the invoice for ₹799 shows USD 8.20 and has no GSTIN, so Indian businesses can't claim input tax credit)
   - [ ] 👤 own ₹799 test payment: cancel Starter in the customer portal now (stops the 2026-12-10 renewal). Dodo refunds only from available balance, which is still ₹0 while the payment settles, so refund once it shows in Payouts → Balances (or ask Dodo support). It won't be paid out in the meantime, being far below the $50–100 payout minimum
+- [ ] 👤🤖 **Staging** (billing test environment, 2026-11-10):
+  - [x] 🤖 Supabase project `bankstatementtosheets-staging` created, migrations applied, auth URLs set
+  - [x] 🤖 Render service `bankstatementtosheets-staging` created (Free, auto-deploys main)
+  - [x] 🤖 Dodo test-mode webhook pointed at staging
+  - [ ] 👤 Render staging → Environment → **Add from .env**: paste `.env.staging`, then add `SUPABASE_SECRET_KEY` (staging project → API Keys → secret), `BREVO_API_KEY` (same as prod) and optionally `ANTHROPIC_API_KEY`. Save and deploy
+  - [ ] 👤 sign in on staging, buy a plan with a Dodo test card; 🤖 verify the webhook, emails and dashboard; then test a decline card (payment-failed email), plan change, page pack and cancel
 - [ ] 👤 **Render:** add a card and switch from Free to Starter ($7/mo). Free instances sleep and take ~50s to wake up. (2026-11-10: deploy 894e63e failed: built fine but the instance never started and the health check timed out after 15 min; the previous deploy stayed live.)
 - [ ] 🤖 **Real conversion on prod:** check that a real PDF converts on prod. The Anthropic key on Render starts with `sk-ant-usr-`; if extraction fails, replace it with a normal `sk-ant-api…` key.
 - [ ] 🤖 **Benchmark:** run `npm run bench` on 30+ real statements (US, UK, India, EU; digital and scanned). Record the real $/page and verified % in CLAUDE.md §3.

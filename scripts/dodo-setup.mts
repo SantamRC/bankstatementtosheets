@@ -12,7 +12,6 @@ import DodoPayments from "dodopayments";
 import { CURRENCIES, PAGE_PACK, PLANS, productEnvKey, type Currency } from "../src/lib/plans.ts";
 
 const envFile = process.argv.includes("--env") ? process.argv[process.argv.indexOf("--env") + 1] : ".env.local";
-const WEBHOOK_URL = "https://bankstatementtosheets.com/api/webhooks/dodo";
 const EVENTS = [
   "payment.succeeded",
   "subscription.active",
@@ -80,6 +79,12 @@ const env = readEnv(envFile);
 if (!env.DODO_PAYMENTS_API_KEY) throw new Error(`Set DODO_PAYMENTS_API_KEY in ${envFile} first.`);
 const mode = env.DODO_PAYMENTS_ENVIRONMENT === "live_mode" ? "live_mode" : "test_mode";
 const dodo = new DodoPayments({ bearerToken: env.DODO_PAYMENTS_API_KEY, environment: mode });
+// Live webhooks go to prod; test-mode webhooks go to staging (Render + staging Supabase), never to prod.
+const WEBHOOK_URL =
+  env.DODO_WEBHOOK_URL ||
+  (mode === "live_mode"
+    ? "https://bankstatementtosheets.com/api/webhooks/dodo"
+    : "https://bankstatementtosheets-staging.onrender.com/api/webhooks/dodo");
 console.log(`Dodo ${mode} — writing IDs to ${envFile}`);
 
 const existing = new Map<string, { id: string; name: string; desc?: string | null }>();
