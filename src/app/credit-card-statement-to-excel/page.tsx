@@ -41,6 +41,8 @@ export default function Page() {
           ["Which credit cards are supported?", "Any issuer in any country: American Express, Chase, Capital One, Citi, Discover, Barclaycard, HDFC, ICICI, SBI Card and more. There are no templates."],
           ["Can I combine several cards into one spreadsheet?", "Yes. Upload all the statements together and export once; a Source column shows which card each row came from."],
           ["Can I import card transactions into QuickBooks or Xero?", "Yes. Export CSV and import it as a credit card account, mapping Date, Description and Amount."],
+          ["How do I convert a credit card statement PDF to Excel?", "Download the statement PDF from your card issuer’s website or app, upload it here, check the rows and click Excel. CSV and Google Sheets work the same way."],
+          ["Can I export my Chase or Amex credit card statement to Excel?", "Yes. Issuers usually let you download recent activity as a spreadsheet, but past statements are often PDF only. Upload those PDFs and get Excel, CSV or Google Sheets."],
           ["Is my statement stored?", "No. PDFs are processed in memory and never stored. The extracted table is kept for 30 days so you can re-download it, or until you delete it."],
         ],
       }}

@@ -163,3 +163,9 @@ export const FORMAT_LINKS: [string, string][] = [
   ["Bank statement to Google Sheets", "/bank-statement-to-google-sheets"],
   ["Credit card statement to Excel", "/credit-card-statement-to-excel"],
 ];
+
+export const GUIDE_LINKS: [string, string][] = [
+  ["DocuClipper alternative", "/docuclipper-alternative"],
+  ["Bank statement PDF password (HDFC, SBI, ICICI…)", "/bank-statement-password"],
+  ["Bank statements for a mortgage", "/bank-statements-for-mortgage"],
+];

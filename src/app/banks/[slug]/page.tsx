@@ -18,9 +18,9 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const bank = bankBySlug((await params).slug);
   if (!bank) return {};
-  const title = `Convert ${bank.query}s to Excel, CSV & Google Sheets`;
+  const title = `${bank.query} to Excel Converter — PDF to Excel, CSV & Sheets`;
   const description = `Convert ${bank.name} PDF statements to Excel, CSV or Google Sheets in seconds. Every row is checked against the statement's balance. ${bank.country === "India" ? "UPI references extracted. " : ""}Scanned PDFs work. 20 pages free.`;
-  return pageMeta({ title, description, path: `/banks/${bank.slug}` });
+  return pageMeta({ title, description, path: `/banks/${bank.slug}`, absoluteTitle: true });
 }
 
 export default async function BankPage({ params }: Props) {
@@ -67,7 +67,20 @@ export default async function BankPage({ params }: Props) {
           </p>
         </Section>
 
-        <Faq title={`${bank.name} statement conversion: FAQ`} items={bank.faqs} />
+        <Faq
+          title={`${bank.name} statement conversion: FAQ`}
+          items={[
+            [
+              `How do I convert a ${bank.name} statement PDF to Excel?`,
+              `Download the statement PDF (steps above), upload it on the converter, check the review table and click Excel. CSV and Google Sheets work the same way, and scanned ${bank.name} statements are supported.`,
+            ],
+            ...bank.faqs,
+            [
+              `Is there a free ${bank.name} statement converter?`,
+              `Yes. Your first 20 pages are free with no credit card, enough for several ${bank.name} statements. Every feature is included, and failed conversions are never charged.`,
+            ],
+          ]}
+        />
 
         {related.length > 0 && <LinkGrid title={`Other banks in ${bank.country === "United States" ? "the US" : bank.country === "United Kingdom" ? "the UK" : bank.country}`} links={[...related, ["All banks", "/banks"]]} />}
         <LinkGrid title="Convert to" links={FORMAT_LINKS} />

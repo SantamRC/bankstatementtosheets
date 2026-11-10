@@ -52,6 +52,8 @@ export default function Page() {
           ["Do you get access to my whole Google Drive?", "No. We request Google’s drive.file scope, which only allows access to files our app creates. We can’t see or change anything else in your Drive."],
           ["Can I add statements to an existing Google Sheet?", "Yes. Use Copy table and paste into your sheet — the columns stay aligned. Each one-click export creates a new spreadsheet."],
           ["Does it work with credit card statements?", "Yes. Purchases and fees become debits; payments and refunds become credits."],
+          ["How do I convert a PDF to Google Sheets?", "For bank and credit card statements, upload the PDF here and click Google Sheets — the transactions arrive as a formatted sheet with real dates and numbers. For other PDFs, opening them with Google Docs and copying tables works, but rows and columns usually need cleaning up."],
+          ["How do I import a bank statement into Google Sheets?", "If your bank offers a CSV download, use File → Import in Google Sheets. If you only have a PDF statement, convert it here and we create the Google Sheet for you."],
           ["Is it free to try?", "Yes. Your first 20 pages are free with no credit card."],
         ],
       }}

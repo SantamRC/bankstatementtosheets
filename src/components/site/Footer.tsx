@@ -26,11 +26,19 @@ export function Footer() {
         ["All banks", "/banks"],
       ],
     ],
+    [
+      "Guides",
+      [
+        ["DocuClipper alternative", "/docuclipper-alternative"],
+        ["Bank statement password", "/bank-statement-password"],
+        ["Statements for a mortgage", "/bank-statements-for-mortgage"],
+      ],
+    ],
     ["Company", [["Contact", "/contact"], ["Refunds & cancellation", "/refunds"], ["Privacy", "/privacy"], ["Terms", "/terms"]]],
   ];
   return (
     <footer className="mt-auto border-t border-line bg-paper">
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 sm:grid-cols-2 md:grid-cols-[1.4fr_1fr_1.3fr_1fr_1fr]">
+      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-[1.4fr_1fr_1.3fr_1fr_1fr_1fr]">
         <div className="space-y-3">
           <Logo />
           <p className="max-w-xs text-sm text-muted">

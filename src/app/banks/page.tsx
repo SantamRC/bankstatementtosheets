@@ -10,7 +10,7 @@ import { BANKS, COUNTRIES } from "@/lib/seo/banks";
 
 export const metadata: Metadata = pageMeta({
   title: "Bank Statement Converter for Any Bank — Chase, HSBC, HDFC & More",
-  description: "Convert PDF statements from Chase, Bank of America, Wells Fargo, Barclays, HSBC, Lloyds, HDFC, ICICI, SBI and thousands of other banks to Excel, CSV or Google Sheets. No templates.",
+  description: "Convert PDF statements from Chase, Bank of America, Wells Fargo, PNC, TD, Barclays, HSBC, Santander, HDFC, ICICI, SBI, PNB, Bank of Baroda and thousands of other banks to Excel, CSV or Google Sheets. No templates.",
   path: "/banks",
   absoluteTitle: true,
 });

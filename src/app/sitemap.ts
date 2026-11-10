@@ -14,6 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page("/convert", 0.9),
     page("/pricing", 0.8),
     ...FORMAT_PATHS.map((p) => page(p, 0.8)),
+    ...["/docuclipper-alternative", "/bank-statement-password", "/bank-statements-for-mortgage"].map((p) => page(p, 0.7)),
     page("/banks", 0.7),
     ...BANKS.map((b) => page(`/banks/${b.slug}`, 0.7)),
     page("/contact", 0.4),

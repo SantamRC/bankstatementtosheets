@@ -67,6 +67,8 @@ export default function Page() {
           ["How do I import the CSV into Xero?", "Open the bank account in Xero, choose Import a statement, upload the CSV and map Date, Description and Amount (or Debit and Credit)."],
           ["Which date format does the CSV use?", "ISO dates (YYYY-MM-DD), which every accounting tool and spreadsheet reads without guessing whether 04/10 is April or October."],
           ["Can I get one CSV for several statements?", "Yes. Upload them together and export once. A Source column tells you which statement each row came from."],
+          ["How do I convert a PDF bank statement to CSV?", "Upload the PDF statement, check the review table, and click CSV. Scanned statements work too, and several statements can be exported into one CSV file."],
+          ["Can I import the CSV into Sage, YNAB or other software?", "Yes. Any tool that accepts a bank CSV works: map Date, Description and Amount (or Debit and Credit). Sage, YNAB, FreshBooks, Wave and spreadsheets all accept it."],
           ["Is it free?", "Your first 20 pages are free with no credit card. Paid plans start at $9/month for 150 pages."],
         ],
       }}

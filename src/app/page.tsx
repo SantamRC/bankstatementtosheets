@@ -3,7 +3,9 @@ import { ArrowRight, Check } from "lucide-react";
 import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
 import { HeroVisual } from "@/components/landing/HeroVisual";
-import { Audiences, BankStrip, Comparison, FAQ, FAQS, Features, FinalCTA, HowItWorks, Security } from "@/components/landing/Sections";
+import { Audiences, BankStrip, Comparison, FAQ, FAQS, Features, FinalCTA, HowItWorks, PopularConversions, Security } from "@/components/landing/Sections";
+import { FORMAT_LINKS, GUIDE_LINKS } from "@/components/seo/Blocks";
+import { BANKS } from "@/lib/seo/banks";
 import { Pricing } from "@/components/landing/Pricing";
 import { btn } from "@/lib/ui";
 import { FREE_PAGES, PLANS } from "@/lib/plans";
@@ -97,6 +99,13 @@ export default function Home() {
         <Pricing />
         <Security />
         <FAQ />
+        <PopularConversions
+          links={[
+            ...FORMAT_LINKS,
+            ...BANKS.map((b): [string, string] => [`${b.name} statement to Excel`, `/banks/${b.slug}`]),
+            ...GUIDE_LINKS,
+          ]}
+        />
         <FinalCTA />
       </main>
       <Footer />

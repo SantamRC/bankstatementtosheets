@@ -69,10 +69,12 @@ _Last updated: 2026-11-10_
 - [x] 🤖 **IndexNow** (2026-11-08): the key file is in `public/`. `npm run indexnow` (optionally with paths) submits URLs, and the GitHub Action `indexnow.yml` re-submits the sitemap 5 minutes after any push that changes pages.
 - [ ] 🤖 **In about a week:** check Search Console coverage and the first queries, and request indexing for the remaining pages (quota is about 10 a day).
 - [x] 🤖 **Keyword research** (2026-11-11, OpenSEO report 79919fc8, US + IN): "bank statement converter" is the head term (US 1,300 KD 6; IN 33,100 KD 16). Per-bank terms are ≤10/mo, so don't scale bank pages for volume. Homepage retitled around it, and "PDF" added to the /bank-statement-to-excel title.
-- [ ] 🤖 `/vs/docuclipper` comparison page ("docuclipper" 2,900/mo, KD 15). Re-check their pricing first. Later `/vs/moneythumb` (880/mo).
-- [ ] 🤖 Lender guide for "bank statement for mortgage" (880/mo, KD 0, CPC $59). Check the SERP first.
+- [x] 🤖 **On-page keyword pass** (2026-11-11): homepage FAQ +6 question keywords and a "Popular conversions & guides" link block; keyword FAQs on the 4 format pages; every bank page now has a "<bank> statement to Excel Converter" title plus 2 shared FAQs; 8 new banks (PNC, TD Bank, U.S. Bank, Santander UK, Bank of Baroda, PNB, Canara, Union Bank); Guides footer column.
+- [x] 🤖 `/docuclipper-alternative` (2026-11-11; DocuClipper pricing re-checked that day; re-check before editing numbers). Later `/vs/moneythumb` (880/mo).
+- [x] 🤖 `/bank-statements-for-mortgage` guide (2026-11-11).
 - [ ] 🤖 **Tally export** (India: "pdf to tally" 320, "bank statement to tally" 110), then a `/bank-statement-to-tally` page.
-- [ ] 🤖 "HDFC statement password" guide (IN 90,500/mo) → ties to password-protected PDF support (roadmap #4).
+- [x] 🤖 `/bank-statement-password` guide (2026-11-11). Formats are hedged because sources disagree. Next: password-protected PDF support (roadmap #4).
+- [ ] 🤖 In 4–6 weeks: check Search Console for impressions on the new pages and the retitled homepage; request indexing for the new URLs.
 - [ ] 👤 OpenSEO: 500 → ~270 credits. Approve saving the shortlist and adding rank tracking.
 - [x] 🤖 **Phase 1, technical** (2026-11-08):
   - OG image (`opengraph-image.tsx`)

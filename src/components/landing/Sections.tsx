@@ -72,7 +72,7 @@ export function Comparison() {
       <div className="mx-auto max-w-2xl text-center">
         <p className="text-sm font-semibold text-brand">Why we built this</p>
         <h2 className="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">
-          Other converters guess. <span className="font-serif font-normal italic">We check.</span>
+          Other bank statement converters guess. <span className="font-serif font-normal italic">We check.</span>
         </h2>
         <p className="mt-4 text-lg text-muted">
           A converter that’s 98% right means you still re-check 100% of the rows. So we made the statement prove itself.
@@ -162,7 +162,7 @@ export function Features() {
             </div>
           </div>
           <Feature className="md:col-span-2" icon={<Camera />} title="Scanned & photographed PDFs">
-            Crooked scans and phone photos saved as PDF are read with vision AI — not brittle OCR templates.
+            Scanned bank statements, crooked copies and phone photos saved as PDF are read with vision AI — not brittle OCR templates.
           </Feature>
           <Feature className="md:col-span-2" icon={<PencilLine />} title="Edit before you export">
             A spreadsheet-style review screen. Fix a value and the balance check re-runs instantly.
@@ -218,7 +218,7 @@ export function HowItWorks() {
       <div className="mx-auto max-w-2xl text-center">
         <p className="text-sm font-semibold text-brand">How it works</p>
         <h2 className="mt-2 text-4xl font-semibold tracking-tight sm:text-5xl">
-          From PDF to pivot table in <span className="font-serif font-normal italic">under a minute.</span>
+          Convert a PDF bank statement to Excel in <span className="font-serif font-normal italic">under a minute.</span>
         </h2>
       </div>
       <ol className="mt-14 grid gap-6 md:grid-cols-3">
@@ -295,6 +295,18 @@ export function Security() {
 
 export const FAQS: [string, string][] = [
   [
+    "How do I convert a PDF bank statement to Excel?",
+    "Upload the PDF on the converter, check the review table (verified rows are ticked, anything that doesn’t tie out is highlighted), then click Excel to download an .xlsx file. It takes about a minute, works for several statements at once, and the same steps give you CSV or a Google Sheet.",
+  ],
+  [
+    "Is there a free bank statement converter?",
+    `Yes. Your first ${FREE_PAGES} pages are free, with no credit card and no time limit, and they include every feature: balance verification, scanned PDFs, Excel, CSV and Google Sheets export. Paid plans start at $9/month for 150 pages.`,
+  ],
+  [
+    "Do I need to install any software?",
+    "No. It’s an online bank statement converter that runs in your browser on Windows, Mac, Linux, iPad or Android. There’s nothing to download or install.",
+  ],
+  [
     "How accurate is the conversion?",
     "Extraction is done by a frontier AI model that reads the page the way a person does, then every row is checked against the statement’s own running balance. When a statement prints balances, you see exactly which rows are verified — usually all of them. Anything that doesn’t tie out is highlighted for a quick look before you export.",
   ],
@@ -311,7 +323,7 @@ export const FAQS: [string, string][] = [
     "One page of the PDF you upload, regardless of how many transactions it contains. If a conversion fails, you’re not charged for it.",
   ],
   [
-    "Can I export to Google Sheets?",
+    "Can I convert a bank statement to Google Sheets?",
     "Yes — one click creates a formatted Google Sheet in your Drive. You can also download Excel (.xlsx) or CSV, or copy the table and paste it into any spreadsheet.",
   ],
   [
@@ -334,7 +346,37 @@ export const FAQS: [string, string][] = [
     "Can I import the result into QuickBooks or Xero?",
     "Use the CSV export, which both accept for bank imports. Native QBO/OFX files are on our roadmap.",
   ],
+  [
+    "How do I convert a bank statement to CSV?",
+    "Upload the PDF, review the rows, and choose CSV. The file is UTF-8 with ISO dates (YYYY-MM-DD), separate Debit and Credit columns and a signed Amount column, so it imports cleanly into QuickBooks, Xero, Sage, YNAB or a script.",
+  ],
+  [
+    "Can I export my Chase, Bank of America or HDFC statement to Excel?",
+    "Yes. Most banks only let you download recent activity as a spreadsheet; older months, closed accounts and statements sent to you as PDFs exist only as PDF statements. Upload those PDFs here — any bank works, and we have step-by-step guides for popular banks.",
+  ],
+  [
+    "Is it safe to upload my bank statement to an online converter?",
+    "Ask any converter where your file goes. Ours is processed in memory and never stored, the connection is encrypted, the extracted table is deleted after 30 days, and your data is never used to train AI models.",
+  ],
 ];
+
+/** Keyword-rich internal links to every SEO page. */
+export function PopularConversions({ links }: { links: [string, string][] }) {
+  return (
+    <section className="mx-auto max-w-6xl px-4 pb-8 sm:px-6">
+      <h2 className="text-center text-sm font-semibold uppercase tracking-wider text-muted">Popular conversions & guides</h2>
+      <ul className="mt-5 flex flex-wrap justify-center gap-2">
+        {links.map(([label, href]) => (
+          <li key={href}>
+            <Link href={href} className="inline-flex items-center gap-1 rounded-full border border-line-strong bg-card px-3.5 py-1.5 text-sm text-ink-soft hover:border-ink hover:text-ink">
+              {label} <ArrowRight className="size-3" />
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
 
 export function FAQ() {
   return (

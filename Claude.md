@@ -175,6 +175,7 @@ src/
     sitemap.ts (fixed UPDATED date; bump on content changes), robots.ts, icon.svg, opengraph-image.tsx
     banks/, banks/[slug]/    SEO: bank hub + one page per bank (data in lib/seo/banks.ts, static params)
     bank-statement-to-{excel,csv,google-sheets}/, credit-card-statement-to-excel/   SEO format pages (components/seo/FormatPage)
+    docuclipper-alternative/, bank-statement-password/, bank-statements-for-mortgage/   SEO comparison + guide pages (GUIDE_LINKS in seo/Blocks)
   components/
     landing/  HeroVisual, Sections (all marketing sections + FAQS data), Pricing (client, monthly/yearly toggle)
     convert/  Workspace (queue, progress, views), ReviewTable (editable grid), ExportBar, Dropzone
@@ -345,3 +346,4 @@ npm run indexnow [-- /path ...] # tell Bing/IndexNow pages changed (default: who
 - 2026-11-10 — All customer billing emails are ours except Dodo's receipt/invoice, refund and cancellation emails. Payment failed = webhook `subscription.on_hold`. Renewal reminder = yearly plans only, 7 days ahead, from a daily GitHub Action (`cron.yml`) calling `/api/cron/renewal-reminders` with `CRON_SECRET`. Monthly plans get no reminder, because a monthly nudge mostly drives churn.
 - 2026-11-10 — Correction: the Supabase 2-project limit is per account. santamrcdev404 has just 1 project, so a free staging project is possible; KinoKrate (old account) doesn't count.
 - 2026-11-10 — Added a **staging** environment (Render Free + a second free Supabase project + Dodo test mode) so billing flows can be tested end to end without real money. `dodo:setup` now picks the webhook URL by mode (live → prod, test → staging).
+- 2026-11-11 — **Keyword research** (OpenSEO, US + IN): the head term is "bank statement converter" (US 1,300/mo KD 6; IN 33,100 KD 16), so the homepage is retitled around it. Per-bank terms are ≤10/mo, so bank pages are long-tail support. On-page pass: question-keyword FAQs, internal link block, 8 more banks (23 total), plus `/docuclipper-alternative`, `/bank-statement-password` and `/bank-statements-for-mortgage`. No keyword stuffing: each phrase appears naturally in a title, heading or FAQ. The comparison page is honest about where DocuClipper is stronger (QBO/OFX, integrations, SOC 2).

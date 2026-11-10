@@ -18,11 +18,16 @@ Key facts:
 - [Bank statement to Google Sheets](https://bankstatementtosheets.com/bank-statement-to-google-sheets)
 - [Credit card statement to Excel](https://bankstatementtosheets.com/credit-card-statement-to-excel)
 
+## Guides
+- [DocuClipper alternative](https://bankstatementtosheets.com/docuclipper-alternative): price and feature comparison
+- [Bank statement PDF password](https://bankstatementtosheets.com/bank-statement-password): opening locked HDFC, SBI, ICICI, Axis and Kotak statements
+- [Bank statements for a mortgage](https://bankstatementtosheets.com/bank-statements-for-mortgage): what lenders check
+
 ## Bank guides
 - [All banks](https://bankstatementtosheets.com/banks)
-- US: [Chase](https://bankstatementtosheets.com/banks/chase), [Bank of America](https://bankstatementtosheets.com/banks/bank-of-america), [Wells Fargo](https://bankstatementtosheets.com/banks/wells-fargo), [Citi](https://bankstatementtosheets.com/banks/citi), [Capital One](https://bankstatementtosheets.com/banks/capital-one), [American Express](https://bankstatementtosheets.com/banks/american-express)
-- UK: [Barclays](https://bankstatementtosheets.com/banks/barclays), [HSBC](https://bankstatementtosheets.com/banks/hsbc), [Lloyds](https://bankstatementtosheets.com/banks/lloyds), [NatWest](https://bankstatementtosheets.com/banks/natwest)
-- India: [HDFC Bank](https://bankstatementtosheets.com/banks/hdfc-bank), [ICICI Bank](https://bankstatementtosheets.com/banks/icici-bank), [SBI](https://bankstatementtosheets.com/banks/sbi), [Axis Bank](https://bankstatementtosheets.com/banks/axis-bank), [Kotak Mahindra Bank](https://bankstatementtosheets.com/banks/kotak-mahindra-bank)
+- US: [Chase](https://bankstatementtosheets.com/banks/chase), [Bank of America](https://bankstatementtosheets.com/banks/bank-of-america), [Wells Fargo](https://bankstatementtosheets.com/banks/wells-fargo), [Citi](https://bankstatementtosheets.com/banks/citi), [Capital One](https://bankstatementtosheets.com/banks/capital-one), [American Express](https://bankstatementtosheets.com/banks/american-express), [PNC](https://bankstatementtosheets.com/banks/pnc), [TD Bank](https://bankstatementtosheets.com/banks/td-bank), [U.S. Bank](https://bankstatementtosheets.com/banks/us-bank)
+- UK: [Barclays](https://bankstatementtosheets.com/banks/barclays), [HSBC](https://bankstatementtosheets.com/banks/hsbc), [Lloyds](https://bankstatementtosheets.com/banks/lloyds), [NatWest](https://bankstatementtosheets.com/banks/natwest), [Santander UK](https://bankstatementtosheets.com/banks/santander-uk)
+- India: [HDFC Bank](https://bankstatementtosheets.com/banks/hdfc-bank), [ICICI Bank](https://bankstatementtosheets.com/banks/icici-bank), [SBI](https://bankstatementtosheets.com/banks/sbi), [Axis Bank](https://bankstatementtosheets.com/banks/axis-bank), [Kotak Mahindra Bank](https://bankstatementtosheets.com/banks/kotak-mahindra-bank), [Bank of Baroda](https://bankstatementtosheets.com/banks/bank-of-baroda), [Punjab National Bank](https://bankstatementtosheets.com/banks/punjab-national-bank), [Canara Bank](https://bankstatementtosheets.com/banks/canara-bank), [Union Bank of India](https://bankstatementtosheets.com/banks/union-bank-of-india)
 
 ## Policies
 - [Privacy](https://bankstatementtosheets.com/privacy)
