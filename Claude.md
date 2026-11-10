@@ -172,7 +172,7 @@ src/
     api/google/{connect,callback,sheets}/   Google Sheets export
     api/conversions/[id]/    DELETE a history item
     auth/callback, auth/signout
-    sitemap.ts (fixed UPDATED date; bump on content changes), robots.ts, icon.svg, opengraph-image.tsx
+    sitemap.ts (per-group lastmod in UPDATED; bump only the group you changed; no priority/changefreq), robots.ts, icon.svg, opengraph-image.tsx
     banks/, banks/[slug]/    SEO: bank hub + one page per bank (data in lib/seo/banks.ts, static params)
     bank-statement-to-{excel,csv,google-sheets}/, credit-card-statement-to-excel/   SEO format pages (components/seo/FormatPage)
     docuclipper-alternative/, bank-statement-password/, bank-statements-for-mortgage/   SEO comparison + guide pages (GUIDE_LINKS in seo/Blocks)

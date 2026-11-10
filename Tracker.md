@@ -72,6 +72,7 @@ _Last updated: 2026-11-10_
 - [x] 🤖 **On-page keyword pass** (2026-11-11): homepage FAQ +6 question keywords and a "Popular conversions & guides" link block; keyword FAQs on the 4 format pages; every bank page now has a "<bank> statement to Excel Converter" title plus 2 shared FAQs; 8 new banks (PNC, TD Bank, U.S. Bank, Santander UK, Bank of Baroda, PNB, Canara, Union Bank); Guides footer column.
 - [x] 🤖 `/docuclipper-alternative` (2026-11-11; DocuClipper pricing re-checked that day; re-check before editing numbers). Later `/vs/moneythumb` (880/mo).
 - [x] 🤖 `/bank-statements-for-mortgage` guide (2026-11-11).
+- [x] 🤖 **Sitemap audit** (2026-11-11): 38 URLs, valid XML, all 200, canonicals match, no noindexed or redirected URLs, listed in robots.txt. Fixed: per-group accurate lastmod, dropped `<priority>`.
 - [ ] 🤖 **Tally export** (India: "pdf to tally" 320, "bank statement to tally" 110), then a `/bank-statement-to-tally` page.
 - [x] 🤖 `/bank-statement-password` guide (2026-11-11). Formats are hedged because sources disagree. Next: password-protected PDF support (roadmap #4).
 - [ ] 🤖 In 4–6 weeks: check Search Console for impressions on the new pages and the retitled homepage; request indexing for the new URLs.
