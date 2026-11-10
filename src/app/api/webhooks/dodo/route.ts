@@ -3,7 +3,7 @@ import type { UnwrapWebhookEvent } from "dodopayments/resources/webhooks/webhook
 import { getDodo } from "@/lib/dodo";
 import { supabaseAdmin } from "@/lib/supabase/server";
 import { planById, planFromProductId } from "@/lib/plans";
-import { sendPackAdded, sendPlanWelcome } from "@/lib/email";
+import { sendPackAdded, sendPaymentFailed, sendPlanWelcome } from "@/lib/email";
 
 type Meta = Record<string, string | number | boolean> | null | undefined;
 type Customer = { customer_id: string; email: string };
@@ -123,6 +123,11 @@ export async function POST(req: NextRequest) {
             ...(paused ? { monthly_pages_left: 0, allowance_resets_at: null } : {}),
           })
           .eq("id", userId);
+        // on_hold = a renewal charge failed. Tell the customer (Dodo's own failed-payment emails are off).
+        if (event.type === "subscription.on_hold") {
+          const planId = planFromProductId(s.product_id);
+          await notify(userId, s.customer.email, (to) => sendPaymentFailed(to, planById(planId ?? "")?.name ?? "paid"));
+        }
         break;
       }
       case "subscription.cancelled":

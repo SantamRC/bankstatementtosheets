@@ -91,3 +91,27 @@ export async function sendLowPages(
 
 /** Low-pages threshold: 20% of the monthly allowance on paid plans, 5 pages on Free. */
 export const lowPagesThreshold = (monthlyAllowance: number) => (monthlyAllowance > 0 ? Math.floor(monthlyAllowance * 0.2) : 5);
+
+/** subscription.on_hold: a renewal charge failed, so monthly pages are paused until the card is updated. */
+export async function sendPaymentFailed(to: string, planName: string) {
+  const subject = "Your payment didn't go through";
+  const paras = [
+    `We couldn't renew your <b>${esc(planName)}</b> plan because the payment failed. Your monthly pages are paused until it's sorted. Any bonus pages you have still work.`,
+    `Open your dashboard and choose <b>Manage billing</b> to update your card or UPI method. Your plan picks up again as soon as a payment goes through, at the same price.`,
+  ];
+  const cta = { label: "Update payment method", href: `${SITE_URL}/dashboard` };
+  const text = `${subject}\n\n${paras.map((x) => x.replace(/<[^>]+>/g, "")).join("\n\n")}\n\n${cta.label}: ${cta.href}\n\nBankStatementToSheets · ${SITE_URL}`;
+  await send(to, subject, layout(subject, paras, cta, false), text);
+}
+
+/** Sent ~7 days before a yearly renewal (daily cron: /api/cron/renewal-reminders). */
+export async function sendRenewalReminder(to: string, o: { planName: string; amount: string; date: string }) {
+  const subject = `Your ${o.planName} plan renews on ${o.date}`;
+  const paras = [
+    `This is a heads-up that your yearly <b>${esc(o.planName)}</b> plan renews on <b>${esc(o.date)}</b> for <b>${esc(o.amount)}</b>. Nothing to do if you'd like to continue.`,
+    `To change or cancel, open your dashboard and choose <b>Manage billing</b> before that date.`,
+  ];
+  const cta = { label: "Manage billing", href: `${SITE_URL}/dashboard` };
+  const text = `${subject}\n\n${paras.map((x) => x.replace(/<[^>]+>/g, "")).join("\n\n")}\n\n${cta.label}: ${cta.href}${footerText}`;
+  await send(to, subject, layout(subject, paras, cta), text);
+}

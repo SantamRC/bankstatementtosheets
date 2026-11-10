@@ -1,0 +1,17 @@
+name: Daily jobs
+# Calls protected endpoints on prod once a day. Needs repo secret CRON_SECRET (same value as on Render).
+on:
+  schedule:
+    - cron: "30 3 * * *" # 03:30 UTC = 09:00 IST
+  workflow_dispatch:
+
+jobs:
+  renewal-reminders:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send yearly renewal reminders
+        # --retry covers a sleeping Free-plan instance waking up.
+        run: |
+          curl -fsS --max-time 120 --retry 3 --retry-delay 20 -X POST \
+            -H "authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            https://bankstatementtosheets.com/api/cron/renewal-reminders
