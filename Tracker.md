@@ -21,7 +21,7 @@ _Last updated: 2026-11-10_
   - [x] 👤🤖 `BREVO_API_KEY` set on Render; a test welcome email was accepted by Brevo on prod (2026-11-10)
   - [ ] 👤 upload the logo in Dodo → Settings → Business → Primary brand → Edit (shown on checkout and invoices)
   - [ ] 👤 ask Dodo support whether INR payers can get an INR invoice with Dodo's GSTIN (the invoice for ₹799 shows USD 8.20 and has no GSTIN, so Indian businesses can't claim input tax credit)
-  - [ ] 👤 decide: keep the Starter subscription, or cancel it in the portal and refund the ₹799 in Dodo → Transactions
+  - [ ] 👤 own ₹799 test payment: cancel Starter in the customer portal now (stops the 2026-12-10 renewal). Dodo refunds only from available balance, which is still ₹0 while the payment settles, so refund once it shows in Payouts → Balances (or ask Dodo support). It won't be paid out in the meantime, being far below the $50–100 payout minimum
 - [ ] 👤 **Render:** add a card and switch from Free to Starter ($7/mo). Free instances sleep and take ~50s to wake up.
 - [ ] 🤖 **Real conversion on prod:** check that a real PDF converts on prod. The Anthropic key on Render starts with `sk-ant-usr-`; if extraction fails, replace it with a normal `sk-ant-api…` key.
 - [ ] 🤖 **Benchmark:** run `npm run bench` on 30+ real statements (US, UK, India, EU; digital and scanned). Record the real $/page and verified % in CLAUDE.md §3.
