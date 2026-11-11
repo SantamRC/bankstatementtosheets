@@ -84,7 +84,18 @@ subscriptions. Set `active: false` once the offer ends.
 - The monthly allowance is granted on `subscription.active/renewed/plan_changed` and refills every month (yearly plans too) via `refresh_allowance()` inside `consume_pages()`. Bonus pages (free signup pages and packs) never expire.
   Monthly pages are spent first.
 
-### ⚠️ Unit economics — not yet measured, VALIDATE BEFORE LAUNCH
+### Unit economics — measured on synthetic statements 2026-11-12 (real PDFs still to do)
+
+**Bench 2026-11-12** (`npm run bench:make`, 14 fictional statements / 30 pages, 7 layouts × digital + scanned, scored against known answers):
+
+| config | vs truth | exact | $/page | median s/statement | escalation |
+|---|---|---|---|---|---|
+| cascade (prod) | 100% | 14/14 | **$0.0025** | 26 | 0% |
+| Haiku 5.5 only | 100% | 14/14 | $0.0025 | 27 | – |
+| Opus 5.5 only | 100% | 14/14 | $0.074 | 41 | – |
+
+Cascade margin at $0.0025/page: >95% on every plan. Opus costs $0.064–0.109/page (above the estimate below), so keep it as the fallback only. Synthetic scans are cleaner than real ones (no stamps/fading/heavy skew), which likely explains 0% escalation; re-run with real statements before trusting the escalation rate.
+
 **Extraction runs in cascade mode ("verify, then escalate"),** chosen by the owner on 2026-11-05:
 1. Every 5-page chunk goes to the **fast model** (`claude-haiku-5-5`, $0.10 in / $0.50 out per million tokens).
 2. The statement is reconciled against its own printed balances.
