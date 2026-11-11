@@ -205,7 +205,8 @@ scripts/make-bench-statements.ts  `npm run bench:make`: 7 fictional layouts × d
 ## 7. Running locally
 
 ```bash
-cp .env.example .env.local      # at minimum set ANTHROPIC_API_KEY and APP_SECRET
+cp .env.example .env.local      # set APP_SECRET; for Claude either run `ant auth login` once (browser login,
+                                # SDK reads ~/.config/anthropic) or set ANTHROPIC_API_KEY (an env key wins over the login)
 npm install
 npm run dev                     # http://localhost:3000
 npm test                        # reconciliation + cascade tests (no API calls)
@@ -218,7 +219,7 @@ npm run indexnow [-- /path ...] # tell Bing/IndexNow pages changed (default: who
                                 # automatically from .github/workflows/indexnow.yml 5 min after page-changing pushes.
 ```
 - **Dev mode:** when the Supabase env vars are blank, auth is bypassed with a "dev user", nothing is metered and
-  history isn't saved. Only `ANTHROPIC_API_KEY` is needed to try real conversions.
+  history isn't saved. Only Claude credentials are needed to try real conversions (`ant auth login` or `ANTHROPIC_API_KEY`; `hasAnthropicCredentials()` in core.ts).
 - "Try a sample" on /convert loads a fictional statement (`src/lib/sample.ts`) with no API call. It's useful for UI work
   and doubles as the logged-out demo.
 

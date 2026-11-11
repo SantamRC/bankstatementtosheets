@@ -8,6 +8,9 @@
  *      STRONG model. The better of the two results is returned.
  * Reconciliation is what makes this safe: we only pay strong-model prices where the cheap model was provably wrong.
  */
+import { existsSync } from "node:fs";
+import { homedir } from "node:os";
+import { join } from "node:path";
 import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
 import { PDFDocument } from "pdf-lib";
@@ -114,6 +117,19 @@ async function splitPdf(doc: PDFDocument, pages: number): Promise<Chunk[]> {
 
 let client: Anthropic | null = null;
 const anthropic = () => (client ??= new Anthropic({ maxRetries: 3 }));
+
+/**
+ * True if the SDK can find credentials: an API key / auth token env var, or (local dev) the browser login
+ * from `ant auth login`, which the SDK reads from ~/.config/anthropic (ANTHROPIC_CONFIG_DIR, ANTHROPIC_PROFILE).
+ */
+export function hasAnthropicCredentials(): boolean {
+  const env = process.env;
+  if (env.ANTHROPIC_API_KEY || env.ANTHROPIC_AUTH_TOKEN || env.ANTHROPIC_PROFILE) return true;
+  const dir =
+    env.ANTHROPIC_CONFIG_DIR ||
+    (process.platform === "win32" ? join(env.APPDATA ?? homedir(), "Anthropic") : join(homedir(), ".config", "anthropic"));
+  return existsSync(join(dir, "active_config")) || existsSync(join(dir, "credentials", "default.json"));
+}
 
 // Server-side refusal fallbacks ("default" form) are supported on these models; Haiku has none.
 const supportsFallbacks = (model: string) => /^claude-(opus-5|sonnet-5-5|fable-5)/.test(model);

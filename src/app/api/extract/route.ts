@@ -1,5 +1,12 @@
 import { NextRequest } from "next/server";
-import { ExtractionError, extractStatement, inspectPdf, publicStatement, summarize } from "@/lib/extraction/extract";
+import {
+  ExtractionError,
+  extractStatement,
+  hasAnthropicCredentials,
+  inspectPdf,
+  publicStatement,
+  summarize,
+} from "@/lib/extraction/extract";
 import type { ExtractEvent } from "@/lib/extraction/schema";
 import { getUser, supabaseAdmin } from "@/lib/supabase/server";
 import { isDevAuthBypass, isSupabaseConfigured } from "@/lib/env";
@@ -15,8 +22,8 @@ const json = (status: number, code: string, message: string) =>
 export async function POST(req: NextRequest) {
   if (!isSupabaseConfigured && !isDevAuthBypass)
     return json(503, "not_configured", "Converting your own statements opens very soon. Try the sample in the meantime!");
-  if (!process.env.ANTHROPIC_API_KEY && !process.env.ANTHROPIC_AUTH_TOKEN)
-    return json(500, "not_configured", "Server is missing ANTHROPIC_API_KEY.");
+  if (!hasAnthropicCredentials())
+    return json(500, "not_configured", "Server has no Anthropic credentials (ANTHROPIC_API_KEY, or `ant auth login` locally).");
 
   const user = await getUser();
   if (!user) return json(401, "auth_required", "Create a free account to convert statements.");

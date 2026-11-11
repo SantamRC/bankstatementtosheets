@@ -19,6 +19,7 @@ import {
   FAST_MODEL,
   STRONG_MODEL,
   extractStatement,
+  hasAnthropicCredentials,
   inspectPdf,
   type Mode,
 } from "../src/lib/extraction/core";
@@ -107,8 +108,8 @@ const median = (xs: number[]) => {
 
 async function main() {
   const args = parseArgs();
-  if (!process.env.ANTHROPIC_API_KEY && !process.env.ANTHROPIC_AUTH_TOKEN) {
-    console.error("Set ANTHROPIC_API_KEY (e.g. in .env.local) first.");
+  if (!hasAnthropicCredentials()) {
+    console.error("No Anthropic credentials: run `ant auth login` once, or set ANTHROPIC_API_KEY in .env.local.");
     process.exit(1);
   }
   let files: string[];
