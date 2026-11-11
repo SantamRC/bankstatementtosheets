@@ -34,7 +34,7 @@ _Last updated: 2026-11-11_
   - [x] 🤖 Supabase project `bankstatementtosheets-staging` created, migrations applied, auth URLs set
   - [x] 🤖 Render service `bankstatementtosheets-staging` created (Free, auto-deploys main)
   - [x] 🤖 Dodo test-mode webhook pointed at staging
-  - [ ] 👤 Render staging → Environment → **Add from .env**: paste `.env.staging`, then add `SUPABASE_SECRET_KEY` (staging project → API Keys → secret), `BREVO_API_KEY` (same as prod) and optionally `ANTHROPIC_API_KEY`. Save and deploy
+  - [x] 👤 Render staging env set (Supabase staging, Dodo test_mode keys + 24 products, Brevo, Anthropic); health 200 (checked 2026-11-11). `APP_SECRET` not set (only needed for Google Sheets)
   - [ ] 👤 sign in on staging, buy a plan with a Dodo test card; 🤖 verify the webhook, emails and dashboard; then test a decline card (payment-failed email), plan change, page pack and cancel
 - [x] 👤 **Render:** prod switched from Free to Starter (0.5 CPU / 512 MB, $7/mo); no more sleeping (2026-11-11)
 - [ ] 🤖 **Real conversion on prod:** check that a real PDF converts on prod. The Anthropic key on Render starts with `sk-ant-usr-`; if extraction fails, replace it with a normal `sk-ant-api…` key.
