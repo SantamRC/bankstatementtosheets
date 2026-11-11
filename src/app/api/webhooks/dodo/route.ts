@@ -59,6 +59,14 @@ export async function POST(req: NextRequest) {
     }
   };
 
+  /** True if this event is for a subscription other than the user's current one (an old or duplicate subscription). */
+  const isStale = async (userId: string, subscriptionId: string) => {
+    const { data } = await db.from("profiles").select("subscription_id").eq("id", userId).maybeSingle();
+    const stale = Boolean(data?.subscription_id && data.subscription_id !== subscriptionId);
+    if (stale) console.warn(`[dodo] ${event.type}: ignoring non-current subscription ${subscriptionId}`);
+    return stale;
+  };
+
   try {
     switch (event.type) {
       case "payment.succeeded": {
@@ -112,7 +120,7 @@ export async function POST(req: NextRequest) {
       case "subscription.failed": {
         const s = event.data;
         const userId = await findUser(s.metadata, s.customer);
-        if (!userId) break;
+        if (!userId || (await isStale(userId, s.subscription_id))) break;
         const paused = event.type !== "subscription.updated";
         await db
           .from("profiles")
@@ -134,7 +142,7 @@ export async function POST(req: NextRequest) {
       case "subscription.expired": {
         const s = event.data;
         const userId = await findUser(s.metadata, s.customer);
-        if (!userId) break;
+        if (!userId || (await isStale(userId, s.subscription_id))) break;
         await db
           .from("profiles")
           .update({

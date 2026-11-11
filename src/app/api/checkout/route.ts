@@ -23,6 +23,39 @@ export async function POST(req: NextRequest) {
   if (!productId) return NextResponse.json({ error: "This plan isn't available yet." }, { status: 503 });
 
   const profile = await getProfile(user.id);
+
+  // Already subscribed: change the existing subscription instead of opening a second one
+  // (two subscriptions = double billing, and cancelling the old one would drop the user to Free).
+  if (!isPack && profile?.subscription_id) {
+    // A stale ID (e.g. test_mode after switching to live_mode) just means "not subscribed": fall through to checkout.
+    const sub = await getDodo()
+      .subscriptions.retrieve(profile.subscription_id)
+      .catch(() => null);
+    if (sub && (sub.status === "active" || sub.status === "on_hold")) {
+      // A subscription's currency is fixed, so switch to the product in that currency.
+      const subCurrency: Currency = isCurrency(sub.currency) ? sub.currency : currency;
+      const target = dodoProductId(plan!.id as PlanId, interval, subCurrency);
+      if (!target) return NextResponse.json({ error: "This plan isn't available yet." }, { status: 503 });
+      if (target === sub.product_id) return NextResponse.json({ error: "You're already on this plan." }, { status: 409 });
+      try {
+        const res = await getDodo().subscriptions.changePlan(sub.subscription_id, {
+          product_id: target,
+          quantity: 1,
+          // Upgrade: pay the prorated difference now. Downgrade: the unused part is credited.
+          proration_billing_mode: "prorated_immediately",
+        });
+        // A payment link comes back only when the change needs the customer to pay on a checkout page.
+        return NextResponse.json({ url: res.payment_link || `${SITE_URL}/dashboard?checkout=changed` });
+      } catch (e) {
+        console.error("[checkout] plan change failed:", e instanceof Error ? e.message : e);
+        return NextResponse.json(
+          { error: "Couldn't change your plan here. Use Manage billing on your dashboard, or email support@bankstatementtosheets.com." },
+          { status: 502 },
+        );
+      }
+    }
+  }
+
   const create = (customer: { customer_id: string } | { email: string }) =>
     getDodo().checkoutSessions.create({
       product_cart: [{ product_id: productId, quantity: 1 }],

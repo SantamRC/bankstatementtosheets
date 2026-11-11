@@ -31,9 +31,12 @@ async function DashboardInner({ searchParams }: { searchParams: Promise<{ checko
     <>
       <AppHeader user={user} authEnabled />
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-10 sm:px-6">
-        {checkout === "success" && (
+        {(checkout === "success" || checkout === "changed") && (
           <div className="mb-6 flex items-center gap-3 rounded-2xl border border-brand/25 bg-brand-soft p-4 text-sm text-brand-dark">
-            <CheckCircle2 className="size-5" /> Payment received — your pages have been added. Thank you!
+            <CheckCircle2 className="size-5" />
+            {checkout === "changed"
+              ? "Plan change requested. Your new plan and pages appear here within a minute (refresh to see them)."
+              : "Payment received — your pages have been added. Thank you!"}
           </div>
         )}
         <div className="flex flex-wrap items-end justify-between gap-4">

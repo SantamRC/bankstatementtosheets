@@ -26,7 +26,10 @@ _Last updated: 2026-11-11_
   - [ ] 🤖 "pages refilled" monthly email (needs a scheduled job; refills are lazy in `consume_pages`)
   - [x] 👤 logo uploaded to the Dodo primary brand (live), shown on checkout and invoices (2026-11-11)
   - [ ] 👤 ask Dodo support whether INR payers can get an INR invoice with Dodo's GSTIN (the invoice for ₹799 shows USD 8.20 and has no GSTIN, so Indian businesses can't claim input tax credit) 2026-11-11: question sent in the refund thread (escalated to a human by Dodo's AI support); awaiting reply
-  - [ ] 👤 own ₹799 test payment: cancel Starter in the customer portal (stops the 2026-12-10 renewal). Full refund fails with "insufficient balance": the payment settled as $8.20 but Dodo already took tax $1.25 + fees $0.66, leaving $6.29 in the wallet (checked 2026-11-11). Options: partial refund ≤ $6.29, ask Dodo support to refund in full, or skip it (it's paid out to you anyway once over the payout minimum). 2026-11-11: full-refund request emailed to support@dodopayments.com from santamrcdev404; awaiting reply
+  - [ ] 👤 own ₹799 test payment: ~~cancel Starter~~ (cancelled 2026-11-11; account back on Free). Full refund fails with "insufficient balance": the payment settled as $8.20 but Dodo already took tax $1.25 + fees $0.66, leaving $6.29 in the wallet (checked 2026-11-11). Options: partial refund ≤ $6.29, ask Dodo support to refund in full, or skip it (it's paid out to you anyway once over the payout minimum). 2026-11-11: full-refund request emailed to support@dodopayments.com from santamrcdev404; awaiting reply
+  - [x] 🤖 existing subscribers who pick another plan now get a Dodo plan change (prorated) instead of a second subscription; webhook ignores events for a non-current subscription (2026-11-11)
+  - [ ] 👤 Dodo live → Settings → Subscriptions: turn OFF "Allow Multiple Subscriptions" and "Allow Immediate Cancellation" (keep cancel at next billing date)
+  - [ ] 👤🤖 test an upgrade (Starter → Pro) on staging with a test card
 - [ ] 👤🤖 **Staging** (billing test environment, 2026-11-10):
   - [x] 🤖 Supabase project `bankstatementtosheets-staging` created, migrations applied, auth URLs set
   - [x] 🤖 Render service `bankstatementtosheets-staging` created (Free, auto-deploys main)
