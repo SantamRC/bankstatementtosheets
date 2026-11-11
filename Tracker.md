@@ -25,7 +25,7 @@ _Last updated: 2026-11-11_
   - [x] 👤🤖 `CRON_SECRET` set on GitHub and Render; manual run of `cron.yml` returned 200 `{"checked":0,"sent":0}` (2026-11-11)
   - [ ] 🤖 "pages refilled" monthly email (needs a scheduled job; refills are lazy in `consume_pages`)
   - [x] 👤 logo uploaded to the Dodo primary brand (live), shown on checkout and invoices (2026-11-11)
-  - [ ] 👤 ask Dodo support whether INR payers can get an INR invoice with Dodo's GSTIN (the invoice for ₹799 shows USD 8.20 and has no GSTIN, so Indian businesses can't claim input tax credit) 2026-11-11: question drafted as a reply in the refund thread (escalated to a human by Dodo's AI support)
+  - [ ] 👤 ask Dodo support whether INR payers can get an INR invoice with Dodo's GSTIN (the invoice for ₹799 shows USD 8.20 and has no GSTIN, so Indian businesses can't claim input tax credit) 2026-11-11: question sent in the refund thread (escalated to a human by Dodo's AI support); awaiting reply
   - [ ] 👤 own ₹799 test payment: cancel Starter in the customer portal (stops the 2026-12-10 renewal). Full refund fails with "insufficient balance": the payment settled as $8.20 but Dodo already took tax $1.25 + fees $0.66, leaving $6.29 in the wallet (checked 2026-11-11). Options: partial refund ≤ $6.29, ask Dodo support to refund in full, or skip it (it's paid out to you anyway once over the payout minimum). 2026-11-11: full-refund request emailed to support@dodopayments.com from santamrcdev404; awaiting reply
 - [ ] 👤🤖 **Staging** (billing test environment, 2026-11-10):
   - [x] 🤖 Supabase project `bankstatementtosheets-staging` created, migrations applied, auth URLs set
