@@ -4,7 +4,7 @@
 > Decisions and the reasons for them live in `CLAUDE.md` (decision log). This file is the to-do list.
 > 👤 = needs the owner (login, payment, or a click Claude can't make). 🤖 = Claude can do it.
 
-_Last updated: 2026-11-10_
+_Last updated: 2026-11-11_
 
 ## 🔴 Pending: launch blockers
 
@@ -22,7 +22,7 @@ _Last updated: 2026-11-10_
   - [x] 🤖 Dodo's "Subscription Plan Changed" customer email switched off (ours replaces it) (2026-11-10)
   - [x] 🤖 low-pages email: after a successful conversion that drops the balance to ≤20% of the monthly allowance (≤5 on Free), or to 0 (2026-11-10)
   - [x] 🤖 our own payment-failed email (webhook `subscription.on_hold`) and yearly renewal reminder 7 days ahead (`/api/cron/renewal-reminders`, daily GitHub Action `cron.yml`); Dodo's versions stay off (2026-11-10)
-  - [ ] 👤 cron secret: run `openssl rand -hex 32 | tee /dev/tty | gh secret set CRON_SECRET` in the repo, then add the same value on Render as `CRON_SECRET` (the reminder job returns 401 until both are set)
+  - [x] 👤🤖 `CRON_SECRET` set on GitHub and Render; manual run of `cron.yml` returned 200 `{"checked":0,"sent":0}` (2026-11-11)
   - [ ] 🤖 "pages refilled" monthly email (needs a scheduled job; refills are lazy in `consume_pages`)
   - [ ] 👤 upload the logo in Dodo → Settings → Business → Primary brand → Edit (shown on checkout and invoices)
   - [ ] 👤 ask Dodo support whether INR payers can get an INR invoice with Dodo's GSTIN (the invoice for ₹799 shows USD 8.20 and has no GSTIN, so Indian businesses can't claim input tax credit)
