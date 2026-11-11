@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
       case "subscription.active":
       case "subscription.renewed":
       case "subscription.plan_changed": {
-        // Start, each renewal and plan changes: (re)grant the plan's monthly allowance.
+        // Start and renewals: grant a fresh month. Plan changes: adjust pages by the allowance difference.
         const s = event.data;
         const planId = planFromProductId(s.product_id);
         const userId = await findUser(s.metadata, s.customer);
@@ -94,22 +94,44 @@ export async function POST(req: NextRequest) {
           break;
         }
         const pages = planById(planId)!.pages;
-        const nextMonth = new Date();
-        nextMonth.setMonth(nextMonth.getMonth() + 1);
+        const { data: cur } = await db
+          .from("profiles")
+          .select("plan, subscription_id, monthly_allowance, monthly_pages_left, allowance_resets_at")
+          .eq("id", userId)
+          .maybeSingle();
+        // A plan change (or an `active` re-sent for the same subscription and plan) must not refill the month,
+        // or switching Pro → Starter → Pro would hand out a fresh 600 pages each time. Instead, shift the pages
+        // left by the difference in allowance and keep the current monthly cycle.
+        // A paused subscription (payment failed → on_hold cleared the cycle) gets a full refill once it's active again.
+        const keepCycle =
+          cur?.subscription_id === s.subscription_id &&
+          cur.plan !== "free" &&
+          Boolean(cur.allowance_resets_at) &&
+          (event.type === "subscription.plan_changed" || (event.type === "subscription.active" && cur.plan === planId));
+        let pagesLeft = pages;
+        let resetsAt: string;
+        if (keepCycle) {
+          pagesLeft = Math.min(pages, Math.max(0, (cur!.monthly_pages_left ?? 0) + pages - (cur!.monthly_allowance ?? 0)));
+          resetsAt = cur!.allowance_resets_at!;
+        } else {
+          const nextMonth = new Date();
+          nextMonth.setMonth(nextMonth.getMonth() + 1);
+          resetsAt = nextMonth.toISOString();
+        }
         await db
           .from("profiles")
           .update({
             plan: planId,
             monthly_allowance: pages,
-            monthly_pages_left: pages,
-            allowance_resets_at: nextMonth.toISOString(),
+            monthly_pages_left: pagesLeft,
+            allowance_resets_at: resetsAt,
             subscription_id: s.subscription_id,
             subscription_status: s.status,
             current_period_end: s.next_billing_date,
           })
           .eq("id", userId);
         // Renewals stay quiet (Dodo emails the receipt); welcome on start, confirm on plan change.
-        if (event.type !== "subscription.renewed")
+        if (event.type === "subscription.plan_changed" || (event.type === "subscription.active" && !keepCycle))
           await notify(userId, s.customer.email, (to) =>
             sendPlanWelcome(to, planById(planId)!.name, pages, event.type === "subscription.plan_changed"),
           );

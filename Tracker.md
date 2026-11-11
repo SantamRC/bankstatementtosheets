@@ -29,7 +29,9 @@ _Last updated: 2026-11-11_
   - [ ] 👤 own ₹799 test payment: ~~cancel Starter~~ (cancelled 2026-11-11; account back on Free). Full refund fails with "insufficient balance": the payment settled as $8.20 but Dodo already took tax $1.25 + fees $0.66, leaving $6.29 in the wallet (checked 2026-11-11). Options: partial refund ≤ $6.29, ask Dodo support to refund in full, or skip it (it's paid out to you anyway once over the payout minimum). 2026-11-11: full-refund request emailed to support@dodopayments.com from santamrcdev404; awaiting reply
   - [x] 🤖 existing subscribers who pick another plan now get a Dodo plan change (prorated) instead of a second subscription; webhook ignores events for a non-current subscription (2026-11-11)
   - [x] 👤 Dodo live → Settings → Subscriptions: "Allow Multiple Subscriptions" and "Allow Immediate Cancellation" OFF; cancel at next billing date stays ON (2026-11-11)
-  - [ ] 👤🤖 test an upgrade (Starter → Pro) on staging with a test card
+  - [x] 👤🤖 staging test (2026-11-12): Starter monthly ($9, test card) → Pro yearly ($279 prorated) → Pro monthly ($0): one Dodo subscription throughout; dashboard Pro, 600 + 20 bonus pages
+  - [x] 🤖 fix: a plan change no longer refills the month (Pro → Starter → Pro gave 600 fresh pages each time); pages left shift by the allowance difference and the monthly cycle is kept (2026-11-12)
+  - [ ] 👤🤖 staging: confirm the welcome + plan-change emails arrived (santamdev404 inbox); then decline card (payment-failed email), page pack, cancel at period end
 - [ ] 👤🤖 **Staging** (billing test environment, 2026-11-10):
   - [x] 🤖 Supabase project `bankstatementtosheets-staging` created, migrations applied, auth URLs set
   - [x] 🤖 Render service `bankstatementtosheets-staging` created (Free, auto-deploys main)
