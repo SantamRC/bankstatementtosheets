@@ -4,7 +4,7 @@
 
 Key facts:
 - Works with any bank or card issuer worldwide; no per-bank templates. A vision AI model reads the page, so scanned statements work.
-- Output: Excel workbook (Transactions, Summary and Categories sheets with live SUMIFS formulas), CSV (UTF-8, ISO dates, Debit/Credit plus signed Amount), Google Sheets (one-click, drive.file scope), or copy/paste.
+- Output: Excel workbook (Transactions, Summary and Categories sheets with live SUMIFS formulas), CSV (UTF-8, ISO dates, Debit/Credit plus signed Amount), Google Sheets (one-click, drive.file scope), Tally XML vouchers (TallyPrime / Tally.ERP 9), or copy/paste.
 - Editable review table before export; clean payee names and UPI/NEFT/cheque references extracted into their own columns.
 - Privacy: uploaded PDFs are processed in memory and never stored; extracted tables are deleted after 30 days.
 - Pricing (per page, 1 page = 1 credit, failed conversions refunded): Free 20 pages; Starter $9/mo for 150 pages; Pro $29/mo for 600 pages; Business $79/mo for 2,500 pages; page pack $10 for 100 pages that never expire. Also priced in EUR and INR.
@@ -17,6 +17,7 @@ Key facts:
 - [Bank statement to CSV](https://bankstatementtosheets.com/bank-statement-to-csv)
 - [Bank statement to Google Sheets](https://bankstatementtosheets.com/bank-statement-to-google-sheets)
 - [Credit card statement to Excel](https://bankstatementtosheets.com/credit-card-statement-to-excel)
+- [Bank statement to Tally](https://bankstatementtosheets.com/bank-statement-to-tally): Tally XML vouchers (Payment/Receipt/Contra) with your own ledger mapping, for TallyPrime and Tally.ERP 9
 
 ## Guides
 - [All guides](https://bankstatementtosheets.com/guides)

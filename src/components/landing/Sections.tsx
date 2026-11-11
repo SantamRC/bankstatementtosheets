@@ -327,8 +327,12 @@ export const FAQS: [string, string][] = [
     "Yes — one click creates a formatted Google Sheet in your Drive. You can also download Excel (.xlsx) or CSV, or copy the table and paste it into any spreadsheet.",
   ],
   [
+    "Can I import a bank statement into Tally?",
+    "Yes. Click Tally after converting: every transaction becomes a Payment, Receipt or Contra voucher in Tally XML, posted to the ledgers you choose. Import it in TallyPrime with Import → Transactions.",
+  ],
+  [
     "Can I keep the bank’s original descriptions?",
-    "Yes. By default you get a short, clean payee name (for example “Amazon Pay” instead of a long UPI string) with the transaction ID in the Reference column, and the full narration in an “Original description” column. One toggle switches to the bank’s exact wording everywhere.",
+    "Yes, that’s the default: descriptions stay exactly as the bank printed them. Turn on “Clean payee names” to get a short name instead (for example “Amazon Pay” rather than a long UPI string), with the transaction ID in the Reference column and the full narration kept in an “Original description” column.",
   ],
   [
     "Does it work with credit card statements?",

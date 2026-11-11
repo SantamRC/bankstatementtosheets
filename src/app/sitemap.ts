@@ -11,7 +11,7 @@ const UPDATED = {
   legal: "2026-11-08", // contact, refunds, privacy, terms
 };
 
-const FORMAT_PATHS = ["/bank-statement-to-excel", "/bank-statement-to-csv", "/bank-statement-to-google-sheets", "/credit-card-statement-to-excel"];
+const FORMAT_PATHS = ["/bank-statement-to-excel", "/bank-statement-to-csv", "/bank-statement-to-google-sheets", "/credit-card-statement-to-excel", "/bank-statement-to-tally"];
 const GUIDE_PATHS = [
   "/guides",
   "/how-to-download-bank-statement",

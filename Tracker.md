@@ -78,7 +78,16 @@ _Last updated: 2026-11-10_
 - [x] 🤖 GSC (2026-11-11): indexing requested for /guides, the 3 new guides, /es and /hi; sitemap resubmitted (44 URLs). GSC is at `search.google.com/u/2/search-console` in the owner's Chrome.
 - [ ] 🤖 In 4–6 weeks: check impressions for /es and /hi in Search Console. If they convert, translate the app UI (at least /convert and the pricing section) and consider MXN pricing; if /hi gets traffic, add a Hindi password guide.
 - [ ] 🤖 Template guide: open the .xlsx in real Excel and Google Sheets once to confirm the formulas, dropdowns and highlighting work (only checked by reading the XML so far).
-- [ ] 🤖 **Tally export** (India: "pdf to tally" 320, "bank statement to tally" 110), then a `/bank-statement-to-tally` page.
+- [ ] 👤🤖 **Directory listings and launch posts** (highest impact; a new domain needs links): Product Hunt, AlternativeTo (as an alternative to DocuClipper and BankStatementConverter), G2, Capterra, SaaSHub, Indie Hackers. The owner creates the accounts; Claude drafts every listing.
+- [ ] 👤🤖 **Promote the free reconciliation template:** r/Bookkeeping, r/Accounting, accountant forums, and "free accounting templates" roundup posts (pitch for a link).
+- [ ] 🤖 **Analytics:** Cloudflare Web Analytics (free, no cookie banner) so we can see which pages lead to sign-ups.
+- [ ] 🤖 **Audience pages:** `/for/accountants`, `/for/mortgage-brokers`.
+- [ ] 🤖 **`/vs/moneythumb`** (~880/mo). Re-check their prices first.
+- [ ] 👤 **OpenSEO rank tracking** for ~15 target keywords (spends credits; 153 left on 2026-11-11). Needs the owner's OK.
+- [ ] 🤖 **More translated pages** only if /es and /hi show impressions in Search Console after 4–6 weeks.
+- [x] 🤖 **Tally export + `/bank-statement-to-tally`** (2026-11-11; "pdf to tally" 320, "bank statement to tally" 110): Tally XML vouchers (Payment/Receipt/Contra) with bank ledger, default ledger and per-category mapping saved in localStorage. TallyPrime's own bank-statement import rejects PDF-derived files, so vouchers are the route (same as Suvit, Repotic, BankToLedger).
+- [ ] 👤 **Test the Tally XML in a real TallyPrime** (backup company): create the ledgers, Import → Transactions, check vouchers and the bank ledger. Not yet tested in Tally itself (only unit tests and an XML validity check). If import fails, export a voucher from Tally as XML and send it over to match the format.
+- [ ] 🤖 Tally follow-ups: optional ledger-master XML (create missing ledgers), bank allocations for BRS, and a Hindi Tally guide if /hi gets traffic.
 - [x] 🤖 `/bank-statement-password` guide (2026-11-11). Formats are hedged because sources disagree. Next: password-protected PDF support (roadmap #4).
 - [ ] 🤖 In 4–6 weeks: check Search Console for impressions on the new pages and the retitled homepage; request indexing for the new URLs.
 - [ ] 👤 OpenSEO: 500 → ~270 credits. Approve saving the shortlist and adding rank tracking.

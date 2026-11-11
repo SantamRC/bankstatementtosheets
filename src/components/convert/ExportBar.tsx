@@ -1,12 +1,13 @@
 "use client";
 import { useState } from "react";
-import { Check, ClipboardCopy, Download, FileSpreadsheet, Loader2, Sheet } from "lucide-react";
+import { BookOpen, Check, ClipboardCopy, Download, FileSpreadsheet, Loader2, Sheet } from "lucide-react";
 import type { Statement } from "@/lib/extraction/schema";
 import { baseName, categoryTable, summaryTable, toCSV, toTSV, transactionsTable } from "@/lib/export/build";
 import { downloadXlsx, saveBlob } from "@/lib/export/xlsx";
 import { btn, cn } from "@/lib/ui";
 import { useDescStyle } from "@/lib/prefs";
 import { DescStyleSwitch } from "./DescStyleSwitch";
+import { TallyDialog } from "./TallyDialog";
 
 type Busy = null | "xlsx" | "csv" | "copy" | "sheets";
 
@@ -15,6 +16,7 @@ export function ExportBar({ statements, scopeLabel }: { statements: Statement[];
   const [done, setDone] = useState<Busy>(null);
   const [sheetUrl, setSheetUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [tally, setTally] = useState(false);
   const style = useDescStyle();
 
   const flash = (k: Busy) => {
@@ -111,6 +113,14 @@ export function ExportBar({ statements, scopeLabel }: { statements: Statement[];
             <Download className="size-4" /> {label("csv", "CSV")}
           </button>
           <button
+            onClick={() => setTally(true)}
+            disabled={busy !== null}
+            title="Tally XML vouchers for TallyPrime / Tally.ERP 9"
+            className={cn(btn("ghost", "md"), "text-paper/80 hover:bg-white/10 hover:text-paper")}
+          >
+            <BookOpen className="size-4" /> Tally
+          </button>
+          <button
             onClick={() => run("copy", () => navigator.clipboard.writeText(toTSV(transactionsTable(statements, style))))}
             disabled={busy !== null}
             title="Copy as a table you can paste into any spreadsheet"
@@ -120,6 +130,7 @@ export function ExportBar({ statements, scopeLabel }: { statements: Statement[];
           </button>
         </div>
       </div>
+      {tally && <TallyDialog statements={statements} style={style} onClose={() => setTally(false)} />}
       {(error || sheetUrl) && (
         <p className={cn("mt-2 px-2 text-sm", error ? "text-danger" : "text-ink-soft")}>
           {error ?? (

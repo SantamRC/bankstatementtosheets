@@ -12,6 +12,7 @@ export function Footer() {
         ["Bank statement to CSV", "/bank-statement-to-csv"],
         ["Bank statement to Google Sheets", "/bank-statement-to-google-sheets"],
         ["Credit card statement to Excel", "/credit-card-statement-to-excel"],
+        ["Bank statement to Tally", "/bank-statement-to-tally"],
       ],
     ],
     [

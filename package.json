@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node scripts/test-reconcile.ts && tsx scripts/test-cascade.ts",
+    "test": "node scripts/test-reconcile.ts && node scripts/test-tally.ts && tsx scripts/test-cascade.ts",
     "typecheck": "tsc --noEmit",
     "bench": "tsx --env-file-if-exists=.env.local scripts/benchmark.ts",
     "dodo:setup": "tsx scripts/dodo-setup.mts",
