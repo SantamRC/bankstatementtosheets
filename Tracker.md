@@ -55,7 +55,7 @@ _Last updated: 2026-11-11_
 - [ ] 🤖 **OG image** (`src/app/opengraph-image.tsx`).
 - [ ] 👤 **Supabase pg_cron 30-day purge** of `conversions` (SQL at the bottom of `0001_init.sql`).
 - [ ] 👤 **Dodo test-mode cleanup:**
-  - cancel the test Pro subscription on the owner's account
+  - ~~cancel the test Pro subscription on the owner's account~~ (cancelled 2026-11-12; it blocked staging checkout for the same email)
   - archive the 7 old tax-exclusive USD products (unused)
 - [ ] 👤 **Reconnect MCP connectors** to santamrcdev404: Render and Supabase still point at the old account or org.
 - [ ] 👤 **Supabase:** delete the abandoned empty project `yrjzihenkouuyesduyxr`, which is paused in the KinoKrate org.
