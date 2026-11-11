@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "bench": "tsx --env-file-if-exists=.env.local scripts/benchmark.ts",
     "dodo:setup": "tsx scripts/dodo-setup.mts",
-    "indexnow": "node scripts/indexnow.mjs"
+    "indexnow": "node scripts/indexnow.mjs",
+    "bench:make": "tsx scripts/make-bench-statements.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.4.0",

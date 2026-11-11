@@ -13,7 +13,7 @@
  *
  * ⚠️ bench/ is git-ignored. Never commit real bank statements.
  */
-import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, join } from "node:path";
 import {
   FAST_MODEL,
@@ -64,6 +64,10 @@ interface Row {
   costPerPage?: number;
   seconds?: number;
   agreement?: number | null;
+  /** F1 vs the known answer (<file>.truth.json from scripts/make-bench-statements.ts), when there is one. */
+  truth?: number | null;
+  /** Every row matched the known answer exactly (count, dates and signed amounts). */
+  exact?: boolean | null;
 }
 
 /** F1 overlap of (date, signed amount) between two extractions — a proxy for accuracy vs a reference. */
@@ -83,6 +87,16 @@ function agreement(a: Statement, b: Statement): number {
   const total = a.transactions.length + b.transactions.length;
   return total ? (2 * inter) / total : 1;
 }
+
+/** Summary columns vs the known answers: mean F1 and share of statements extracted exactly. */
+const truthCols = (ok: Row[]): string[] => {
+  const t = ok.map((r) => r.truth).filter((x): x is number => x != null);
+  const ex = ok.filter((r) => r.exact != null);
+  return [
+    t.length ? `${Math.round((t.reduce((a, b) => a + b, 0) / t.length) * 1000) / 10}%` : "–",
+    ex.length ? pct(ex.filter((r) => r.exact).length, ex.length) : "–",
+  ];
+};
 
 const pct = (n: number, d: number) => (d ? `${Math.round((n / d) * 100)}%` : "–");
 const median = (xs: number[]) => {
@@ -114,7 +128,9 @@ async function main() {
   for (const f of files) {
     try {
       const { doc, pages } = await inspectPdf(new Uint8Array(readFileSync(f)));
-      docs.push({ file: f, doc, pages });
+      const tf = f.replace(/\.pdf$/i, ".truth.json");
+      const truth = existsSync(tf) ? (JSON.parse(readFileSync(tf, "utf8")) as Pick<Statement, "transactions">) : null;
+      docs.push({ file: f, doc, pages, truth });
     } catch (e) {
       console.warn(`skip ${basename(f)}: ${e instanceof Error ? e.message : e}`);
     }
@@ -148,6 +164,7 @@ async function main() {
         const m = s.extraction!;
         outputs.set(`${d.file}::${config}`, s);
         const r = s.reconciliation;
+        const truthScore = d.truth ? Math.round(agreement(s, d.truth as Statement) * 1000) / 1000 : null;
         results.push({
           file: name,
           config,
@@ -162,8 +179,11 @@ async function main() {
           costUsd: m.costUsd,
           costPerPage: m.costPerPageUsd,
           seconds: (Date.now() - t0) / 1000,
+          truth: truthScore,
+          exact: d.truth ? truthScore === 1 && s.transactions.length === d.truth.transactions.length : null,
         });
-        console.log(`${r.status.padEnd(12)} ${String(s.transactions.length).padStart(4)} rows  $${m.costPerPageUsd.toFixed(4)}/pg  ${((Date.now() - t0) / 1000).toFixed(1)}s`);
+        const tScore = truthScore == null ? "" : `  truth ${(truthScore * 100).toFixed(1)}%`;
+        console.log(`${r.status.padEnd(12)} ${String(s.transactions.length).padStart(4)} rows  $${m.costPerPageUsd.toFixed(4)}/pg  ${((Date.now() - t0) / 1000).toFixed(1)}s${tScore}`);
         if (args.save) writeFileSync(join(outDir, `${stamp}__${name}__${config}.json`), JSON.stringify(s, null, 2));
       } catch (e) {
         const msg = e instanceof Error ? e.message : String(e);
@@ -183,7 +203,7 @@ async function main() {
 
   // Summary per config.
   console.log(`\nSummary (row agreement measured against "${ref}")\n`);
-  const header = ["config", "verified", "verified+partial", "needs review", "errors", "avg $/page", "total $", "median s", "escalation", "agreement"];
+  const header = ["config", "verified", "verified+partial", "needs review", "errors", "avg $/page", "total $", "median s", "escalation", "agreement", "vs truth", "exact"];
   const lines: string[][] = [header];
   for (const config of args.configs) {
     const rs = results.filter((r) => r.config === config);
@@ -203,6 +223,7 @@ async function main() {
       median(ok.map((r) => r.seconds ?? 0)).toFixed(1),
       config === "cascade" ? pct(esc, ok.length) : "–",
       agree.length ? `${Math.round((agree.reduce((a, b) => a + b, 0) / agree.length) * 1000) / 10}%` : "–",
+      ...truthCols(ok),
     ]);
   }
   const widths = header.map((_, i) => Math.max(...lines.map((l) => l[i].length)));

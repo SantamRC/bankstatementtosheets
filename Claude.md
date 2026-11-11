@@ -198,6 +198,7 @@ scripts/test-cascade.ts      Cascade/escalation tests with a fake model (tsx, no
 scripts/make-reconciliation-template.mts   Regenerates public/templates/bank-reconciliation-template.xlsx (npx tsx …; commit the file)
 scripts/indexnow.mjs         IndexNow submit (key file public/f41940a6….txt; the key is public by design)
 scripts/benchmark.ts         Model bake-off on real PDFs in bench/statements (git-ignored!)
+scripts/make-bench-statements.ts  `npm run bench:make`: 7 fictional layouts × digital/scanned with <name>.truth.json; bench scores "vs truth" + "exact"
 .env.example                 All env vars, documented
 ```
 
