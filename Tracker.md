@@ -31,15 +31,16 @@ _Last updated: 2026-11-11_
   - [x] 👤 Dodo live → Settings → Subscriptions: "Allow Multiple Subscriptions" and "Allow Immediate Cancellation" OFF; cancel at next billing date stays ON (2026-11-11)
   - [x] 👤🤖 staging test (2026-11-12): Starter monthly ($9, test card) → Pro yearly ($279 prorated) → Pro monthly ($0): one Dodo subscription throughout; dashboard Pro, 600 + 20 bonus pages
   - [x] 🤖 fix: a plan change no longer refills the month (Pro → Starter → Pro gave 600 fresh pages each time); pages left shift by the allowance difference and the monthly cycle is kept (2026-11-12)
-  - [ ] 👤🤖 staging: confirm the welcome + plan-change emails arrived (santamdev404 inbox); then decline card (payment-failed email), page pack, cancel at period end
+  - [x] 👤🤖 staging (2026-11-12): welcome + plan-change emails arrived; page pack +100 bonus pages; Pro → Starter kept the cycle; cancel at next billing date → dashboard shows "Ends 11 Dec 2026", plan kept until then
+  - [ ] 🤖 untested: payment failed (`on_hold`) only happens on a failed renewal; check the first real one in the logs
 - [ ] 👤🤖 **Staging** (billing test environment, 2026-11-10):
   - [x] 🤖 Supabase project `bankstatementtosheets-staging` created, migrations applied, auth URLs set
   - [x] 🤖 Render service `bankstatementtosheets-staging` created (Free, auto-deploys main)
   - [x] 🤖 Dodo test-mode webhook pointed at staging
   - [x] 👤 Render staging env set (Supabase staging, Dodo test_mode keys + 24 products, Brevo, Anthropic); health 200 (checked 2026-11-11). `APP_SECRET` not set (only needed for Google Sheets)
-  - [ ] 👤 sign in on staging, buy a plan with a Dodo test card; 🤖 verify the webhook, emails and dashboard; then test a decline card (payment-failed email), plan change, page pack and cancel
+  - [x] 👤🤖 staging billing test done (2026-11-12, see the Dodo live mode items above)
 - [x] 👤 **Render:** prod switched from Free to Starter (0.5 CPU / 512 MB, $7/mo); no more sleeping (2026-11-11)
-- [ ] 🤖 **Real conversion on prod:** check that a real PDF converts on prod. The Anthropic key on Render starts with `sk-ant-usr-`; if extraction fails, replace it with a normal `sk-ant-api…` key.
+- [x] 🤖 **Real conversion on prod:** works; the owner converted a 4-page Standard Chartered statement on 2026-11-06 and 11-07 (in history on the prod dashboard)
 - [ ] 🤖 **Benchmark:** run `npm run bench` on 30+ real statements (US, UK, India, EU; digital and scanned). Record the real $/page and verified % in CLAUDE.md §3.
 - [ ] 👤 **Legal:** review the privacy and terms templates; add a name and address.
 
