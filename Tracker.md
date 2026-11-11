@@ -43,6 +43,8 @@ _Last updated: 2026-11-11_
 
 ## 🟡 Pending: before or just after launch
 
+- [ ] 🤖 **Sign-in UX:** add a 6-digit code to the magic-link email (type it in the same tab; works when email is opened on a phone), and make the "Check your email" tab continue on its own once signed in elsewhere. Needs `{{ .Token }}` in the Supabase email templates (staging + prod).
+
 - [ ] 👤🤖 **Google Cloud OAuth** (Sheets export and Google login):
   - create a Web client with redirect `/api/google/callback` and scope `drive.file`, and publish the consent screen
   - enable the Sheets API and Drive API
