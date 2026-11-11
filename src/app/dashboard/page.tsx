@@ -52,7 +52,10 @@ async function DashboardInner({ searchParams }: { searchParams: Promise<{ checko
             <p className="text-sm text-muted">Plan</p>
             <p className="mt-1 text-2xl font-semibold">{plan.name}</p>
             {profile?.current_period_end && plan.id !== "free" && (
-              <p className="mt-1 text-xs text-muted">Renews {new Date(profile.current_period_end).toLocaleDateString()}</p>
+              <p className="mt-1 text-xs text-muted">
+                {profile.subscription_status === "cancelling" ? "Ends" : "Renews"}{" "}
+                {new Date(profile.current_period_end).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+              </p>
             )}
           </div>
           <div className="rounded-2xl border border-line-strong bg-card p-5">

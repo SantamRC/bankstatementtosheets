@@ -59,6 +59,11 @@ export async function POST(req: NextRequest) {
     }
   };
 
+  /** Dodo keeps a sub "active" until the period ends after a cancel; we store "cancelling" so the dashboard
+   *  says "Ends …" and the renewal reminder skips it. */
+  const statusOf = (s: { status: string; cancel_at_next_billing_date?: boolean | null }) =>
+    s.status === "active" && s.cancel_at_next_billing_date ? "cancelling" : s.status;
+
   /** True if this event is for a subscription other than the user's current one (an old or duplicate subscription). */
   const isStale = async (userId: string, subscriptionId: string) => {
     const { data } = await db.from("profiles").select("subscription_id").eq("id", userId).maybeSingle();
@@ -126,7 +131,7 @@ export async function POST(req: NextRequest) {
             monthly_pages_left: pagesLeft,
             allowance_resets_at: resetsAt,
             subscription_id: s.subscription_id,
-            subscription_status: s.status,
+            subscription_status: statusOf(s),
             current_period_end: s.next_billing_date,
           })
           .eq("id", userId);
@@ -147,7 +152,7 @@ export async function POST(req: NextRequest) {
         await db
           .from("profiles")
           .update({
-            subscription_status: s.status,
+            subscription_status: statusOf(s),
             current_period_end: s.next_billing_date,
             // Payment failed: stop handing out monthly pages until the subscription is active again.
             ...(paused ? { monthly_pages_left: 0, allowance_resets_at: null } : {}),
@@ -172,7 +177,7 @@ export async function POST(req: NextRequest) {
             monthly_allowance: 0,
             monthly_pages_left: 0,
             allowance_resets_at: null,
-            subscription_status: s.status,
+            subscription_status: statusOf(s),
           })
           .eq("id", userId);
         break;
