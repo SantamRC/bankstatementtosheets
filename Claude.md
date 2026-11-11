@@ -290,10 +290,10 @@ npm run indexnow [-- /path ...] # tell Bing/IndexNow pages changed (default: who
 
 - **Repo:** https://github.com/SantamRC/bankstatementtosheets (public, branch `main`, auto-deploys on push).
 - **Render (rebuilt 2026-11-07 under santamrcdev404@gmail.com):** workspace "BankStatementToSheets", service `srv-dbn43kei0phs73bgi44g`,
-  https://bankstatementtosheets-w4en.onrender.com. Plan **Free** (sleeps after 15 min idle). Created in the dashboard (not the Blueprint),
+  https://bankstatementtosheets-w4en.onrender.com. Plan **Starter** (0.5 CPU / 512 MB, since 2026-11-11; doesn't sleep). Created in the dashboard (not the Blueprint),
   so `render.yaml` isn't applied: build `npm ci && npm run build`, start `npm start`, health check `/api/health`, auto-deploy on commit.
   The old workspace (`tea-dblppg3bc2fs73a2ufc0`, old account) was deleted. The Render MCP connector is still authed to the old account,
-  so manage this service through the dashboard until the connector is reconnected. **Before launch:** add a card and switch to Starter ($7/mo).
+  so manage this service through the dashboard until the connector is reconnected.
 - **Env vars set on Render:** NODE_VERSION, NEXT_TELEMETRY_DISABLED, NEXT_PUBLIC_SITE_URL, APP_SECRET (generated),
   EXTRACTION_MODEL, EXTRACTION_EFFORT, STRIPE_AUTOMATIC_TAX. **Missing:** payment and Google keys. (The owner added ANTHROPIC_API_KEY and SUPABASE_SECRET_KEY on 2026-11-06.) NEXT_PUBLIC_SUPABASE_URL and the publishable key are set. Never set `NODE_ENV` on Render, because `npm ci` would then skip devDependencies and the build fails.
 - **Production safety:** until the Supabase env vars are set, `/api/extract` returns 503 "opens very soon" (no

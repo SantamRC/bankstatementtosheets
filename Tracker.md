@@ -33,7 +33,7 @@ _Last updated: 2026-11-11_
   - [x] 🤖 Dodo test-mode webhook pointed at staging
   - [ ] 👤 Render staging → Environment → **Add from .env**: paste `.env.staging`, then add `SUPABASE_SECRET_KEY` (staging project → API Keys → secret), `BREVO_API_KEY` (same as prod) and optionally `ANTHROPIC_API_KEY`. Save and deploy
   - [ ] 👤 sign in on staging, buy a plan with a Dodo test card; 🤖 verify the webhook, emails and dashboard; then test a decline card (payment-failed email), plan change, page pack and cancel
-- [ ] 👤 **Render:** add a card and switch from Free to Starter ($7/mo). Free instances sleep and take ~50s to wake up. (2026-11-10: deploy 894e63e failed: built fine but the instance never started and the health check timed out after 15 min; the previous deploy stayed live.)
+- [x] 👤 **Render:** prod switched from Free to Starter (0.5 CPU / 512 MB, $7/mo); no more sleeping (2026-11-11)
 - [ ] 🤖 **Real conversion on prod:** check that a real PDF converts on prod. The Anthropic key on Render starts with `sk-ant-usr-`; if extraction fails, replace it with a normal `sk-ant-api…` key.
 - [ ] 🤖 **Benchmark:** run `npm run bench` on 30+ real statements (US, UK, India, EU; digital and scanned). Record the real $/page and verified % in CLAUDE.md §3.
 - [ ] 👤 **Legal:** review the privacy and terms templates; add a name and address.
