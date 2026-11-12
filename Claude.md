@@ -8,6 +8,7 @@
 - Work autonomously. Ask the owner only when blocked (permissions, logins, payments), and then give exact click steps and wait.
 - Keep replies very brief, with no explanations unless asked.
 - After every change, commit and push to `main` (Render auto-deploys prod).
+- Commits and PRs have **SantamRC as the only author**: never add `Co-Authored-By` or other AI attribution lines (owner, 2026-11-13).
 - Keep **`Tracker.md`** (pending and done to-dos) current: tick items off and add new ones in the same commit as the work.
 - Keep **local** and **prod** separate: `.env.local` plus the dev Supabase project for local; Render env plus the prod Supabase project for prod.
 - On every request, check how competitors do it and suggest how we can do better.
@@ -368,3 +369,4 @@ npm run indexnow [-- /path ...] # tell Bing/IndexNow pages changed (default: who
 - 2026-11-11 — **Tally export** (India SEO + accountant demand): TallyPrime's bank-statement import rejects Excel/CSV converted from PDFs, so we export **Tally XML vouchers** (money out → Payment, in → Receipt, against a ledger named "Cash" → Contra). Users name the bank ledger, a default counter ledger (Suspense) and optional category → ledger mapping (`TallyDialog`, saved in localStorage). Ledgers must already exist in Tally; the dialog lists them. Landing page `/bank-statement-to-tally`. Not yet tested in a real Tally install.
 - 2026-11-11 — Gmail MCP connector reconnected to santamrcdev404@gmail.com (was kinokrate); project mail can go through it.
 - 2026-11-11 — Upgrades/downgrades go through Dodo `subscriptions.changePlan` (prorated_immediately) from `/api/checkout` when the user already has an active subscription; a second subscription is never opened. Webhooks ignore events for a subscription that isn't `profiles.subscription_id`. Dodo live: multiple subscriptions OFF, immediate cancellation OFF (customers cancel at period end, keeping what they paid for). Render prod moved to Starter.
+- 2026-11-13 — Git history rewritten to strip all `Co-Authored-By` trailers (78 commits); from now on SantamRC is the sole author on every commit. Local backup branch `backup/pre-coauthor-strip`.
