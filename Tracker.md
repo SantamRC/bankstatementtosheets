@@ -4,7 +4,7 @@
 > Decisions and the reasons for them live in `CLAUDE.md` (decision log). This file is the to-do list.
 > 👤 = needs the owner (login, payment, or a click Claude can't make). 🤖 = Claude can do it.
 
-_Last updated: 2026-11-11_
+_Last updated: 2026-11-13_
 
 ## 🔴 Pending: launch blockers
 
@@ -43,6 +43,7 @@ _Last updated: 2026-11-11_
 - [x] 🤖 **Real conversion on prod:** works; the owner converted a 4-page Standard Chartered statement on 2026-11-06 and 11-07 (in history on the prod dashboard)
 - [x] 🤖 **Benchmark (synthetic)** 2026-11-12: 14 statements / 30 pages, cascade 100% exact vs truth at $0.0025/page, 0% escalation; Opus-only $0.074/page (CLAUDE.md §3)
 - [ ] 👤🤖 **Benchmark (real):** drop 5–10 real statements (esp. bad scans, credit card) in `bench/statements/real/` and run `npm run bench -- --dir bench/statements/real --yes` to check accuracy and escalation on messy input
+- [ ] 👤 **Dodo 2FA:** set up two-factor authentication on the Dodo account by **2026-12-12** (Dodo email 2026-11-12), or dashboard access gets blocked.
 - [ ] 👤 **Legal:** review the privacy and terms templates; add a name and address.
 
 ## 🟡 Pending: before or just after launch
