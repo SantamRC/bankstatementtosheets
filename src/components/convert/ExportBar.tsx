@@ -5,6 +5,7 @@ import type { Statement } from "@/lib/extraction/schema";
 import { baseName, categoryTable, summaryTable, toCSV, toTSV, transactionsTable } from "@/lib/export/build";
 import { downloadXlsx, saveBlob } from "@/lib/export/xlsx";
 import { toOfxFiles, type OfxFlavor } from "@/lib/export/ofx";
+import { toQifFiles } from "@/lib/export/qif";
 import { btn, cn } from "@/lib/ui";
 import { useDescStyle } from "@/lib/prefs";
 import { DescStyleSwitch } from "./DescStyleSwitch";
@@ -12,9 +13,12 @@ import { TallyDialog } from "./TallyDialog";
 
 type Busy = null | "xlsx" | "csv" | "copy" | "sheets" | "ofx";
 
-const OFX_HELP: Record<OfxFlavor, string> = {
+type AcctFormat = OfxFlavor | "qif";
+
+const OFX_HELP: Record<AcctFormat, string> = {
   qbo: "In QuickBooks Online: Transactions → Bank transactions → Upload transactions → pick the .qbo file and the account. QuickBooks Desktop: File → Utilities → Import → Web Connect Files.",
   ofx: "In Xero: Bank account → Manage account → Import a statement → pick the .ofx file. Quicken, Sage, MoneyWiz and most money apps import OFX the same way.",
+  qif: "In Quicken: File → Import → QIF file. GnuCash: File → Import → Import QIF. Banktivity and Moneydance: File → Import. Pick the account the transactions belong to.",
 };
 
 export function ExportBar({ statements, scopeLabel }: { statements: Statement[]; scopeLabel: string }) {
@@ -84,13 +88,13 @@ export function ExportBar({ statements, scopeLabel }: { statements: Statement[];
     window.open(j.url, "_blank", "noopener");
   }
 
-  async function toOfx(flavor: OfxFlavor) {
+  async function toOfx(flavor: AcctFormat) {
     setOfxMenu(false);
-    const files = toOfxFiles(statements, { flavor, style });
+    const files = flavor === "qif" ? toQifFiles(statements, { style }) : toOfxFiles(statements, { flavor, style });
     if (!files.some((f) => f.transactions > 0)) throw new Error("No transactions to export.");
     for (const [i, f] of files.entries()) {
       if (i) await new Promise((r) => setTimeout(r, 400)); // browsers drop rapid back-to-back downloads
-      saveBlob(new Blob([f.content], { type: "application/x-ofx" }), f.filename);
+      saveBlob(new Blob([f.content], { type: flavor === "qif" ? "application/qif" : "application/x-ofx" }), f.filename);
     }
     setSheetUrl(null);
     setNotice(`${files.length > 1 ? `${files.length} files, one per account. ` : ""}${OFX_HELP[flavor]}`);
@@ -138,7 +142,7 @@ export function ExportBar({ statements, scopeLabel }: { statements: Statement[];
               onClick={() => setOfxMenu((v) => !v)}
               disabled={busy !== null}
               aria-expanded={ofxMenu}
-              title="QuickBooks, Xero, Quicken or Tally import files"
+              title="QuickBooks, Xero, Quicken, GnuCash or Tally import files"
               className={cn(btn("ghost", "md"), "text-paper/80 hover:bg-white/10 hover:text-paper")}
             >
               <Landmark className="size-4" /> {label("ofx", "Accounting")} <ChevronDown className="size-3.5 opacity-60" />
@@ -149,6 +153,7 @@ export function ExportBar({ statements, scopeLabel }: { statements: Statement[];
                   [
                     ["qbo", "QuickBooks (.qbo)", "QuickBooks Online & Desktop"],
                     ["ofx", "OFX (.ofx)", "Xero, Quicken, Sage and others"],
+                    ["qif", "QIF (.qif)", "Quicken for Mac, GnuCash, Banktivity"],
                   ] as const
                 ).map(([k, title, sub]) => (
                   <button

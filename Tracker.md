@@ -93,7 +93,8 @@ _Last updated: 2026-11-14_
 - [x] 🤖 **AlternativeTo** (2026-11-14): listing submitted (free queue; the queue is long, and priority review is $19 or $29 for a human edit — the owner decides) with 8 alternatives linked: DocuClipper, StatementTable, ZeroParse, RowSure, stmtai, BalancedStatement, Bankredo, Accurate Bank Statement Converter. Track it under My submissions.
 - [x] 🤖 **QBO / OFX export** (2026-11-14): `src/lib/export/ofx.ts` (OFX 1.02 SGML; .qbo adds INTU.BID 3000), one file per account, bank and credit card accounts, stable FITIDs, tested in `scripts/test-ofx.ts`. Export bar: Tally moved into a new "Accounting" menu (QuickBooks .qbo / OFX .ofx / Tally XML). New page `/bank-statement-to-qbo`; every "QBO is on our roadmap" line updated.
 - [ ] 👤 **Test a .qbo in real QuickBooks Online** (and an .ofx in Xero if you have it): Bank transactions → Upload transactions. Only checked against the OFX spec so far. If QuickBooks rejects the bank code, tell me the error.
-- [ ] 🤖 Next formats competitors have: QIF and QFX (Quicken), IIF (QuickBooks Desktop journal), and a direct QuickBooks Online / Xero sync.
+- [x] 🤖 **QIF export** (2026-11-14): `lib/export/qif.ts`, !Type:Bank / !Type:CCard, tested in `scripts/test-qif.ts`; in the Accounting menu.
+- [ ] 🤖 Still missing vs competitors: QFX (Quicken Web Connect needs a real bank code), IIF (QuickBooks Desktop journal), direct QuickBooks Online / Xero sync.
 - [ ] 👤🤖 **Directory listings and launch posts** (highest impact; a new domain needs links): Product Hunt, AlternativeTo (as an alternative to DocuClipper and BankStatementConverter), G2, Capterra, SaaSHub, Indie Hackers. The owner creates the accounts; Claude drafts every listing.
 - [ ] 👤🤖 **Promote the free reconciliation template:** r/Bookkeeping, r/Accounting, accountant forums, and "free accounting templates" roundup posts (pitch for a link).
 - [ ] 🤖 **Audience pages:** `/for/accountants`, `/for/mortgage-brokers`.

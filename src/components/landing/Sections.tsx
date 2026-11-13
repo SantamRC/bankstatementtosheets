@@ -189,7 +189,7 @@ export function Features() {
             Reopen or re-download any conversion from your dashboard for 30 days, then it’s deleted automatically.
           </Feature>
           <Feature className="md:col-span-2" icon={<ClipboardCopy />} title="QuickBooks, Xero & Tally">
-            QBO for QuickBooks, OFX for Xero and Quicken, Tally XML vouchers, a clean CSV, or copy the table into any spreadsheet.
+            QBO for QuickBooks, OFX for Xero, QIF for Quicken and GnuCash, Tally XML vouchers, a clean CSV, or copy the table into any spreadsheet.
           </Feature>
         </div>
       </div>

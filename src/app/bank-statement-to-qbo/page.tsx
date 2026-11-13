@@ -78,6 +78,7 @@ export default function Page() {
           ["How do I import a QBO file into QuickBooks Online?", "Go to Transactions → Bank transactions (or Banking), choose Upload transactions, select the .qbo file and pick the bank account to add it to. The transactions then appear in the For review tab."],
           ["Does it work with QuickBooks Desktop?", "Yes. In QuickBooks Desktop use File → Utilities → Import → Web Connect Files and choose the .qbo file. Test the first import on a backup of your company file."],
           ["Can I import into Xero?", "Yes. Choose OFX (.ofx), then in Xero open the bank account, choose Manage account → Import a statement, and upload the file."],
+          ["Can I export to Quicken or GnuCash?", "Yes. Choose QIF (.qif) for Quicken for Mac, GnuCash, Banktivity or Moneydance, or OFX for Quicken on Windows."],
           ["Do credit card statements work?", "Yes. Card statements export as credit card accounts: purchases and fees are negative, payments and refunds positive, and the balance owed is carried over."],
           ["What if I import the same statement twice?", "Each transaction has a stable ID, so QuickBooks and Xero match rows they already imported instead of creating duplicates."],
           ["How much does it cost?", `The first ${FREE_PAGES} pages are free, with no card. Paid plans start at $9 a month for 150 pages, and failed conversions are never charged.`],

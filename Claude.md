@@ -199,7 +199,7 @@ src/
     extraction/ core.ts (engine + cascade, framework-free), extract.ts (server-only re-export for Next),
                 schema.ts (Zod + app types), prompt.ts, reconcile.ts (pure)
     export/     build.ts (tables, CSV/TSV), xlsx.ts (client), tally.ts (Tally XML vouchers; pure, tested by scripts/test-tally.ts),
-                ofx.ts (OFX/QBO, one file per account; pure, tested by scripts/test-ofx.ts)
+                ofx.ts (OFX/QBO, one file per account; pure, tested by scripts/test-ofx.ts), qif.ts (QIF; scripts/test-qif.ts)
     supabase/   server.ts (getUser/getProfile/admin), client.ts
     seo/        banks.ts (bank page content), samples.ts (fictional regional samples run through reconcile()), meta.ts (pageMeta: title/canonical/OG per page)
     plans.ts, dodo.ts, google.ts, crypto.ts (AES-GCM), env.ts (feature flags), sample.ts (demo statement), ui.ts (btn(), money(), cn())
@@ -273,7 +273,7 @@ npm run indexnow [-- /path ...] # tell Bing/IndexNow pages changed (default: who
    cascade settings from the results. Optionally add a Gemini or GPT `ChunkExtractor` and compare.
 2. **SEO landing pages:** `/banks/[bank]` ("Chase statement to Excel") and `/convert/pdf-to-csv` etc. This is the main
    acquisition channel; competitors rank on these terms.
-3. ~~QBO / OFX export~~ (done 2026-11-14). Still to do: QIF/QFX/IIF and a direct QuickBooks Online / Xero sync.
+3. ~~QBO / OFX export~~ (done 2026-11-14). QIF done too. Still to do: QFX/IIF and a direct QuickBooks Online / Xero sync.
 4. Password-protected PDFs (accept the password in the UI; decrypt server-side with qpdf/mupdf).
 5. Side-by-side PDF preview with click-to-highlight of the source row (needs per-row bounding boxes).
 6. Team workspaces (Business plan seats) and a client-folder organization for accountants.
