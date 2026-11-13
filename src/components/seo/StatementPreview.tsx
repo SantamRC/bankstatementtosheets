@@ -150,7 +150,7 @@ export function StatementPreview({ region, layout, bankName, lang = "en" }: { re
                   <td className="num px-3 py-2 text-right text-brand">{m(tx.credit)}</td>
                   {!card && <td className="num px-3 py-2 text-right">{m(tx.balance)}</td>}
                   <td className="px-2 py-2">
-                    {!card && tx.status !== "unchecked" && (
+                    {tx.status !== "unchecked" && (
                       <span className="grid size-4 place-items-center rounded-full bg-brand-soft" title={t.tip}>
                         <Check className="size-2.5 text-brand" strokeWidth={3} />
                       </span>
@@ -164,9 +164,14 @@ export function StatementPreview({ region, layout, bankName, lang = "en" }: { re
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-line bg-brand-soft/60 px-4 py-3 text-xs">
           {card ? (
             <>
-              <span className="font-semibold text-brand-dark">{total} transactions, signs kept straight</span>
+              <span className="inline-flex items-center gap-1.5 font-semibold text-brand-dark">
+                <span className="grid size-4 place-items-center rounded-full bg-brand">
+                  <Check className="size-2.5 text-white" strokeWidth={3} />
+                </span>
+                {t.verified(verified, total)}
+              </span>
               <span className="text-ink-soft">
-                Charges {m(s.reconciliation.totalDebits)} · Payments & credits {m(s.reconciliation.totalCredits)}
+                Previous balance {m(s.opening)} + charges {m(s.reconciliation.totalDebits)} − payments {m(s.reconciliation.totalCredits)} = new balance {m(s.closing)} {s.currency}, to the cent
               </span>
             </>
           ) : (

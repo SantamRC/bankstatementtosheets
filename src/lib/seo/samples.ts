@@ -45,7 +45,7 @@ const SAMPLES: Record<Region, Sample> = {
   us_card: {
     currency: "USD",
     locale: "en-US",
-    opening: 0,
+    opening: 1250, // previous balance owed; the first row pays it off
     rows: [
       { date: "2026-10-02", desc: "PAYMENT RECEIVED - THANK YOU", payee: "Card payment", in: 1250, category: "Transfer" },
       { date: "2026-10-04", desc: "DELTA AIR LINES ATLANTA GA", payee: "Delta Air Lines", out: 428.9, category: "Travel" },
@@ -123,13 +123,14 @@ export function buildSample(region: Region, mode: BalanceMode): BuiltSample {
   const card = region === "us_card";
   let running = s.opening;
   const rows = s.rows.map((r, i, all) => {
-    running = round2(running + (r.in ?? 0) - (r.out ?? 0));
+    // Cards print what you owe: charges raise the balance, payments lower it.
+    running = round2(running + (card ? -1 : 1) * ((r.in ?? 0) - (r.out ?? 0)));
     const lastOfDay = all[i + 1]?.date !== r.date;
     const balance = card || mode === "none" || (mode === "daily" && !lastOfDay) ? null : running;
     return { ...r, balance };
   });
-  const opening = card ? null : s.opening;
-  const closing = card ? null : running;
+  const opening = s.opening;
+  const closing = running;
   const txns: Transaction[] = rows.map((r, i) => ({
     id: `seo-${region}-${i}`,
     date: r.date,
@@ -143,7 +144,7 @@ export function buildSample(region: Region, mode: BalanceMode): BuiltSample {
     page: 1,
     status: "unchecked",
   }));
-  const { transactions, reconciliation } = reconcile(txns, opening, closing, { reorder: false });
+  const { transactions, reconciliation } = reconcile(txns, opening, closing, { reorder: false, accountType: card ? "credit_card" : "checking" });
   return { currency: s.currency, locale: s.locale, rows, transactions, reconciliation, opening, closing };
 }
 

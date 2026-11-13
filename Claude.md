@@ -161,7 +161,7 @@ Browser: review table (edit → reconcile() re-runs client-side) → export
   printed balances are verified as a group, which handles banks that print one balance per day.
 - When a single row mismatches and swapping its debit/credit makes it tie out, the engine swaps them automatically
   and marks the row `fixed`.
-- Statement-level check: `opening + credits − debits − closing = difference`.
+- Statement-level check: `opening + credits − debits − closing = difference` for bank accounts. Credit cards and loans print the amount **owed**, so the sign flips (`opening + debits − credits`). `reconcile()` tries both directions, keeps the account type's one unless the other clearly ties out better (`shouldSwitch`), and stores it in `reconciliation.direction`; edits re-check with that direction.
 - Row statuses: `verified | fixed | mismatch | unchecked`. Statement statuses: `verified | partial | mismatch | no_balances`.
 - **The prompt tells the model never to compute balances.** This matters: a computed balance would hide extraction errors.
 
@@ -370,3 +370,4 @@ npm run indexnow [-- /path ...] # tell Bing/IndexNow pages changed (default: who
 - 2026-11-11 — Gmail MCP connector reconnected to santamrcdev404@gmail.com (was kinokrate); project mail can go through it.
 - 2026-11-11 — Upgrades/downgrades go through Dodo `subscriptions.changePlan` (prorated_immediately) from `/api/checkout` when the user already has an active subscription; a second subscription is never opened. Webhooks ignore events for a subscription that isn't `profiles.subscription_id`. Dodo live: multiple subscriptions OFF, immediate cancellation OFF (customers cancel at period end, keeping what they paid for). Render prod moved to Starter.
 - 2026-11-13 — Git history rewritten to strip all `Co-Authored-By` trailers (78 commits); from now on SantamRC is the sole author on every commit. Local backup branch `backup/pre-coauthor-strip`.
+- 2026-11-14 — Credit-card reconciliation fixed: balance direction (asset vs liability) is detected per statement. Before, a card statement with running balances had every row's debit/credit swapped by the auto-fix. The card SEO page now claims verification.

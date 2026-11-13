@@ -246,7 +246,8 @@ function buildStatement(fileName: string, pages: number, results: ModelChunk[]):
       status: "unchecked" as const,
     })),
   );
-  const { transactions, reconciliation } = reconcile(raw, opening, closing);
+  const accountType = firstNonNull(results.map((r) => r.account_type));
+  const { transactions, reconciliation } = reconcile(raw, opening, closing, { accountType });
 
   return {
     id: crypto.randomUUID(),
@@ -255,7 +256,7 @@ function buildStatement(fileName: string, pages: number, results: ModelChunk[]):
     bankName: firstNonNull(results.map((r) => r.bank_name)),
     accountHolder: firstNonNull(results.map((r) => r.account_holder)),
     accountLast4: firstNonNull(results.map((r) => r.account_number_last4)),
-    accountType: firstNonNull(results.map((r) => r.account_type)),
+    accountType,
     currency: firstNonNull(results.map((r) => r.currency)),
     periodStart: firstNonNull(results.map((r) => r.statement_period_start)),
     periodEnd: lastNonNull(results.map((r) => r.statement_period_end)),

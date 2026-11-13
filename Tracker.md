@@ -4,7 +4,7 @@
 > Decisions and the reasons for them live in `CLAUDE.md` (decision log). This file is the to-do list.
 > 👤 = needs the owner (login, payment, or a click Claude can't make). 🤖 = Claude can do it.
 
-_Last updated: 2026-11-13_
+_Last updated: 2026-11-14_
 
 ## 🔴 Pending: launch blockers
 
@@ -122,7 +122,7 @@ _Last updated: 2026-11-13_
   - India (PNB, Bank of Baroda, Yes Bank)
 - [x] 🤖 **Phase 2, format pages** (2026-11-08): `/bank-statement-to-excel`, `/bank-statement-to-csv`, `/bank-statement-to-google-sheets` and `/credit-card-statement-to-excel`.
 - [ ] 🤖 `/bank-statement-to-qbo` once QBO export ships (move QBO up the roadmap: high-intent accountant searches).
-- [ ] 🤖 **Check credit-card reconciliation:** `reconcile()` uses `opening + credits − debits = closing`, but a card's balance is money owed, so it may mark a correct card statement as "mismatch". Test with a real card PDF and flip the formula for `credit_card`. Card SEO pages avoid the "verified" claim until this is fixed.
+- [x] 🤖 **Credit-card reconciliation** (2026-11-14): `reconcile()` now tries both balance directions (bank: balance = money held; card/loan: balance = money owed) and keeps the account type's direction unless the other clearly ties out better. Before, card statements with running balances got every row "auto-fixed" (purchases flipped into credits). 7 new tests. The card SEO page and sample now show "verified". Still to do: confirm with a real card PDF in the real benchmark.
 - [ ] 👤 **Google Sheets export is promised on the site but needs Google OAuth on prod** (see the item above).
 - [ ] 🤖 **Phase 3:**
   - audience pages: `/for/accountants`, `/for/mortgage-brokers`

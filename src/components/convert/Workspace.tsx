@@ -168,6 +168,8 @@ export function Workspace({
           const { transactions, reconciliation } = reconcile(edit(s.transactions), s.openingBalance, s.closingBalance, {
             reorder: false,
             allowAutoFix: false,
+            direction: s.reconciliation.direction,
+            accountType: s.accountType,
           });
           return { ...j, statement: { ...s, transactions, reconciliation: { ...reconciliation, reversedOrder: s.reconciliation.reversedOrder } } };
         }),
@@ -445,7 +447,7 @@ function VerificationBanner({ s }: { s: Statement }) {
       title: r.mismatchRows ? (r.mismatchRows === 1 ? "1 row needs a quick look" : `${r.mismatchRows} rows need a quick look`) : "Totals don’t tie out",
       body:
         r.difference != null && Math.abs(r.difference) >= 0.01
-          ? `Opening + credits − debits is off from the closing balance by ${money(Math.abs(r.difference))}. Check highlighted rows against the PDF (page numbers shown on hover).`
+          ? `${r.direction === "liability" ? "Opening + purchases − payments" : "Opening + credits − debits"} is off from the closing balance by ${money(Math.abs(r.difference))}. Check highlighted rows against the PDF (page numbers shown on hover).`
           : "Highlighted rows don’t match the printed running balance. Fix the amount and the check re-runs instantly.",
     },
     no_balances: {

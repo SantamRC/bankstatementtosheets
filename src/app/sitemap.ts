@@ -6,7 +6,7 @@ import { BANKS } from "@/lib/seo/banks";
 // Google trusts lastmod only when it's accurate, so never bump everything on every deploy.
 const UPDATED = {
   home: "2026-11-11",
-  seo: "2026-11-11", // format, guide, comparison and bank pages
+  seo: "2026-11-14", // format, guide, comparison and bank pages
   app: "2026-11-08", // /convert, /pricing
   legal: "2026-11-08", // contact, refunds, privacy, terms
 };

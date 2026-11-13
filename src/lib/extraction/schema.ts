@@ -118,6 +118,9 @@ export interface Transaction {
   note?: string;
 }
 
+/** "asset": balance = money held (bank accounts). "liability": balance = money owed (credit cards, loans). */
+export type BalanceDirection = "asset" | "liability";
+
 export type ReconciliationStatus = "verified" | "partial" | "mismatch" | "no_balances";
 
 export interface Reconciliation {
@@ -128,9 +131,11 @@ export interface Reconciliation {
   uncheckedRows: number;
   totalCredits: number;
   totalDebits: number;
-  /** opening + credits - debits - closing (0 when it ties out) */
+  /** opening ± (credits - debits) - closing (0 when it ties out); the sign follows `direction` */
   difference: number | null;
   reversedOrder: boolean;
+  /** Which way rows move the balance; absent on conversions saved before 2026-11-14 (treat as "asset"). */
+  direction?: BalanceDirection;
 }
 
 export interface Statement {

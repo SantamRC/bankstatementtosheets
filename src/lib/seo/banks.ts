@@ -170,7 +170,7 @@ export const BANKS: Bank[] = [
     quirks: [
       ["Relationship statements cover several accounts", "Each account's transactions are extracted in order; the account details are kept so you can split them in the sheet."],
       ["Dates without a year", "The year comes from the statement period, so you get real dates that sort and filter correctly."],
-      ["Card statements have no running balance", "For Citi credit cards you get every purchase, payment and refund with the signs kept straight, plus category totals."],
+      ["Card statements have no running balance", "For Citi credit cards we check the totals instead: previous balance + purchases − payments must equal the new balance, to the cent. You get every purchase, payment and refund with the signs kept straight, plus category totals."],
     ],
     faqs: [
       ["Does it work with Citi credit card statements?", "Yes. Citi Double Cash, Custom Cash, Premier and other card statements convert. Purchases are debits; payments and credits are credits."],
