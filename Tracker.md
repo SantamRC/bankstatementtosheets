@@ -90,6 +90,8 @@ _Last updated: 2026-11-14_
 - [x] 🤖 GSC (2026-11-11): indexing requested for /guides, the 3 new guides, /es and /hi; sitemap resubmitted (44 URLs). GSC is at `search.google.com/u/2/search-console` in the owner's Chrome.
 - [ ] 🤖 In 4–6 weeks: check impressions for /es and /hi in Search Console. If they convert, translate the app UI (at least /convert and the pricing section) and consider MXN pricing; if /hi gets traffic, add a Hindi password guide.
 - [ ] 🤖 Template guide: open the .xlsx in real Excel and Google Sheets once to confirm the formulas, dropdowns and highlighting work (only checked by reading the XML so far).
+- [x] 🤖 **AlternativeTo** (2026-11-14): listing submitted (free queue; the queue is long, and priority review is $19 or $29 for a human edit — the owner decides) with 8 alternatives linked: DocuClipper, StatementTable, ZeroParse, RowSure, stmtai, BalancedStatement, Bankredo, Accurate Bank Statement Converter. Track it under My submissions.
+- [ ] 🤖 **Move QBO/OFX/Xero export up**: almost every listed competitor (RowSure, stmtai, ZeroParse, BalancedStatement, Finstatly, BANKTRUST) offers QBO/OFX/Xero and also claims balance checking, so verification alone no longer sets us apart.
 - [ ] 👤🤖 **Directory listings and launch posts** (highest impact; a new domain needs links): Product Hunt, AlternativeTo (as an alternative to DocuClipper and BankStatementConverter), G2, Capterra, SaaSHub, Indie Hackers. The owner creates the accounts; Claude drafts every listing.
 - [ ] 👤🤖 **Promote the free reconciliation template:** r/Bookkeeping, r/Accounting, accountant forums, and "free accounting templates" roundup posts (pitch for a link).
 - [ ] 🤖 **Audience pages:** `/for/accountants`, `/for/mortgage-brokers`.
