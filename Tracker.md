@@ -48,7 +48,8 @@ _Last updated: 2026-11-14_
 
 ## 🟡 Pending: before or just after launch
 
-- [ ] 🤖 **Sign-in UX:** add a 6-digit code to the magic-link email (type it in the same tab; works when email is opened on a phone), and make the "Check your email" tab continue on its own once signed in elsewhere. Needs `{{ .Token }}` in the Supabase email templates (staging + prod).
+- [x] 🤖 **Sign-in code** (2026-11-14): the email now carries a 6-digit code (also in the subject) plus the link; the login page has a code box (auto-submits, resend after 60s, "use a different email") and continues on its own when the link is clicked in another tab of the same browser. Prod: Email OTP length 8 → 6, "Magic link or OTP" and "Confirm sign up" templates updated. Staging can't be edited (no custom SMTP), so it still sends Supabase's default link-only email.
+- [ ] 👤 **Test the sign-in code on prod:** sign out, sign in with your email, type the code from the email.
 
 - [ ] 👤🤖 **Google Cloud OAuth** (Sheets export and Google login):
   - create a Web client with redirect `/api/google/callback` and scope `drive.file`, and publish the consent screen
