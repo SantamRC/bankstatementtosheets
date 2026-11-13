@@ -198,7 +198,8 @@ src/
   lib/
     extraction/ core.ts (engine + cascade, framework-free), extract.ts (server-only re-export for Next),
                 schema.ts (Zod + app types), prompt.ts, reconcile.ts (pure)
-    export/     build.ts (tables, CSV/TSV), xlsx.ts (client), tally.ts (Tally XML vouchers; pure, tested by scripts/test-tally.ts)
+    export/     build.ts (tables, CSV/TSV), xlsx.ts (client), tally.ts (Tally XML vouchers; pure, tested by scripts/test-tally.ts),
+                ofx.ts (OFX/QBO, one file per account; pure, tested by scripts/test-ofx.ts)
     supabase/   server.ts (getUser/getProfile/admin), client.ts
     seo/        banks.ts (bank page content), samples.ts (fictional regional samples run through reconcile()), meta.ts (pageMeta: title/canonical/OG per page)
     plans.ts, dodo.ts, google.ts, crypto.ts (AES-GCM), env.ts (feature flags), sample.ts (demo statement), ui.ts (btn(), money(), cn())
@@ -272,7 +273,7 @@ npm run indexnow [-- /path ...] # tell Bing/IndexNow pages changed (default: who
    cascade settings from the results. Optionally add a Gemini or GPT `ChunkExtractor` and compare.
 2. **SEO landing pages:** `/banks/[bank]` ("Chase statement to Excel") and `/convert/pdf-to-csv` etc. This is the main
    acquisition channel; competitors rank on these terms.
-3. **QBO / OFX / QIF export** for QuickBooks and Xero users (accountants ask for it constantly).
+3. ~~QBO / OFX export~~ (done 2026-11-14). Still to do: QIF/QFX/IIF and a direct QuickBooks Online / Xero sync.
 4. Password-protected PDFs (accept the password in the UI; decrypt server-side with qpdf/mupdf).
 5. Side-by-side PDF preview with click-to-highlight of the source row (needs per-row bounding boxes).
 6. Team workspaces (Business plan seats) and a client-folder organization for accountants.
@@ -374,3 +375,4 @@ npm run indexnow [-- /path ...] # tell Bing/IndexNow pages changed (default: who
 - 2026-11-14 — Sign-in by **6-digit email code** as well as the magic link (`verifyOtp` type `email`), because a link opened on a phone can't sign in the desktop tab (PKCE verifier lives in the desktop browser). Prod Supabase: OTP length 6, templates "Magic link or OTP" and "Confirm sign up" show `{{ .Token }}` in subject and body. `CODE_LENGTH` in `LoginForm.tsx` must match the Supabase setting.
 - 2026-11-14 — Cloudflare Web Analytics turned on with automatic setup (Cloudflare injects the beacon into proxied HTML; nothing in the code). Cookieless, so no consent banner. Staging (onrender.com, not proxied) isn't tracked. Funnel events come from Supabase, not Cloudflare.
 - 2026-11-14 — AlternativeTo listing submitted. Its bank-statement category shows ~15 new converters (StatementTable, ZeroParse, RowSure, stmtai, BalancedStatement, BankToRows, BANKTRUST, LedgerSprout…) that **also claim balance verification**, most with QBO/OFX/Xero export and some with Tally. Our moat is now verification + review UX + any-layout vision, not verification alone; QBO/OFX export moves up the roadmap.
+- 2026-11-14 — **QBO and OFX export** shipped (client-side, `lib/export/ofx.ts`): OFX 1.02 SGML for widest importer support, .qbo = same plus `<INTU.BID>3000`; credit cards use CCSTMTRS with charges negative and owed balance negative; FITIDs are deterministic hashes so re-imports dedupe. The export bar's Tally button moved into an "Accounting" menu with QuickBooks / OFX / Tally. Landing page `/bank-statement-to-qbo`.

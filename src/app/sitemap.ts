@@ -5,13 +5,13 @@ import { BANKS } from "@/lib/seo/banks";
 // lastmod = date of the last meaningful content change for that group of pages. Bump only the group you changed:
 // Google trusts lastmod only when it's accurate, so never bump everything on every deploy.
 const UPDATED = {
-  home: "2026-11-11",
+  home: "2026-11-14",
   seo: "2026-11-14", // format, guide, comparison and bank pages
-  app: "2026-11-08", // /convert, /pricing
+  app: "2026-11-14", // /convert, /pricing
   legal: "2026-11-14", // contact, refunds, privacy, terms
 };
 
-const FORMAT_PATHS = ["/bank-statement-to-excel", "/bank-statement-to-csv", "/bank-statement-to-google-sheets", "/credit-card-statement-to-excel", "/bank-statement-to-tally"];
+const FORMAT_PATHS = ["/bank-statement-to-excel", "/bank-statement-to-csv", "/bank-statement-to-google-sheets", "/credit-card-statement-to-excel", "/bank-statement-to-tally", "/bank-statement-to-qbo"];
 const GUIDE_PATHS = [
   "/guides",
   "/how-to-download-bank-statement",

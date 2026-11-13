@@ -63,7 +63,7 @@ export default function Page() {
           ),
         },
         faqs: [
-          ["How do I import the CSV into QuickBooks Online?", "In QuickBooks Online go to Banking (or Transactions → Bank transactions), choose Upload transactions / File upload, select the CSV and map Date, Description and Amount. A native QBO file export is on our roadmap."],
+          ["How do I import the CSV into QuickBooks Online?", "In QuickBooks Online go to Banking (or Transactions → Bank transactions), choose Upload transactions / File upload, select the CSV and map Date, Description and Amount. Or skip the mapping: download a .qbo file instead (Accounting → QuickBooks) and upload that."],
           ["How do I import the CSV into Xero?", "Open the bank account in Xero, choose Import a statement, upload the CSV and map Date, Description and Amount (or Debit and Credit)."],
           ["Which date format does the CSV use?", "ISO dates (YYYY-MM-DD), which every accounting tool and spreadsheet reads without guessing whether 04/10 is April or October."],
           ["Can I get one CSV for several statements?", "Yes. Upload them together and export once. A Source column tells you which statement each row came from."],

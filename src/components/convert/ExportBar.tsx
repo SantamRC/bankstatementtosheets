@@ -1,15 +1,21 @@
 "use client";
 import { useState } from "react";
-import { BookOpen, Check, ClipboardCopy, Download, FileSpreadsheet, Loader2, Sheet } from "lucide-react";
+import { BookOpen, Check, ChevronDown, ClipboardCopy, Download, FileSpreadsheet, Landmark, Loader2, Sheet, X } from "lucide-react";
 import type { Statement } from "@/lib/extraction/schema";
 import { baseName, categoryTable, summaryTable, toCSV, toTSV, transactionsTable } from "@/lib/export/build";
 import { downloadXlsx, saveBlob } from "@/lib/export/xlsx";
+import { toOfxFiles, type OfxFlavor } from "@/lib/export/ofx";
 import { btn, cn } from "@/lib/ui";
 import { useDescStyle } from "@/lib/prefs";
 import { DescStyleSwitch } from "./DescStyleSwitch";
 import { TallyDialog } from "./TallyDialog";
 
-type Busy = null | "xlsx" | "csv" | "copy" | "sheets";
+type Busy = null | "xlsx" | "csv" | "copy" | "sheets" | "ofx";
+
+const OFX_HELP: Record<OfxFlavor, string> = {
+  qbo: "In QuickBooks Online: Transactions → Bank transactions → Upload transactions → pick the .qbo file and the account. QuickBooks Desktop: File → Utilities → Import → Web Connect Files.",
+  ofx: "In Xero: Bank account → Manage account → Import a statement → pick the .ofx file. Quicken, Sage, MoneyWiz and most money apps import OFX the same way.",
+};
 
 export function ExportBar({ statements, scopeLabel }: { statements: Statement[]; scopeLabel: string }) {
   const [busy, setBusy] = useState<Busy>(null);
@@ -17,6 +23,8 @@ export function ExportBar({ statements, scopeLabel }: { statements: Statement[];
   const [sheetUrl, setSheetUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [tally, setTally] = useState(false);
+  const [ofxMenu, setOfxMenu] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
   const style = useDescStyle();
 
   const flash = (k: Busy) => {
@@ -71,8 +79,21 @@ export function ExportBar({ statements, scopeLabel }: { statements: Statement[];
     }
     const j = await res.json();
     if (!res.ok || !j.url) throw new Error(j.error ?? "Couldn't create the Google Sheet.");
+    setNotice(null);
     setSheetUrl(j.url);
     window.open(j.url, "_blank", "noopener");
+  }
+
+  async function toOfx(flavor: OfxFlavor) {
+    setOfxMenu(false);
+    const files = toOfxFiles(statements, { flavor, style });
+    if (!files.some((f) => f.transactions > 0)) throw new Error("No transactions to export.");
+    for (const [i, f] of files.entries()) {
+      if (i) await new Promise((r) => setTimeout(r, 400)); // browsers drop rapid back-to-back downloads
+      saveBlob(new Blob([f.content], { type: "application/x-ofx" }), f.filename);
+    }
+    setSheetUrl(null);
+    setNotice(`${files.length > 1 ? `${files.length} files, one per account. ` : ""}${OFX_HELP[flavor]}`);
   }
 
   const label = (k: Exclude<Busy, null>, text: string) =>
@@ -112,14 +133,49 @@ export function ExportBar({ statements, scopeLabel }: { statements: Statement[];
           >
             <Download className="size-4" /> {label("csv", "CSV")}
           </button>
-          <button
-            onClick={() => setTally(true)}
-            disabled={busy !== null}
-            title="Tally XML vouchers for TallyPrime / Tally.ERP 9"
-            className={cn(btn("ghost", "md"), "text-paper/80 hover:bg-white/10 hover:text-paper")}
-          >
-            <BookOpen className="size-4" /> Tally
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => setOfxMenu((v) => !v)}
+              disabled={busy !== null}
+              aria-expanded={ofxMenu}
+              title="QuickBooks, Xero, Quicken or Tally import files"
+              className={cn(btn("ghost", "md"), "text-paper/80 hover:bg-white/10 hover:text-paper")}
+            >
+              <Landmark className="size-4" /> {label("ofx", "Accounting")} <ChevronDown className="size-3.5 opacity-60" />
+            </button>
+            {ofxMenu && (
+              <div className="absolute bottom-full right-0 mb-2 w-64 overflow-hidden rounded-xl border border-line-strong bg-card text-ink shadow-xl">
+                {(
+                  [
+                    ["qbo", "QuickBooks (.qbo)", "QuickBooks Online & Desktop"],
+                    ["ofx", "OFX (.ofx)", "Xero, Quicken, Sage and others"],
+                  ] as const
+                ).map(([k, title, sub]) => (
+                  <button
+                    key={k}
+                    onClick={() => run("ofx", () => toOfx(k))}
+                    className="block w-full px-4 py-2.5 text-left hover:bg-paper"
+                  >
+                    <span className="block text-sm font-medium">{title}</span>
+                    <span className="block text-xs text-muted">{sub}</span>
+                  </button>
+                ))}
+                <button
+                  onClick={() => {
+                    setOfxMenu(false);
+                    setTally(true);
+                  }}
+                  className="flex w-full items-start gap-2 border-t border-line px-4 py-2.5 text-left hover:bg-paper"
+                >
+                  <BookOpen className="mt-0.5 size-4 text-muted" />
+                  <span>
+                    <span className="block text-sm font-medium">Tally XML</span>
+                    <span className="block text-xs text-muted">TallyPrime / Tally.ERP 9 vouchers</span>
+                  </span>
+                </button>
+              </div>
+            )}
+          </div>
           <button
             onClick={() => run("copy", () => navigator.clipboard.writeText(toTSV(transactionsTable(statements, style))))}
             disabled={busy !== null}
@@ -131,8 +187,17 @@ export function ExportBar({ statements, scopeLabel }: { statements: Statement[];
         </div>
       </div>
       {tally && <TallyDialog statements={statements} style={style} onClose={() => setTally(false)} />}
+      {notice && !error && (
+        <div className="mt-2 flex items-start gap-3 rounded-xl border border-line-strong bg-card px-4 py-3 text-sm text-ink-soft shadow-lg">
+          <Check className="mt-0.5 size-4 shrink-0 text-brand" />
+          <p className="flex-1">{notice}</p>
+          <button onClick={() => setNotice(null)} aria-label="Dismiss" className="text-muted hover:text-ink">
+            <X className="size-4" />
+          </button>
+        </div>
+      )}
       {(error || sheetUrl) && (
-        <p className={cn("mt-2 px-2 text-sm", error ? "text-danger" : "text-ink-soft")}>
+        <p className={cn("mt-2 rounded-xl border border-line-strong bg-card px-4 py-3 text-sm shadow-lg", error ? "text-danger" : "text-ink-soft")}>
           {error ?? (
             <>
               Google Sheet created —{" "}

@@ -31,7 +31,7 @@ export default function Page() {
     ["Free to try", "14-day trial, up to 120 pages", `${FREE_PAGES} free pages, no time limit, no card`],
     ["Unused pages", "Monthly pages don't roll over", "Monthly pages don't roll over; page packs never expire"],
     ["How numbers are checked", "Against the printed opening and closing balances", "Every row against the printed running balance; a swapped debit/credit is fixed automatically"],
-    ["Exports", "Excel, CSV, QBO, IIF, OFX, QFX, QIF; QuickBooks and Xero integrations", "Excel (Transactions, Summary, Categories with formulas), CSV, one-click Google Sheets"],
+    ["Exports", "Excel, CSV, QBO, IIF, OFX, QFX, QIF; QuickBooks and Xero integrations", "Excel (Transactions, Summary, Categories with formulas), CSV, QBO, OFX, Tally XML; no direct QuickBooks/Xero sync yet"],
     ["Uploaded PDFs", "Encrypted in storage; you can delete them", "Never stored: processed in memory only"],
     ["Users", "Unlimited users", "One login per account (team seats planned)"],
     ["Security audit", "SOC 2 Type II", "Not audited yet"],
@@ -93,13 +93,12 @@ export default function Page() {
         <Section kicker="Being fair" title="When DocuClipper is the better choice">
           <div className="max-w-3xl space-y-4 leading-relaxed text-ink-soft">
             <p>
-              Choose DocuClipper if you need native QuickBooks Desktop or Xero files today (QBO, IIF, OFX, QFX, QIF) or a direct QuickBooks Online and
-              Xero sync, if a SOC 2 Type II report is required by your firm’s vendor review, or if you also process invoices, receipts and tax forms.
+              Choose DocuClipper if you need IIF, QFX or QIF files, or a direct QuickBooks Online and Xero sync, if a SOC 2 Type II report is required by your firm’s vendor review, or if you also process invoices, receipts and tax forms.
               It also includes unlimited users and fraud-detection reports on its higher plans.
             </p>
             <p>
               Choose BankStatementToSheets if your work is mostly bank and card statements and you want more pages for the money, row-by-row
-              verification, Google Sheets export, or rupee and euro pricing. Native QBO and OFX export is on our roadmap.
+              verification, QBO and OFX files, Tally export, or rupee and euro pricing.
             </p>
           </div>
         </Section>
@@ -110,7 +109,7 @@ export default function Page() {
             ["Is BankStatementToSheets cheaper than DocuClipper?", `Yes, per page. On monthly billing $29 buys 60 pages on DocuClipper Starter and ${pro.pages} pages on our Pro plan. Our Business plan is $${business.price.USD.monthly}/month for ${business.pages.toLocaleString("en-US")} pages, against $159/month for 640 pages on DocuClipper Business.`],
             ["Can I try it before I pay?", `Yes. Your first ${FREE_PAGES} pages are free with no credit card and no time limit.`],
             ["Does it work with the same banks?", "Yes. There are no per-bank templates, so any bank or card issuer in any country works, including scanned statements."],
-            ["Can I import the results into QuickBooks or Xero?", "Yes, through CSV, which both accept for bank imports. Native QBO/OFX files are planned."],
+            ["Can I import the results into QuickBooks or Xero?", "Yes. Download a .qbo file for QuickBooks Online or Desktop, or an .ofx file for Xero. CSV works too. There is no direct sync yet, so you upload the file yourself."],
             ["Is BankStatementToSheets affiliated with DocuClipper?", "No. We’re an independent product. DocuClipper is a trademark of its owner."],
           ]}
         />

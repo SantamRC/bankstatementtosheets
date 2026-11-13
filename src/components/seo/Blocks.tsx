@@ -177,6 +177,7 @@ export const FORMAT_LINKS: [string, string][] = [
   ["Bank statement to Google Sheets", "/bank-statement-to-google-sheets"],
   ["Credit card statement to Excel", "/credit-card-statement-to-excel"],
   ["Bank statement to Tally", "/bank-statement-to-tally"],
+  ["Bank statement to QBO / OFX", "/bank-statement-to-qbo"],
 ];
 
 export const GUIDE_LINKS: [string, string][] = [

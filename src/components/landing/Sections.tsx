@@ -188,8 +188,8 @@ export function Features() {
           <Feature className="md:col-span-2" icon={<History />} title="History for 30 days">
             Reopen or re-download any conversion from your dashboard for 30 days, then it’s deleted automatically.
           </Feature>
-          <Feature className="md:col-span-2" icon={<ClipboardCopy />} title="CSV & copy-paste">
-            A clean CSV for QuickBooks or Xero bank imports, or copy the table and paste it into any spreadsheet.
+          <Feature className="md:col-span-2" icon={<ClipboardCopy />} title="QuickBooks, Xero & Tally">
+            QBO for QuickBooks, OFX for Xero and Quicken, Tally XML vouchers, a clean CSV, or copy the table into any spreadsheet.
           </Feature>
         </div>
       </div>
@@ -239,7 +239,7 @@ export function Audiences() {
   const items = [
     { icon: <Briefcase />, title: "Accountants & bookkeepers", body: "Catch up a client’s year of statements in an afternoon instead of a week of typing." },
     { icon: <Landmark />, title: "Lenders & mortgage brokers", body: "Turn applicant statements into analyzable cash-flow data with income and spending totals." },
-    { icon: <Building2 />, title: "Small businesses", body: "Feed bank activity into your books, budgets or QuickBooks/Xero imports via CSV." },
+    { icon: <Building2 />, title: "Small businesses", body: "Feed bank activity into your books with QBO for QuickBooks, OFX for Xero, or CSV for anything else." },
     { icon: <UserRound />, title: "Personal finance & taxes", body: "See where the money went, find deductible expenses, and build your own budget sheet." },
   ];
   return (
@@ -348,7 +348,7 @@ export const FAQS: [string, string][] = [
   ],
   [
     "Can I import the result into QuickBooks or Xero?",
-    "Use the CSV export, which both accept for bank imports. Native QBO/OFX files are on our roadmap.",
+    "Yes. Download a .qbo file for QuickBooks Online or Desktop, or an .ofx file for Xero, and upload it as a bank statement import. No column mapping needed.",
   ],
   [
     "How do I convert a bank statement to CSV?",

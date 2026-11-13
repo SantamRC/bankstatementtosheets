@@ -102,7 +102,7 @@ export const BANKS: Bank[] = [
     faqs: [
       ["Why doesn't my Bank of America export show a balance column?", "Bank of America prints daily balances in a separate summary instead of next to each transaction. Your spreadsheet still gets a Balance column wherever one is printed, and the statement is verified against its summary totals."],
       ["Does it handle Bank of America business statements?", "Yes. Business Advantage and other business checking statements use the same section layout and convert the same way."],
-      ["Can I import the result into QuickBooks?", "Yes — export CSV and import it in QuickBooks Online under Banking → Upload transactions, mapping Date, Description and Amount. A native QBO file export is on our roadmap."],
+      ["Can I import the result into QuickBooks?", "Yes. Download a .qbo file (Accounting → QuickBooks) and upload it in QuickBooks Online under Bank transactions → Upload transactions. CSV works too."],
     ],
   },
   {
@@ -587,7 +587,7 @@ export const BANKS: Bank[] = [
     faqs: [
       ["Can I download PNC transactions as a spreadsheet instead?", "PNC lets you export recent activity, but older statements and closed accounts usually exist only as PDFs. Upload those here."],
       ["Does it work with PNC business checking statements?", "Yes. Business statements use the same section layout and convert the same way."],
-      ["Can I import the result into QuickBooks?", "Yes. Export CSV and upload it in QuickBooks Online under bank transactions, mapping Date, Description and Amount."],
+      ["Can I import the result into QuickBooks?", "Yes. Download a .qbo file (Accounting → QuickBooks) and upload it in QuickBooks Online under Bank transactions → Upload transactions. CSV works too."],
     ],
   },
   {
