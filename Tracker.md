@@ -49,6 +49,7 @@ _Last updated: 2026-11-14_
 ## 🟡 Pending: before or just after launch
 
 - [x] 🤖 **Sign-in code** (2026-11-14): the email now carries a 6-digit code (also in the subject) plus the link; the login page has a code box (auto-submits, resend after 60s, "use a different email") and continues on its own when the link is clicked in another tab of the same browser. Prod: Email OTP length 8 → 6, "Magic link or OTP" and "Confirm sign up" templates updated. Staging can't be edited (no custom SMTP), so it still sends Supabase's default link-only email.
+- [ ] 🤖 **Funnel numbers:** a small admin query/page (Supabase) for sign-ups, first conversions and paid plans per day, since Cloudflare Web Analytics can't count events.
 - [ ] 👤 **Test the sign-in code on prod:** sign out, sign in with your email, type the code from the email.
 
 - [ ] 👤🤖 **Google Cloud OAuth** (Sheets export and Google login):
@@ -56,7 +57,7 @@ _Last updated: 2026-11-14_
   - enable the Sheets API and Drive API
   - set the `GOOGLE_*` env vars on Render
   - enable the Google provider in Supabase, then set `NEXT_PUBLIC_AUTH_GOOGLE`
-- [ ] 🤖 **Analytics:** Cloudflare Web Analytics (free).
+- [x] 🤖 **Analytics** (2026-11-14): Cloudflare Web Analytics on bankstatementtosheets.com, automatic setup (beacon injected at the edge, no code, no cookies). Dashboard: Cloudflare → Analytics → Web analytics. Privacy page updated. It has no custom events, so sign-up / conversion / checkout counts come from Supabase.
 - [ ] 🤖 **Error tracking:** Sentry, then add the Sentry MCP.
 - [ ] 🤖 **OG image** (`src/app/opengraph-image.tsx`).
 - [ ] 👤 **Supabase pg_cron 30-day purge** of `conversions` (SQL at the bottom of `0001_init.sql`).
@@ -91,7 +92,6 @@ _Last updated: 2026-11-14_
 - [ ] 🤖 Template guide: open the .xlsx in real Excel and Google Sheets once to confirm the formulas, dropdowns and highlighting work (only checked by reading the XML so far).
 - [ ] 👤🤖 **Directory listings and launch posts** (highest impact; a new domain needs links): Product Hunt, AlternativeTo (as an alternative to DocuClipper and BankStatementConverter), G2, Capterra, SaaSHub, Indie Hackers. The owner creates the accounts; Claude drafts every listing.
 - [ ] 👤🤖 **Promote the free reconciliation template:** r/Bookkeeping, r/Accounting, accountant forums, and "free accounting templates" roundup posts (pitch for a link).
-- [ ] 🤖 **Analytics:** Cloudflare Web Analytics (free, no cookie banner) so we can see which pages lead to sign-ups.
 - [ ] 🤖 **Audience pages:** `/for/accountants`, `/for/mortgage-brokers`.
 - [ ] 🤖 **`/vs/moneythumb`** (~880/mo). Re-check their prices first.
 - [ ] 👤 **OpenSEO rank tracking** for ~15 target keywords (spends credits; 153 left on 2026-11-11). Needs the owner's OK.

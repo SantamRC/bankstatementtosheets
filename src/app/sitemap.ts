@@ -8,7 +8,7 @@ const UPDATED = {
   home: "2026-11-11",
   seo: "2026-11-14", // format, guide, comparison and bank pages
   app: "2026-11-08", // /convert, /pricing
-  legal: "2026-11-08", // contact, refunds, privacy, terms
+  legal: "2026-11-14", // contact, refunds, privacy, terms
 };
 
 const FORMAT_PATHS = ["/bank-statement-to-excel", "/bank-statement-to-csv", "/bank-statement-to-google-sheets", "/credit-card-statement-to-excel", "/bank-statement-to-tally"];

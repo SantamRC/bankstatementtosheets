@@ -262,7 +262,7 @@ npm run indexnow [-- /path ...] # tell Bing/IndexNow pages changed (default: who
 - [ ] Dodo webhook URL and Google OAuth redirect must use the final `https://bankstatementtosheets.com` domain.
 - [x] Email (done 2026-11-06): **Cloudflare Email Routing** (free, receive-only): `support@` plus a catch-all forward to the owner's Gmail. Don't use Porkbun forwarding, because it stops working once the nameservers move to Cloudflare. To reply *as* support@ later, add Gmail "Send mail as" through an SMTP relay (Resend or Brevo free tier).
 - [ ] Legal review of the privacy and terms templates. Add a company name and address.
-- [ ] Analytics (Cloudflare Web Analytics is free, or Plausible) and error tracking (Sentry). Consider Cloudflare Turnstile on sign-up if free-tier abuse appears.
+- [x] Analytics: Cloudflare Web Analytics, automatic setup (2026-11-14). [ ] Error tracking (Sentry). Consider Cloudflare Turnstile on sign-up if free-tier abuse appears.
 - [ ] Rate limiting on `/api/extract` beyond credits (for example Upstash) if free-tier abuse appears.
 - [ ] OG image (`src/app/opengraph-image.tsx`).
 
@@ -372,3 +372,4 @@ npm run indexnow [-- /path ...] # tell Bing/IndexNow pages changed (default: who
 - 2026-11-13 — Git history rewritten to strip all `Co-Authored-By` trailers (78 commits); from now on SantamRC is the sole author on every commit. Local backup branch `backup/pre-coauthor-strip`.
 - 2026-11-14 — Credit-card reconciliation fixed: balance direction (asset vs liability) is detected per statement. Before, a card statement with running balances had every row's debit/credit swapped by the auto-fix. The card SEO page now claims verification.
 - 2026-11-14 — Sign-in by **6-digit email code** as well as the magic link (`verifyOtp` type `email`), because a link opened on a phone can't sign in the desktop tab (PKCE verifier lives in the desktop browser). Prod Supabase: OTP length 6, templates "Magic link or OTP" and "Confirm sign up" show `{{ .Token }}` in subject and body. `CODE_LENGTH` in `LoginForm.tsx` must match the Supabase setting.
+- 2026-11-14 — Cloudflare Web Analytics turned on with automatic setup (Cloudflare injects the beacon into proxied HTML; nothing in the code). Cookieless, so no consent banner. Staging (onrender.com, not proxied) isn't tracked. Funnel events come from Supabase, not Cloudflare.
