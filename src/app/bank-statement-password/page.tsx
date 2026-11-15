@@ -5,25 +5,25 @@ import { Navbar } from "@/components/site/Navbar";
 import { Footer } from "@/components/site/Footer";
 import { FinalCTA } from "@/components/landing/Sections";
 import { Breadcrumbs, Faq, FORMAT_LINKS, GUIDE_LINKS, LinkGrid, Section, SeoHero, Steps } from "@/components/seo/Blocks";
+import { PASSWORDS } from "@/lib/seo/passwords";
 
 const path = "/bank-statement-password";
 
 export const metadata: Metadata = pageMeta({
-  title: "Bank Statement PDF Password — HDFC, SBI, ICICI, Axis & Kotak",
+  title: "Bank Statement PDF Password List — HDFC, SBI, ICICI, Axis, Kotak, PNB & More",
   description:
-    "Can’t open your bank statement PDF? Where to find the password for HDFC, SBI, ICICI, Axis and Kotak statements, and how to save an unlocked copy so you can convert it to Excel.",
+    "Can’t open your bank statement PDF? Password formats for HDFC, SBI, ICICI, Axis, Kotak, Bank of Baroda, PNB, Canara and Union Bank statements, with examples, and how to unlock and convert the PDF to Excel.",
   path,
   absoluteTitle: true,
 });
 
-// Formats are deliberately hedged: published sources disagree and banks change them. The email that delivers the statement is authoritative.
-const BANKS: [string, string, string][] = [
-  ["HDFC Bank", "Usually your Customer ID", "Often built from your name and date of birth, or card digits and date of birth"],
-  ["SBI", "Often a mix of your registered mobile number and date of birth; varies by channel (email, YONO, branch)", "Often your date of birth combined with card digits"],
-  ["ICICI Bank", "Often the first four letters of your name plus your date and month of birth", "Often the same name-plus-birthday pattern"],
-  ["Axis Bank", "Often the first four letters of your name combined with your Customer ID or date of birth", "Often a name-plus-birthday pattern"],
-  ["Kotak Mahindra Bank", "Often your CRN (Customer Relationship Number)", "Often the first four letters of your name plus your date and month of birth"],
-];
+// Data lives in lib/seo/passwords.ts (sourced and hedged there). The email that delivers the statement is authoritative.
+const ROWS = PASSWORDS.map((p) => ({
+  name: p.name,
+  href: `/banks/${p.slug}/statement-password`,
+  acct: p.account[0],
+  card: p.card?.formats[0],
+}));
 
 export default function Page() {
   return (
@@ -35,7 +35,7 @@ export default function Page() {
           eyebrow="Guide · India"
           title="How to open a password-protected bank statement PDF,"
           accent="and convert it to Excel."
-          intro="Indian banks email statements as locked PDFs. Here’s where to find the password for HDFC, SBI, ICICI, Axis and Kotak statements, and how to save an unlocked copy you can convert to Excel, CSV or Google Sheets."
+          intro="Indian banks email statements as locked PDFs. Here’s the password format for HDFC, SBI, ICICI, Axis, Kotak, Bank of Baroda, PNB, Canara and Union Bank statements, and how to unlock one and convert it to Excel, CSV or Google Sheets."
         />
 
         <Section kicker="Start here" title="Where to find your statement password">
@@ -63,33 +63,41 @@ export default function Page() {
                 </tr>
               </thead>
               <tbody>
-                {BANKS.map(([bank, acct, card]) => (
-                  <tr key={bank} className="border-b border-line/70 align-top last:border-0">
-                    <th scope="row" className="px-5 py-3.5 font-medium text-ink">{bank}</th>
-                    <td className="px-5 py-3.5 text-ink-soft">{acct}</td>
-                    <td className="px-5 py-3.5 text-ink-soft">{card}</td>
+                {ROWS.map((r) => (
+                  <tr key={r.href} className="border-b border-line/70 align-top last:border-0">
+                    <th scope="row" className="px-5 py-3.5 font-medium text-ink">
+                      <Link href={r.href} className="text-brand underline-offset-2 hover:underline">{r.name}</Link>
+                    </th>
+                    <td className="px-5 py-3.5 text-ink-soft">
+                      {r.acct.rule}
+                      {r.acct.source === "bank" && <span className="ml-1 text-xs font-medium text-brand">(bank-confirmed)</span>}
+                    </td>
+                    <td className="px-5 py-3.5 text-ink-soft">
+                      {r.card ? r.card.rule : "—"}
+                      {r.card?.source === "bank" && <span className="ml-1 text-xs font-medium text-brand">(bank-confirmed)</span>}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
           <p className="mt-3 text-sm text-muted">
-            These are the formats most often reported, not official rules, and they change. Always check the instructions in your bank’s email, or
-            call your bank. We never ask for or store your password.
+            Only the rules marked bank-confirmed are published by the bank. The rest are the formats most often reported, and banks change them. The
+            email that came with your statement is the authority. Click a bank for examples, alternatives and fixes.
           </p>
         </Section>
 
         <Section kicker="Unlock it" title="How to save an unlocked copy of your statement">
           <Steps
             steps={[
-              "Open the PDF in Chrome, Edge, Adobe Acrobat Reader or your phone’s PDF viewer and enter the password.",
-              "Choose Print, and pick “Save as PDF” (or “Microsoft Print to PDF”) as the printer. Save the new file.",
-              "The new copy opens without a password. Upload it to the converter and download Excel, CSV or a Google Sheet.",
+              "Upload the locked PDF on the converter as it is. Several statements at once is fine.",
+              "Type the password when asked. The file is unlocked in your browser, so the password is never sent to us, and both capitals and lowercase are tried.",
+              "Check the review table, where every row is verified against the balance, and download Excel, CSV, Google Sheets or Tally XML.",
             ]}
           />
           <p className="mt-4 text-sm text-muted">
-            Shortcut: statements downloaded directly from net banking are often not locked at all. Built-in password entry is coming soon. Only unlock
-            statements that belong to you or that you are authorised to process.
+            Just want an unlocked PDF? Open it with the password in Chrome, Edge or Adobe Reader, choose Print → Save as PDF, and save the copy. Only
+            unlock statements that belong to you or that you are authorised to process.
           </p>
         </Section>
 
@@ -109,10 +117,11 @@ export default function Page() {
         <Faq
           title="Bank statement password: FAQ"
           items={[
-            ["What is the password for an HDFC Bank statement PDF?", "For HDFC account statements it is usually your Customer ID. Credit card statements use a different rule. The email that came with the statement states the exact format, so check it first."],
+            ["What is the password for an HDFC Bank statement PDF?", "For HDFC account statements it is your numeric Customer ID, as HDFC states on its website. Credit card statements use a different rule. The email that came with the statement states the exact format, so check it first."],
             ["What is the password for an SBI statement PDF?", "SBI’s format depends on how the statement was sent (email, YONO or branch) and often combines parts of your registered mobile number and date of birth. Check the instructions in the email or app."],
             ["I typed the right password but it still fails. Why?", "Check capital vs lowercase letters, remove spaces from your name, and try DDMM vs DDMMYYYY for the date. If it still fails, download the statement again from net banking, which is often unlocked."],
-            ["Can I convert a password-protected PDF directly?", "Not yet. Save an unlocked copy first (Print → Save as PDF), then upload it. Built-in password entry is coming soon."],
+            ["Can I convert a password-protected PDF directly?", "Yes. Upload the locked PDF and type the password when asked. It’s unlocked in your browser and never sent to us."],
+            ["What is the password for an ICICI credit card statement?", "The last four digits of your card number. ICICI states this on its own website."],
             ["Is it safe to remove the password?", "Yes, for your own statements. Keep the unlocked copy somewhere private, or delete it after converting. We process uploads in memory and never store the PDF."],
           ]}
         />

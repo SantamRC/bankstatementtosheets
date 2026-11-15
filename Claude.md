@@ -201,8 +201,8 @@ src/
     export/     build.ts (tables, CSV/TSV), xlsx.ts (client), tally.ts (Tally XML vouchers; pure, tested by scripts/test-tally.ts),
                 ofx.ts (OFX/QBO, one file per account; pure, tested by scripts/test-ofx.ts), qif.ts (QIF; scripts/test-qif.ts)
     supabase/   server.ts (getUser/getProfile/admin), client.ts
-    seo/        banks.ts (bank page content), samples.ts (fictional regional samples run through reconcile()), meta.ts (pageMeta: title/canonical/OG per page)
-    plans.ts, dodo.ts, google.ts, crypto.ts (AES-GCM), env.ts (feature flags), sample.ts (demo statement), ui.ts (btn(), money(), cn())
+    seo/        banks.ts (bank page content), passwords.ts (per-bank statement-password pages, bank-confirmed vs reported formats), samples.ts (fictional regional samples run through reconcile()), meta.ts (pageMeta: title/canonical/OG per page)
+    pdf-unlock.ts (client-side PDF decryption; scripts/test-unlock.ts), plans.ts, dodo.ts, google.ts, crypto.ts (AES-GCM), env.ts (feature flags), sample.ts (demo statement), ui.ts (btn(), money(), cn())
   proxy.ts                   Next 16 "proxy" (formerly middleware): refreshes Supabase session, guards /dashboard
 supabase/migrations/0001_init.sql   profiles, conversions, RLS, signup trigger, consume_pages/refund_pages RPCs
 supabase/migrations/0003_dodo_billing.sql   billing_customer_id, subscription_id, monthly_allowance + lazy monthly refill (yearly plans), add_bonus_pages, webhook_events
@@ -274,7 +274,7 @@ npm run indexnow [-- /path ...] # tell Bing/IndexNow pages changed (default: who
 2. **SEO landing pages:** `/banks/[bank]` ("Chase statement to Excel") and `/convert/pdf-to-csv` etc. This is the main
    acquisition channel; competitors rank on these terms.
 3. ~~QBO / OFX export~~ (done 2026-11-14). QIF done too. Still to do: QFX/IIF and a direct QuickBooks Online / Xero sync.
-4. Password-protected PDFs (accept the password in the UI; decrypt server-side with qpdf/mupdf).
+4. ~~Password-protected PDFs~~ (done 2026-11-16, unlocked client-side in `lib/pdf-unlock.ts`).
 5. Side-by-side PDF preview with click-to-highlight of the source row (needs per-row bounding boxes).
 6. Team workspaces (Business plan seats) and a client-folder organization for accountants.
 7. Public API with API keys (Business plan) and Zapier.
@@ -376,3 +376,4 @@ npm run indexnow [-- /path ...] # tell Bing/IndexNow pages changed (default: who
 - 2026-11-14 — Cloudflare Web Analytics turned on with automatic setup (Cloudflare injects the beacon into proxied HTML; nothing in the code). Cookieless, so no consent banner. Staging (onrender.com, not proxied) isn't tracked. Funnel events come from Supabase, not Cloudflare.
 - 2026-11-14 — AlternativeTo listing submitted. Its bank-statement category shows ~15 new converters (StatementTable, ZeroParse, RowSure, stmtai, BalancedStatement, BankToRows, BANKTRUST, LedgerSprout…) that **also claim balance verification**, most with QBO/OFX/Xero export and some with Tally. Our moat is now verification + review UX + any-layout vision, not verification alone; QBO/OFX export moves up the roadmap.
 - 2026-11-14 — **QBO and OFX export** shipped (client-side, `lib/export/ofx.ts`): OFX 1.02 SGML for widest importer support, .qbo = same plus `<INTU.BID>3000`; credit cards use CCSTMTRS with charges negative and owed balance negative; FITIDs are deterministic hashes so re-imports dedupe. The export bar's Tally button moved into an "Accounting" menu with QuickBooks / OFX / Tally. Landing page `/bank-statement-to-qbo`.
+- 2026-11-16 — **Statement-password pages + in-browser PDF unlock.** India's biggest bank searches are "<bank> statement password" (HDFC 90.5k/mo, SBI 60.5k+22.2k, Union 12.1k, PNB 8.1k; KD 0–9), so 9 pages at `/banks/<bank>/statement-password` (data in `lib/seo/passwords.ts`). Banks rarely publish the rule: only HDFC account (Customer ID) and ICICI card (last 4 card digits) are bank-confirmed; everything else is labelled "commonly reported" and the email is named as the authority. The converter now takes locked PDFs: `lib/pdf-unlock.ts` decrypts in the browser with `@cantoo/pdf-lib` (MIT; RC4/AES-128/AES-256), tries upper/lower case, opens owner-only locks silently, strips the leftover /Encrypt objects, and uploads only the unlocked copy. The password never reaches the server. US/UK problem searches are too small for pages.

@@ -7,6 +7,8 @@ import { FinalCTA } from "@/components/landing/Sections";
 import { StatementPreview } from "@/components/seo/StatementPreview";
 import { Breadcrumbs, CORE_POINTS, Faq, FORMAT_LINKS, LinkGrid, Points, Section, SeoHero, Steps } from "@/components/seo/Blocks";
 import { BANKS, bankBySlug } from "@/lib/seo/banks";
+import { passwordBySlug } from "@/lib/seo/passwords";
+import { KeyRound } from "lucide-react";
 import { pageMeta } from "@/lib/seo/meta";
 
 type Props = { params: Promise<{ slug: string }> };
@@ -27,6 +29,7 @@ export default async function BankPage({ params }: Props) {
   const bank = bankBySlug((await params).slug);
   if (!bank) notFound();
 
+  const pw = passwordBySlug(bank.slug);
   const related = BANKS.filter((b) => b.country === bank.country && b.slug !== bank.slug).map((b): [string, string] => [b.name, `/banks/${b.slug}`]);
 
   return (
@@ -58,6 +61,18 @@ export default async function BankPage({ params }: Props) {
 
         <Section kicker="Built for this layout" title={`What’s tricky about ${bank.name} statements — and how we handle it`}>
           <Points items={bank.quirks} />
+          {pw && (
+            <Link
+              href={`/banks/${bank.slug}/statement-password`}
+              className="mt-6 flex items-center gap-3 rounded-2xl border border-line-strong bg-card p-5 hover:border-ink"
+            >
+              <KeyRound className="size-5 shrink-0 text-brand" />
+              <span>
+                <span className="font-semibold text-ink">Can’t open your {pw.name} statement PDF?</span>{" "}
+                <span className="text-ink-soft">See the {pw.name} statement password format, with examples and fixes →</span>
+              </span>
+            </Link>
+          )}
         </Section>
 
         <Section kicker="Why BankStatementToSheets" title="More than a PDF-to-Excel dump">

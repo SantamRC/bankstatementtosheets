@@ -81,7 +81,7 @@ export async function inspectPdf(bytes: Uint8Array): Promise<{ doc: PDFDocument;
     if (/encrypt/i.test(msg))
       throw new ExtractionError(
         "encrypted",
-        "This PDF is password-protected. Open it, print/save it as a new PDF without a password, then upload again.",
+        "This PDF is password-protected. Upload it on the converter page and enter the password when asked, or save an unlocked copy (Print → Save as PDF) and upload that.",
       );
     throw new ExtractionError("invalid_pdf", "We couldn't read this file as a PDF. Is it corrupted?");
   }

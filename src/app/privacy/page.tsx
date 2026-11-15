@@ -12,7 +12,7 @@ export const metadata: Metadata = pageMeta({
 // NOTE: Template — have this reviewed by a lawyer before launch (GDPR/CCPA specifics, company entity, address).
 export default function Privacy() {
   return (
-    <LegalPage title="Privacy Policy" updated="November 14, 2026">
+    <LegalPage title="Privacy Policy" updated="November 16, 2026">
       <p>
         {SITE.domain} (“we”, “us”) converts bank statements into spreadsheets. Bank statements are sensitive, so this policy is short and
         specific about what we keep.
@@ -21,6 +21,7 @@ export default function Privacy() {
       <ul>
         <li>Account data: your email address and, if you sign in with Google, your name.</li>
         <li>Uploaded PDFs: processed in memory to extract transactions and discarded immediately. We never write your PDF to disk or storage.</li>
+          <li>PDF passwords: if your statement is password-protected, the password you type is used only in your browser to unlock the file. It is never sent to us or stored, and only the unlocked copy is uploaded.</li>
         <li>Extracted data: the transaction table we produce, saved to your account history for 30 days so you can re-download it. You can delete it at any time.</li>
         <li>Billing data: handled by our payment partner, which acts as merchant of record. We never see or store your full card number.</li>
         <li>Basic usage logs (pages converted, errors) to operate and improve the service.</li>

@@ -6,8 +6,10 @@ import {
   ArrowRight,
   Check,
   FileText,
+  KeyRound,
   Layers,
   Loader2,
+  Lock,
   RotateCcw,
   ShieldCheck,
   Sparkles,
@@ -22,8 +24,9 @@ import { Dropzone } from "./Dropzone";
 import { ReviewTable } from "./ReviewTable";
 import { ExportBar } from "./ExportBar";
 import { btn, cn, money } from "@/lib/ui";
+import { unlockPdf } from "@/lib/pdf-unlock";
 
-type JobStatus = "queued" | "uploading" | "extracting" | "done" | "error";
+type JobStatus = "queued" | "locked" | "uploading" | "extracting" | "done" | "error";
 interface Job {
   id: string;
   name: string;
@@ -34,6 +37,10 @@ interface Job {
   pages?: number;
   error?: { code: string; message: string };
   statement?: Statement;
+  /** Set after a wrong password so the prompt can say so. */
+  wrongPassword?: boolean;
+  /** The file has already been unlocked in the browser. */
+  unlocked?: boolean;
 }
 
 const STORAGE_KEY = "bsts:workspace:v1";
@@ -89,8 +96,20 @@ export function Workspace({
       running.current.add(job.id);
       update(job.id, { status: "uploading", error: undefined, progress: null });
       try {
+        // Locked PDFs are unlocked in the browser; the password never leaves the device.
+        let file = job.file;
+        const opened = job.unlocked ? ({ ok: true, wasLocked: false } as const) : await unlockPdf(new Uint8Array(await file.arrayBuffer()));
+        if (!opened.ok) {
+          if (opened.reason === "needs_password") update(job.id, { status: "locked" });
+          else update(job.id, { status: "error", error: { code: "invalid_pdf", message: "We couldn't read this file as a PDF. Is it corrupted?" } });
+          return;
+        }
+        if (opened.wasLocked) {
+          file = new File([opened.bytes as BlobPart], file.name, { type: "application/pdf" });
+          update(job.id, { file, unlocked: true });
+        }
         const body = new FormData();
-        body.append("file", job.file);
+        body.append("file", file);
         const res = await fetch("/api/extract", { method: "POST", body });
         if (!res.body || !res.headers.get("content-type")?.includes("ndjson")) {
           const j = (await res.json().catch(() => null)) as Extract<ExtractEvent, { type: "error" }> | null;
@@ -154,6 +173,18 @@ export function Workspace({
   };
 
   const retry = (id: string) => update(id, { status: "queued", error: undefined });
+
+  /** Returns false on a wrong password. On success the unlocked copy replaces the file and the job is queued. */
+  const unlock = async (job: Job, password: string) => {
+    if (!job.file) return false;
+    const r = await unlockPdf(new Uint8Array(await job.file.arrayBuffer()), password);
+    if (!r.ok) {
+      update(job.id, { wrongPassword: true });
+      return false;
+    }
+    update(job.id, { file: new File([r.bytes as BlobPart], job.name, { type: "application/pdf" }), status: "queued", wrongPassword: false, unlocked: true });
+    return true;
+  };
   const remove = (id: string) => {
     setJobs((js) => js.filter((j) => j.id !== id));
     setActive((a) => (a === id ? null : a));
@@ -270,6 +301,8 @@ export function Workspace({
             isSample={activeJob.id === "sample"}
             signedIn={signedIn || !authEnabled}
           />
+        ) : activeJob?.status === "locked" ? (
+          <LockedView key={activeJob.id} job={activeJob} onUnlock={(pw) => unlock(activeJob, pw)} />
         ) : activeJob ? (
           <ProcessingView job={activeJob} onRetry={() => retry(activeJob.id)} />
         ) : null}
@@ -334,6 +367,8 @@ function JobItem({ job, active, onSelect, onRetry, onRemove }: { job: Job; activ
           status === "verified" ? <Check className="size-4 text-brand" strokeWidth={3} /> : status === "mismatch" ? <AlertTriangle className="size-4 text-warn" /> : <FileText className="size-4 text-muted" />
         ) : job.status === "error" ? (
           <AlertTriangle className="size-4 text-danger" />
+        ) : job.status === "locked" ? (
+          <Lock className="size-4 text-warn" />
         ) : (
           <Loader2 className="size-4 animate-spin text-brand" />
         )}
@@ -345,7 +380,9 @@ function JobItem({ job, active, onSelect, onRetry, onRemove }: { job: Job; activ
             ? `${s.transactions.length} transactions · ${s.pages} pages`
             : job.status === "error"
               ? "Failed"
-              : job.status === "queued"
+              : job.status === "locked"
+                ? "Needs password"
+                : job.status === "queued"
                 ? "Queued"
                 : job.progress
                   ? `Reading… ${job.progress.done}/${job.progress.total} parts`
@@ -364,6 +401,56 @@ function JobItem({ job, active, onSelect, onRetry, onRemove }: { job: Job; activ
       >
         <X className="size-3.5" />
       </button>
+    </div>
+  );
+}
+
+function LockedView({ job, onUnlock }: { job: Job; onUnlock: (password: string) => Promise<boolean> }) {
+  const [pw, setPw] = useState("");
+  const [busy, setBusy] = useState(false);
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pw || busy) return;
+    setBusy(true);
+    if (!(await onUnlock(pw))) setBusy(false);
+  };
+  return (
+    <div className="rounded-2xl border border-line-strong bg-card p-8 text-center sm:p-10">
+      <div className="mx-auto grid size-12 place-items-center rounded-full bg-paper">
+        <KeyRound className="size-5 text-brand" />
+      </div>
+      <h2 className="mt-4 text-lg font-semibold">This statement is password-protected</h2>
+      <p className="mx-auto mt-2 max-w-md text-ink-soft">
+        Enter the password you use to open <span className="font-medium text-ink">{job.name}</span>. We unlock it here in your browser. The password is
+        never sent to us or stored.
+      </p>
+      <form onSubmit={submit} className="mx-auto mt-6 flex max-w-sm gap-2">
+        <input
+          type="password"
+          value={pw}
+          onChange={(e) => setPw(e.target.value)}
+          autoFocus
+          autoComplete="off"
+          spellCheck={false}
+          aria-label="PDF password"
+          placeholder="PDF password"
+          className={cn(
+            "min-w-0 flex-1 rounded-lg border bg-paper px-3 py-2.5 text-sm outline-none focus:border-ink",
+            job.wrongPassword ? "border-danger" : "border-line-strong",
+          )}
+        />
+        <button type="submit" disabled={!pw || busy} className={btn("primary", "md")}>
+          {busy ? <Loader2 className="size-4 animate-spin" /> : <Lock className="size-4" />} Unlock
+        </button>
+      </form>
+      {job.wrongPassword && <p className="mt-3 text-sm text-danger">That password didn’t open the file. Check the format in your bank’s email and try again.</p>}
+      <p className="mx-auto mt-6 max-w-md text-xs text-muted">
+        Not sure what it is? It’s usually in the email that came with the statement. See the{" "}
+        <Link href="/bank-statement-password" target="_blank" className="font-medium text-brand underline-offset-2 hover:underline">
+          password formats for HDFC, SBI, ICICI, Axis, Kotak and other banks
+        </Link>
+        .
+      </p>
     </div>
   );
 }

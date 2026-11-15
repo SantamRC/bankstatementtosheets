@@ -340,7 +340,7 @@ export const FAQS: [string, string][] = [
   ],
   [
     "What about password-protected PDFs?",
-    "Open the PDF with its password and save or print it as a new PDF, then upload that copy. Direct password entry is coming soon.",
+    "Upload them as they are and type the password when asked. We unlock the PDF in your browser, so the password is never sent to us or stored.",
   ],
   [
     "Do you store my bank statements?",

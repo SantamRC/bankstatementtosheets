@@ -1,13 +1,14 @@
 import type { MetadataRoute } from "next";
 import { SITE } from "@/lib/site";
 import { BANKS } from "@/lib/seo/banks";
+import { PASSWORDS } from "@/lib/seo/passwords";
 
 // lastmod = date of the last meaningful content change for that group of pages. Bump only the group you changed:
 // Google trusts lastmod only when it's accurate, so never bump everything on every deploy.
 const UPDATED = {
-  home: "2026-11-14",
-  seo: "2026-11-14", // format, guide, comparison and bank pages
-  app: "2026-11-14", // /convert, /pricing
+  home: "2026-11-16",
+  seo: "2026-11-16", // format, guide, comparison and bank pages
+  app: "2026-11-16", // /convert, /pricing
   legal: "2026-11-14", // contact, refunds, privacy, terms
 };
 
@@ -30,7 +31,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     page("", UPDATED.home),
     page("/convert", UPDATED.app),
     page("/pricing", UPDATED.app),
-    ...[...FORMAT_PATHS, ...GUIDE_PATHS, "/banks", ...BANKS.map((b) => `/banks/${b.slug}`)].map((p) => page(p, UPDATED.seo)),
+    ...[...FORMAT_PATHS, ...GUIDE_PATHS, "/banks", ...BANKS.map((b) => `/banks/${b.slug}`), ...PASSWORDS.map((p) => `/banks/${p.slug}/statement-password`)].map((p) => page(p, UPDATED.seo)),
     ...["/contact", "/refunds", "/privacy", "/terms"].map((p) => page(p, UPDATED.legal)),
   ];
 }

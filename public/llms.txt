@@ -26,7 +26,7 @@ Key facts:
 - [How to read a bank statement](https://bankstatementtosheets.com/how-to-read-a-bank-statement): sections, debits and credits, running balance, US/UK/India abbreviations
 - [Free bank reconciliation template (Excel)](https://bankstatementtosheets.com/bank-reconciliation-template-excel): downloadable .xlsx with live formulas and auto-matching
 - [DocuClipper alternative](https://bankstatementtosheets.com/docuclipper-alternative): price and feature comparison
-- [Bank statement PDF password](https://bankstatementtosheets.com/bank-statement-password): opening locked HDFC, SBI, ICICI, Axis and Kotak statements
+- [Bank statement PDF password](https://bankstatementtosheets.com/bank-statement-password): password formats for HDFC, SBI, ICICI, Axis, Kotak, Bank of Baroda, PNB, Canara and Union Bank statements, with one page per bank at /banks/<bank>/statement-password. The converter accepts locked PDFs and unlocks them in the browser.
 - [Bank statements for a mortgage](https://bankstatementtosheets.com/bank-statements-for-mortgage): what lenders check
 
 ## Other languages

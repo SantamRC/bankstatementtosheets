@@ -37,7 +37,7 @@ export interface Bank {
 
 const IN_PASSWORD: [string, string] = [
   "Emailed statements are password-protected",
-  "Banks in India usually email statements as locked PDFs. Download the statement from net banking instead, or open the emailed PDF with its password and use Print → Save as PDF to make an unlocked copy, then upload that. Built-in password entry is coming soon.",
+  "Banks in India usually email statements as locked PDFs. Upload the locked file as it is and type the password when asked: we unlock it in your browser, and the password is never sent to us. The password format for this bank is in the guide linked below.",
 ];
 
 export const BANKS: Bank[] = [
