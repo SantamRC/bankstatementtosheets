@@ -4,9 +4,18 @@
 > Decisions and the reasons for them live in `CLAUDE.md` (decision log). This file is the to-do list.
 > 👤 = needs the owner (login, payment, or a click Claude can't make). 🤖 = Claude can do it.
 
-_Last updated: 2026-11-14_
+_Last updated: 2026-11-15_
 
-## 🔴 Pending: launch blockers
+## 🚨 Traction check (2026-11-15)
+
+- Numbers: ~9 visits/day (Cloudflare), Google: 96 impressions in a week at average position 46, 0 clicks. 4 accounts: 2 are the owner, 1 unverified, **1 real stranger who signed up on 11 Nov and converted 0 pages**.
+- Cause 1, nobody knows we exist: 9-day-old domain, no backlinks, no launch posts. SEO takes months, so distribution has to be manual for now.
+- Cause 2, activation: the one stranger signed in and left without uploading. Signup is required before trying anything with your own file.
+- [ ] 🤖 **Try without signup:** let a visitor convert one statement (up to ~3 pages) without an account and require sign-up only to download; Turnstile on that path against abuse.
+- [ ] 👤🤖 **Ask the one real sign-up why they left** (one short, plain email from support@; owner approves the text).
+- [ ] 👤🤖 **Manual distribution this week:** helpful answers + free template in r/Bookkeeping, r/Accounting, r/smallbusiness; Indie Hackers post; Product Hunt; SaaSHub; direct outreach to ~20 bookkeepers with free pages. Claude drafts, owner posts.
+
+
 
 - [x] 👤 **Dodo approval** (2026-11-10): live mode enabled.
 - [ ] 👤🤖 **Dodo live mode:**
