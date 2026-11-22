@@ -4,7 +4,8 @@ import { pageMeta } from "@/lib/seo/meta";
 import { AppHeader } from "@/components/site/AppHeader";
 import { Workspace } from "@/components/convert/Workspace";
 import { getProfile, getUser, supabaseServer } from "@/lib/supabase/server";
-import { isSupabaseConfigured } from "@/lib/env";
+import { isDevGuest, isSupabaseConfigured } from "@/lib/env";
+import { GUEST_ENABLED, GUEST_MAX_PAGES } from "@/lib/guest";
 import type { Statement } from "@/lib/extraction/schema";
 import { publicStatement } from "@/lib/extraction/extract";
 
@@ -35,7 +36,9 @@ async function ConvertPageInner({ searchParams }: { searchParams: Promise<{ c?: 
       <main className="flex-1">
         <Workspace
           signedIn={signedIn}
-          authEnabled={isSupabaseConfigured}
+          authEnabled={isSupabaseConfigured || isDevGuest}
+          guestPages={GUEST_ENABLED ? GUEST_MAX_PAGES : 0}
+          turnstileSiteKey={process.env.TURNSTILE_SITE_KEY || null}
           initialPages={profile ? profile.monthly_pages_left + profile.bonus_pages_left : null}
           initialStatement={initialStatement}
         />

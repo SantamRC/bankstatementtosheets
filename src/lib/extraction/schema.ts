@@ -185,9 +185,15 @@ export interface ExtractionMeta {
 }
 
 /** NDJSON events streamed from /api/extract */
+/** Set on results converted without an account: the guest saw `convertedPages` of `totalPages`. */
+export interface GuestPreview {
+  totalPages: number;
+  convertedPages: number;
+}
+
 export type ExtractEvent =
   | { type: "start"; pages: number; chunks: number }
   | { type: "progress"; done: number; total: number }
   | { type: "ping" } // keep-alive through proxies; clients ignore it
-  | { type: "result"; statement: Statement; pagesRemaining: number | null }
+  | { type: "result"; statement: Statement; pagesRemaining: number | null; guest?: GuestPreview }
   | { type: "error"; code: string; message: string };

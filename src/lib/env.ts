@@ -7,6 +7,8 @@ export const isSupabaseConfigured = Boolean(SUPABASE_URL && SUPABASE_PUBLISHABLE
 
 /** Local dev without Supabase: skip auth & metering. Never in production — that would mean free, unmetered conversions. */
 export const isDevAuthBypass = !isSupabaseConfigured && process.env.NODE_ENV !== "production";
+/** Local only: `DEV_GUEST=1` makes the dev server treat you as a logged-out visitor, to test the no-account trial. */
+export const isDevGuest = isDevAuthBypass && process.env.DEV_GUEST === "1";
 export const isPaymentsConfigured = Boolean(process.env.DODO_PAYMENTS_API_KEY);
 export const isGoogleConfigured = Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
 

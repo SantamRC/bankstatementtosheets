@@ -4,19 +4,23 @@
 > Decisions and the reasons for them live in `CLAUDE.md` (decision log). This file is the to-do list.
 > 👤 = needs the owner (login, payment, or a click Claude can't make). 🤖 = Claude can do it.
 
-_Last updated: 2026-11-15_
+_Last updated: 2026-11-23_
 
 ## 🚨 Traction check (2026-11-15)
 
 - Numbers: ~9 visits/day (Cloudflare), Google: 96 impressions in a week at average position 46, 0 clicks. 4 accounts: 2 are the owner, 1 unverified, **1 real stranger who signed up on 11 Nov and converted 0 pages**.
 - Cause 1, nobody knows we exist: 9-day-old domain, no backlinks, no launch posts. SEO takes months, so distribution has to be manual for now.
 - Cause 2, activation: the one stranger signed in and left without uploading. Signup is required before trying anything with your own file.
-- [ ] 🤖 **Try without signup:** let a visitor convert one statement (up to ~3 pages) without an account and require sign-up only to download; Turnstile on that path against abuse.
-- [ ] 👤🤖 **Ask the one real sign-up why they left** (one short, plain email from support@; owner approves the text).
+- Update 2026-11-23 (Search Console, 23 Oct–19 Nov): ~470 impressions, **1 click**, homepage 1 impression (not ranking for "bank statement converter"). Impressions come from password/how-to pages at positions 20–70. Search won't bring users for 2–4 months; manual distribution is the channel now.
+- [x] 🤖 **Try without signup** (2026-11-23): logged-out visitors convert the first 5 pages of one statement and see the verified result; downloading needs a free account (the result stays in the tab through sign-up). Limits in memory (`lib/guest.ts`): 2 per IP per day, 50 per day in total, failures don't count. Nothing is saved for guests. Homepage/SEO perks now say "Try it without signing up".
+- [ ] 👤 **Turnstile keys** (optional; the trial works without them, limited by IP and the daily cap): Cloudflare → Turnstile → Add widget, domain bankstatementtosheets.com, mode Managed → put the site key in `TURNSTILE_SITE_KEY` and the secret in `TURNSTILE_SECRET_KEY` on Render.
+- [ ] 👤 Check the guest trial on prod in a private window (upload a statement, see the preview, sign up, download).
+- [ ] 👤🤖 **Launch-week outreach:** drafts in `marketing/launch-week.md` (git-ignored): email to the one sign-up, 20 personal emails to bookkeepers, Indie Hackers, r/Bookkeeping template post, answer templates for Reddit/Quora, SaaSHub, Product Hunt (later). Claude drafted; owner sends/posts.
+- [ ] 👤 **Ask the one real sign-up why they left**: draft in `marketing/launch-week.md` §1 (offers 100 bonus pages; SQL included).
 - [x] 🤖 **Statement-password pages + in-browser unlock** (2026-11-16). Keyword data (OpenSEO, India): "HDFC statement password" 90.5k/mo, "SBI statement password" 60.5k + 22.2k, Union 12.1k, PNB 8.1k, Axis 6.6k, BoB 5.4k, HDFC card 5.4k, ICICI 5.4k, Canara 2.9k, Kotak 1.9k, all KD 0–9. US/UK "problem" searches are tiny (≤260/mo), so no pages there. Shipped: 9 pages at `/banks/<bank>/statement-password` (`lib/seo/passwords.ts`; bank-confirmed vs reported formats labelled; HDFC account = Customer ID and ICICI card = last 4 card digits are bank-confirmed), the hub table links to them, and bank pages link to their password page. The converter now accepts locked PDFs: password prompt, unlock in the browser with `@cantoo/pdf-lib` (`lib/pdf-unlock.ts`; tries capitals/lowercase; owner-only locks open silently), only the unlocked copy is uploaded. Competitors on these SERPs (ClearTax, easemoney, BankConv help docs) only explain the password; we unlock and convert in one step.
 - [ ] 🤖 More India password pages if these rank: IDFC First, IndusInd, Yes Bank, IDBI, Indian Bank, Bank of India, Federal Bank (check volumes first), plus "<bank> statement download" problems (SBI 14.8k, Axis/BoB/HDFC 6.6k).
 - [ ] 👤 Test the unlock with a real locked statement from your own bank (any Indian bank e-statement) on prod.
-- [ ] 👤🤖 **Manual distribution this week:** helpful answers + free template in r/Bookkeeping, r/Accounting, r/smallbusiness; Indie Hackers post; Product Hunt; SaaSHub; direct outreach to ~20 bookkeepers with free pages. Claude drafts, owner posts.
+- [ ] 👤 **Manual distribution this week:** drafts ready (see launch-week item above).
 
 
 

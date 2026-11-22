@@ -22,6 +22,7 @@ export default function Privacy() {
         <li>Account data: your email address and, if you sign in with Google, your name.</li>
         <li>Uploaded PDFs: processed in memory to extract transactions and discarded immediately. We never write your PDF to disk or storage.</li>
           <li>PDF passwords: if your statement is password-protected, the password you type is used only in your browser to unlock the file. It is never sent to us or stored, and only the unlocked copy is uploaded.</li>
+        <li>Trying without an account: the result is shown in your browser tab and not saved by us. To limit abuse we keep a one-way hash of your IP address in server memory for 24 hours, then drop it.</li>
         <li>Extracted data: the transaction table we produce, saved to your account history for 30 days so you can re-download it. You can delete it at any time.</li>
         <li>Billing data: handled by our payment partner, which acts as merchant of record. We never see or store your full card number.</li>
         <li>Basic usage logs (pages converted, errors) to operate and improve the service.</li>

@@ -46,3 +46,6 @@ next-env.d.ts
 
 # benchmark inputs/outputs — real bank statements, NEVER commit
 bench/
+
+# outreach drafts (public repo)
+/marketing/

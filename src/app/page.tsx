@@ -82,7 +82,7 @@ export default function Home() {
               </Link>
             </div>
             <ul className="mt-6 flex animate-rise flex-wrap justify-center gap-x-5 gap-y-2 text-sm text-muted [animation-delay:240ms]">
-              {[`${FREE_PAGES} free pages`, "No credit card", "PDFs never stored"].map((t) => (
+              {["Try it without signing up", `${FREE_PAGES} free pages`, "PDFs never stored"].map((t) => (
                 <li key={t} className="flex items-center gap-1.5">
                   <Check className="size-4 text-brand" strokeWidth={2.5} /> {t}
                 </li>

@@ -16,13 +16,14 @@ import {
   Wand2,
   X,
 } from "lucide-react";
-import type { ExtractEvent, Statement, Transaction } from "@/lib/extraction/schema";
+import type { ExtractEvent, GuestPreview, Statement, Transaction } from "@/lib/extraction/schema";
 import { reconcile } from "@/lib/extraction/reconcile";
 import { SAMPLE_STATEMENT } from "@/lib/sample";
 import { FREE_PAGES } from "@/lib/plans";
 import { Dropzone } from "./Dropzone";
 import { ReviewTable } from "./ReviewTable";
 import { ExportBar } from "./ExportBar";
+import { Turnstile } from "./Turnstile";
 import { btn, cn, money } from "@/lib/ui";
 import { unlockPdf } from "@/lib/pdf-unlock";
 
@@ -41,6 +42,8 @@ interface Job {
   wrongPassword?: boolean;
   /** The file has already been unlocked in the browser. */
   unlocked?: boolean;
+  /** Converted without an account (first pages only, download needs sign-up). */
+  guest?: GuestPreview;
 }
 
 const STORAGE_KEY = "bsts:workspace:v1";
@@ -49,14 +52,23 @@ const CONCURRENT = 2;
 export function Workspace({
   signedIn,
   authEnabled,
+  guestPages = 0,
+  turnstileSiteKey = null,
   initialPages,
   initialStatement,
 }: {
   signedIn: boolean;
   authEnabled: boolean;
+  /** Pages a logged-out visitor can try without an account; 0 turns the trial off. */
+  guestPages?: number;
+  turnstileSiteKey?: string | null;
   initialPages: number | null;
   initialStatement?: Statement | null;
 }) {
+  const isGuest = authEnabled && !signedIn;
+  const canTry = isGuest && guestPages > 0;
+  const turnstileToken = useRef<string | null>(null);
+  const resetTurnstile = useRef<(() => void) | null>(null);
   const fromProps: Job | null = initialStatement
     ? { id: initialStatement.id, name: initialStatement.fileName, size: 0, status: "done", progress: null, pages: initialStatement.pages, statement: initialStatement }
     : null;
@@ -110,6 +122,13 @@ export function Workspace({
         }
         const body = new FormData();
         body.append("file", file);
+        if (turnstileSiteKey) {
+          // The managed check usually finishes on its own within a second or two of page load.
+          for (let i = 0; i < 30 && !turnstileToken.current; i++) await new Promise((r) => setTimeout(r, 500));
+          if (turnstileToken.current) body.append("turnstile", turnstileToken.current);
+          turnstileToken.current = null;
+          resetTurnstile.current?.();
+        }
         const res = await fetch("/api/extract", { method: "POST", body });
         if (!res.body || !res.headers.get("content-type")?.includes("ndjson")) {
           const j = (await res.json().catch(() => null)) as Extract<ExtractEvent, { type: "error" }> | null;
@@ -135,7 +154,7 @@ export function Workspace({
             else if (ev.type === "progress") update(job.id, { progress: { done: ev.done, total: ev.total } });
             else if (ev.type === "result") {
               finished = true;
-              update(job.id, { status: "done", statement: ev.statement, file: undefined });
+              update(job.id, { status: "done", statement: ev.statement, file: undefined, guest: ev.guest });
               if (ev.pagesRemaining != null) setPagesLeft(ev.pagesRemaining);
               setActive((a) => (a == null || a === job.id ? job.id : a));
             } else if (ev.type === "error") {
@@ -151,7 +170,7 @@ export function Workspace({
         running.current.delete(job.id);
       }
     },
-    [update],
+    [update, turnstileSiteKey],
   );
 
   // Simple queue: keep CONCURRENT jobs in flight.
@@ -162,6 +181,8 @@ export function Workspace({
   }, [jobs, process]);
 
   const addFiles = (files: File[]) => {
+    // Without an account: one statement at a time.
+    if (isGuest) files = files.slice(0, 1);
     const newJobs: Job[] = files.map((f) => ({ id: crypto.randomUUID(), name: f.name, size: f.size, file: f, status: "queued", progress: null }));
     setJobs((js) => [...js.filter((j) => j.id !== "sample"), ...newJobs]);
     setActive((a) => (a && a !== "sample" ? a : newJobs[0].id));
@@ -214,6 +235,11 @@ export function Workspace({
   const effectiveActive = active ?? done[0]?.id ?? jobs[0]?.id ?? null;
   const activeJob = jobs.find((j) => j.id === effectiveActive);
 
+  // Rendered in both layouts; switching remounts it, which simply starts a fresh check.
+  const turnstileEl =
+    canTry && turnstileSiteKey ? <Turnstile siteKey={turnstileSiteKey} onToken={(t) => (turnstileToken.current = t)} resetRef={resetTurnstile} /> : null;
+  const guestUsed = jobs.some((j) => j.id !== "sample" && j.status !== "error");
+
   /* ---------------- Empty state ---------------- */
   if (jobs.length === 0) {
     return (
@@ -225,8 +251,15 @@ export function Workspace({
           <p className="mt-3 text-ink-soft">PDF in, verified spreadsheet out. Digital or scanned, any bank.</p>
         </div>
         <div className="mt-8">
-          {authEnabled && !signedIn ? (
+          {isGuest && !canTry ? (
             <SignInGate onSample={loadSample} />
+          ) : canTry ? (
+            <GuestStart
+              guestPages={guestPages}
+              onFiles={addFiles}
+              onSample={loadSample}
+              turnstile={turnstileEl}
+            />
           ) : (
             <>
               <Dropzone onFiles={addFiles} />
@@ -288,6 +321,13 @@ export function Workspace({
           ))}
         </div>
         {(!authEnabled || signedIn) && <Dropzone onFiles={addFiles} compact />}
+        {canTry && !guestUsed && (
+          <>
+            <Dropzone onFiles={addFiles} compact />
+            {turnstileEl}
+          </>
+        )}
+        {isGuest && <GuestSidebarCta />}
       </aside>
 
       <section className="min-w-0">
@@ -300,6 +340,8 @@ export function Workspace({
             onDelete={(id) => editStatement(activeJob.id, (rows) => rows.filter((r) => r.id !== id))}
             isSample={activeJob.id === "sample"}
             signedIn={signedIn || !authEnabled}
+            guest={activeJob.guest}
+            onConvertOwn={canTry && !guestUsed ? () => remove("sample") : undefined}
           />
         ) : activeJob?.status === "locked" ? (
           <LockedView key={activeJob.id} job={activeJob} onUnlock={(pw) => unlock(activeJob, pw)} />
@@ -347,6 +389,66 @@ function SignInGate({ onSample }: { onSample: () => void }) {
           <Sparkles className="size-4" /> Explore a sample first
         </button>
       </div>
+    </div>
+  );
+}
+
+function GuestStart({
+  guestPages,
+  onFiles,
+  onSample,
+  turnstile,
+}: {
+  guestPages: number;
+  onFiles: (files: File[]) => void;
+  onSample: () => void;
+  turnstile: React.ReactNode;
+}) {
+  return (
+    <>
+      <Dropzone onFiles={onFiles} />
+      {turnstile && <div className="mt-3">{turnstile}</div>}
+      <p className="mt-3 text-center text-sm text-ink-soft">
+        <span className="font-medium text-ink">Try it now, no account needed.</span> We convert the first {guestPages} pages so you can check the result.
+        Sign up free to download ({FREE_PAGES} pages, no card).
+      </p>
+      <div className="mt-3 flex flex-col items-center justify-center gap-x-5 gap-y-2 text-sm sm:flex-row">
+        <button onClick={onSample} className="inline-flex items-center gap-1.5 font-medium text-brand hover:underline">
+          <Sparkles className="size-4" /> No statement handy? Try a sample
+        </button>
+        <Link href="/login?next=/convert" className="font-medium text-ink-soft hover:text-ink hover:underline">
+          Have an account? Sign in
+        </Link>
+      </div>
+    </>
+  );
+}
+
+function GuestSidebarCta() {
+  return (
+    <div className="rounded-xl border border-line bg-card p-4 text-sm">
+      <p className="font-semibold">Convert more statements</p>
+      <p className="mt-1 text-muted">A free account gives you {FREE_PAGES} pages, batch upload and downloads. No card.</p>
+      <Link href="/login?next=/convert" className={btn("primary", "sm", "mt-3 w-full")}>
+        Create a free account <ArrowRight className="size-3.5" />
+      </Link>
+    </div>
+  );
+}
+
+/** Shown instead of the export bar to visitors without an account. The result stays in this tab while they sign up. */
+function DownloadGate({ s }: { s: Statement }) {
+  return (
+    <div className="flex flex-col gap-4 rounded-2xl border border-line-strong bg-card p-5 sm:flex-row sm:items-center">
+      <div className="min-w-0 flex-1">
+        <p className="font-semibold">Download as Excel, CSV, QuickBooks, Tally or Google Sheets</p>
+        <p className="mt-1 text-sm text-ink-soft">
+          Create a free account to download these {s.transactions.length} transactions. It takes 10 seconds, and this result stays right here.
+        </p>
+      </div>
+      <Link href="/login?next=/convert" className={btn("primary", "lg", "shrink-0")}>
+        Sign up free to download <ArrowRight className="size-4" />
+      </Link>
     </div>
   );
 }
@@ -468,8 +570,8 @@ function ProcessingView({ job, onRetry }: { job: Job; onRetry: () => void }) {
         <div className="mt-6 flex justify-center gap-3">
           {outOfPages ? (
             <Link href="/pricing" className={btn("brand", "md")}>See plans</Link>
-          ) : job.error?.code === "auth_required" ? (
-            <Link href="/login?next=/convert" className={btn("primary", "md")}>Sign in</Link>
+          ) : job.error?.code === "auth_required" || job.error?.code === "guest_limit" ? (
+            <Link href="/login?next=/convert" className={btn("primary", "md")}>Create a free account</Link>
           ) : job.file ? (
             <button onClick={onRetry} className={btn("primary", "md")}>
               <RotateCcw className="size-4" /> Try again
@@ -576,13 +678,19 @@ function StatementView({
   onDelete,
   isSample,
   signedIn,
+  guest,
+  onConvertOwn,
 }: {
   statement: Statement;
   onPatch: (id: string, patch: Partial<Transaction>) => void;
   onDelete: (id: string) => void;
   isSample: boolean;
   signedIn: boolean;
+  guest?: GuestPreview;
+  /** Logged-out visitors who can still try: leave the sample for the upload box. */
+  onConvertOwn?: () => void;
 }) {
+  const partial = guest && guest.convertedPages < guest.totalPages;
   const cur = s.currency;
   return (
     <div className="space-y-4">
@@ -606,11 +714,28 @@ function StatementView({
             <span className="font-semibold text-ink">This is a sample.</span> Try editing an amount — the balance check re-runs live. Then export it to see the
             Excel output.
           </p>
-          {!signedIn && (
-            <Link href="/login?next=/convert" className={btn("brand", "sm", "sm:ml-auto")}>
-              Convert my own <ArrowRight className="size-3.5" />
-            </Link>
-          )}
+          {!signedIn &&
+            (onConvertOwn ? (
+              <button onClick={onConvertOwn} className={btn("brand", "sm", "sm:ml-auto")}>
+                Try my own statement <ArrowRight className="size-3.5" />
+              </button>
+            ) : (
+              <Link href="/login?next=/convert" className={btn("brand", "sm", "sm:ml-auto")}>
+                Convert my own <ArrowRight className="size-3.5" />
+              </Link>
+            ))}
+        </div>
+      )}
+
+      {partial && (
+        <div className="flex flex-col gap-3 rounded-2xl border border-dashed border-brand/40 bg-brand-soft/50 p-4 text-sm sm:flex-row sm:items-center">
+          <Sparkles className="size-5 shrink-0 text-brand" />
+          <p className="text-ink-soft">
+            <span className="font-semibold text-ink">
+              Free preview: pages 1–{guest.convertedPages} of {guest.totalPages}.
+            </span>{" "}
+            {signedIn ? "Upload the file again to convert the whole statement." : "Create a free account to convert the whole statement."}
+          </p>
         </div>
       )}
 
@@ -635,7 +760,7 @@ function StatementView({
       )}
 
       <ReviewTable rows={s.transactions} onPatch={onPatch} onDelete={onDelete} />
-      <ExportBar statements={[s]} scopeLabel={`${s.transactions.length} transactions`} />
+      {!signedIn && !isSample ? <DownloadGate s={s} /> : <ExportBar statements={[s]} scopeLabel={`${s.transactions.length} transactions`} />}
     </div>
   );
 }

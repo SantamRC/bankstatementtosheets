@@ -224,13 +224,14 @@ async function mapLimit<T, R>(items: T[], limit: number, fn: (item: T, i: number
 const firstNonNull = <T>(arr: (T | null)[]) => arr.find((v) => v != null) ?? null;
 const lastNonNull = <T>(arr: (T | null)[]) => [...arr].reverse().find((v) => v != null) ?? null;
 
-function buildStatement(fileName: string, pages: number, results: ModelChunk[]): Statement {
+function buildStatement(fileName: string, pages: number, results: ModelChunk[], partial = false): Statement {
   const anyTxns = results.some((r) => r.transactions.length > 0);
   if (!anyTxns && results.some((r) => !r.is_bank_statement))
     throw new ExtractionError("not_statement", "This doesn't look like a bank or credit card statement.");
 
   const opening = firstNonNull(results.map((r) => r.opening_balance));
-  const closing = lastNonNull(results.map((r) => r.closing_balance));
+  // A partial document (first pages only) can't tie out to the statement's closing balance, so it isn't used.
+  const closing = partial ? null : lastNonNull(results.map((r) => r.closing_balance));
   const raw: Transaction[] = results.flatMap((r) =>
     r.transactions.map((t) => ({
       id: crypto.randomUUID(),
@@ -299,6 +300,8 @@ export interface ExtractOptions {
   extractor?: ChunkExtractor;
   onProgress?: (done: number, total: number) => void;
   onStart?: (chunks: number) => void;
+  /** The document is only the first pages of a longer statement (guest preview): skip the closing-balance check. */
+  partial?: boolean;
 }
 
 export async function extractStatement(
@@ -336,7 +339,7 @@ export async function extractStatement(
     }
   });
 
-  let statement = buildStatement(fileName, pages, pass1);
+  let statement = buildStatement(fileName, pages, pass1, opts.partial);
   let usedPass: 1 | 2 = 1;
   let escalated: number[] = [];
   let reason: string | null = null;
@@ -359,7 +362,7 @@ export async function extractStatement(
       });
       const merged = [...pass1];
       plan.idx.forEach((ci, j) => (merged[ci] = redo[j]));
-      const candidate = buildStatement(fileName, pages, merged);
+      const candidate = buildStatement(fileName, pages, merged, opts.partial);
       if (better(candidate, statement)) {
         statement = candidate;
         usedPass = 2;
@@ -386,6 +389,14 @@ export async function extractStatement(
   };
   statement.extraction = meta;
   return statement;
+}
+
+/** A new document holding only the first `n` pages (guest previews of long statements). */
+export async function firstPages(doc: PDFDocument, n: number): Promise<PDFDocument> {
+  const out = await PDFDocument.create();
+  const copied = await out.copyPages(doc, Array.from({ length: Math.min(n, doc.getPageCount()) }, (_, i) => i));
+  copied.forEach((p) => out.addPage(p));
+  return out;
 }
 
 /** Copy without server-only cost/model metadata — use before sending a statement to the browser. */

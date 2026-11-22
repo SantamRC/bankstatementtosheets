@@ -39,7 +39,7 @@ export function Breadcrumbs({ items, home = "Home" }: { items: [string, string][
   );
 }
 
-const HERO_CTA = { primary: "Convert a statement free", secondary: "See pricing", perks: [`${FREE_PAGES} free pages`, "No credit card", "PDFs never stored"] };
+const HERO_CTA = { primary: "Convert a statement free", secondary: "See pricing", perks: ["Try it without signing up", `${FREE_PAGES} free pages`, "PDFs never stored"] };
 
 export function SeoHero({
   eyebrow,

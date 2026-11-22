@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import {
   ExtractionError,
   extractStatement,
+  firstPages,
   hasAnthropicCredentials,
   inspectPdf,
   publicStatement,
@@ -9,9 +10,10 @@ import {
 } from "@/lib/extraction/extract";
 import type { ExtractEvent } from "@/lib/extraction/schema";
 import { getUser, supabaseAdmin } from "@/lib/supabase/server";
-import { isDevAuthBypass, isSupabaseConfigured } from "@/lib/env";
+import { isDevAuthBypass, isDevGuest, isSupabaseConfigured } from "@/lib/env";
 import { lowPagesThreshold, sendLowPages } from "@/lib/email";
 import { planById } from "@/lib/plans";
+import { GUEST_ENABLED, GUEST_MAX_PAGES, clientIp, releaseGuest, reserveGuest, verifyTurnstile } from "@/lib/guest";
 
 const MAX_BYTES = 25 * 1024 * 1024;
 const MAX_PAGES = Number(process.env.MAX_PAGES_PER_FILE || 150);
@@ -25,8 +27,10 @@ export async function POST(req: NextRequest) {
   if (!hasAnthropicCredentials())
     return json(500, "not_configured", "Server has no Anthropic credentials (ANTHROPIC_API_KEY, or `ant auth login` locally).");
 
-  const user = await getUser();
-  if (!user) return json(401, "auth_required", "Create a free account to convert statements.");
+  const user = isDevGuest ? null : await getUser();
+  // No account: a guest preview of the first pages (see lib/guest.ts). Nothing is saved or metered.
+  const guest = !user;
+  if (guest && !GUEST_ENABLED) return json(401, "auth_required", "Create a free account to convert statements.");
 
   const form = await req.formData().catch(() => null);
   const file = form?.get("file");
@@ -44,14 +48,28 @@ export async function POST(req: NextRequest) {
     if (e instanceof ExtractionError) return json(422, e.code, e.message);
     throw e;
   }
-  const { doc, pages } = inspected;
+  let { doc, pages } = inspected;
   if (pages > MAX_PAGES) return json(413, "too_many_pages", `Statements up to ${MAX_PAGES} pages are supported per file.`);
 
+  const ip = clientIp(req);
+  const totalPages = pages;
+  if (guest) {
+    const token = form?.get("turnstile");
+    if (!(await verifyTurnstile(typeof token === "string" ? token : null, ip)))
+      return json(403, "bot_check", "Please complete the quick check below the upload box and try again.");
+    const limited = reserveGuest(ip);
+    if (limited) return json(429, "guest_limit", limited);
+    if (pages > GUEST_MAX_PAGES) {
+      doc = await firstPages(doc, GUEST_MAX_PAGES);
+      pages = GUEST_MAX_PAGES;
+    }
+  }
+
   // Reserve pages atomically before spending money on extraction; refunded on failure.
-  const metered = isSupabaseConfigured && !user.dev;
+  const metered = Boolean(user && isSupabaseConfigured && !user.dev);
   let pagesRemaining: number | null = null;
   if (metered) {
-    const { data, error } = await supabaseAdmin().rpc("consume_pages", { p_user: user.id, p_pages: pages });
+    const { data, error } = await supabaseAdmin().rpc("consume_pages", { p_user: user!.id, p_pages: pages });
     if (error) return json(500, "billing_error", "Couldn't check your page balance. Please retry.");
     if (data === -1)
       return json(402, "out_of_pages", `This statement has ${pages} pages and you're out of pages. Upgrade to keep converting.`);
@@ -68,6 +86,7 @@ export async function POST(req: NextRequest) {
         const statement = await extractStatement(file.name, doc, pages, {
           onProgress: (done, total) => send({ type: "progress", done, total }),
           onStart: (chunks) => send({ type: "start", pages, chunks }),
+          partial: pages < totalPages,
         });
         console.info(summarize(statement));
 
@@ -75,7 +94,7 @@ export async function POST(req: NextRequest) {
           const { data } = await supabaseAdmin()
             .from("conversions")
             .insert({
-              user_id: user.id,
+              user_id: user!.id,
               file_name: file.name,
               pages,
               bank_name: statement.bankName,
@@ -91,10 +110,16 @@ export async function POST(req: NextRequest) {
           statement.conversionId = data?.id ?? null;
         }
         // Cost/model details are stored for unit economics but never sent to the browser.
-        send({ type: "result", statement: publicStatement(statement), pagesRemaining });
-        if (metered && pagesRemaining !== null) void maybeSendLowPages(user.id, pagesRemaining + pages, pagesRemaining);
+        send({
+          type: "result",
+          statement: publicStatement(statement),
+          pagesRemaining,
+          ...(guest ? { guest: { totalPages, convertedPages: pages } } : {}),
+        });
+        if (metered && pagesRemaining !== null) void maybeSendLowPages(user!.id, pagesRemaining + pages, pagesRemaining);
       } catch (e) {
-        if (metered) await supabaseAdmin().rpc("refund_pages", { p_user: user.id, p_pages: pages });
+        if (metered) await supabaseAdmin().rpc("refund_pages", { p_user: user!.id, p_pages: pages });
+        if (guest) releaseGuest(ip);
         const err =
           e instanceof ExtractionError
             ? { code: e.code, message: e.message }
