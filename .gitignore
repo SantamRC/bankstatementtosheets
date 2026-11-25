@@ -49,3 +49,6 @@ bench/
 
 # outreach drafts (public repo)
 /marketing/
+
+# local secrets (never commit)
+secrets.json
